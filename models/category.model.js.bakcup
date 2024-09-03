@@ -1,0 +1,68 @@
+const BaseSQLModel = require('./base.model');
+
+// Create a new class for a specific table
+class Category extends BaseSQLModel {
+  constructor() {
+    super('categories');
+  }
+}
+
+// Create an instance of the Category model
+const category = new Category();
+
+// Retrieve all categories
+category.findAll()
+  .then((results) => {
+    console.log('All categories:', results);
+  })
+  .catch((error) => {
+    console.error('Error retrieving categories:', error);
+  });
+
+// Find a category by ID
+category.findById(1)
+  .then((category) => {
+    console.log('Category with ID 1:', category);
+  })
+  .catch((error) => {
+    console.error('Error retrieving category:', error);
+  });
+
+// Create a new category
+const newCategory = {
+  name: 'John Doe',
+  email: 'johndoe@example.com',
+  age: 25,
+};
+
+category.create(newCategory)
+  .then((insertId) => {
+    console.log('New category created with ID:', insertId);
+  })
+  .catch((error) => {
+    console.error('Error creating category:', error);
+  });
+
+// Update a category
+const updatedCategory = {
+  name: 'Jane Smith',
+};
+
+category.update(1, updatedCategory)
+  .then((affectedRows) => {
+    console.log('Category updated. Affected rows:', affectedRows);
+  })
+  .catch((error) => {
+    console.error('Error updating category:', error);
+  });
+
+// Delete a category
+category.delete(2)
+  .then((affectedRows) => {
+    console.log('Category deleted. Affected rows:', affectedRows);
+  })
+  .catch((error) => {
+    console.error('Error deleting category:', error);
+  });
+
+  module.exports = Category;
