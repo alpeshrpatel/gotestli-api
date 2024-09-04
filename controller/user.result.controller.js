@@ -107,12 +107,28 @@ exports.create = (req, res) => {
   
   const date = new Date().toISOString().slice(0, 10);
   const userresult = new UserResult({
-    user_id : req.body.userId,
-    question_set_id : req.body.questionSetId,
+    // id : req.body.id,
+    org_id: 10,
+    user_id: req.body.user_id,
+    question_set_id: req.body.question_set_id,
+    total_question: req.body.total_question,
+    total_answered: req.body.total_answered,
+    total_not_answered: req.body.total_not_answered,
+    total_reviewed: req.body.total_reviewed,
+    total_not_visited: req.body.total_not_visited,
+    percentage: req.body.percentage,
+    marks_obtained: req.body.marks_obtained,
+    date: date,
+    flag: null,
+    created_by: req.body.created_by,
+    // created_date: req.body.created_date,
+    modified_by: req.body.modified_by,
+    // modified_date: req.body.modified_date,
+    status: req.body.status,
   });
 
   // Save UserResult in the database
-  UserResult.create(req.body.userId, req.body.questionSetId, (err, data) => {
+  UserResult.create(userresult, (err, data) => {
     if (err)
       res.status(500).send({
         message:

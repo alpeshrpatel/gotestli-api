@@ -35,7 +35,8 @@ exports.create = (req, res) => {
     // created_date : req.body.created_date,
     // modified_by : req.body.modified_by,
     // modified_date : req.body.modified_date,
-    is_delete : req.body.is_delete
+    is_delete : 0,
+    uid:req.body.uid
   
   });
 

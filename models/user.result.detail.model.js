@@ -237,7 +237,7 @@ UserResultDetails.getAll = (title, result) => {
 };
 // userResultId, questionId, findSelectedOption, status
 UserResultDetails.updateById = (userresultdetails, result) => {
-  // console.log("userresultdetails : " + JSON.stringify(userresultdetails));
+   console.log("userresultdetails : " + JSON.stringify(userresultdetails));
   // const updatestmt =
   //   "UPDATE user_test_result_dtl SET " +
   //   "user_test_result_id= ?, " +

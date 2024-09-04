@@ -31,6 +31,8 @@ exports.create = (req, res) => {
         // created_date:req.body.created_date,
         // modified_by:req.body.modified_by,
         // modified_date:req.body.modified_date
+        totalmarks:req.body.totalmarks,
+        pass_percentage:req.body.pass_percentage
       });
 
       // Save QuestionSet in the database

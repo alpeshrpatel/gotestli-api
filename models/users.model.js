@@ -27,6 +27,7 @@ const Users = function(users) {
     // this.modified_by = users.modified_by;
     // this.modified_date = users.modified_date;
     this.is_delete = users.is_delete;
+    this.uid = users.uid
 
 };
 
