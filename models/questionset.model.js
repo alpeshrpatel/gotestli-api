@@ -24,6 +24,7 @@ const QuestionSet = function(questionset) {
     // this.modified_date=modified_date;
     this.totalmarks = questionset.totalmarks;
     this.pass_percentage = questionset.pass_percentage;
+    this.tags = questionset.tags;
 };
 
 QuestionSet.create = (newQuestionSet, result) => {
