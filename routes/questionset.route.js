@@ -20,6 +20,9 @@ module.exports = app => {
 
     // Retrieve question sets of instructor
     router.get("/instructor/:author", questionset.getQuestionSetsOfInstructor)
+
+    // Retrieve question sets of instructor
+    router.get("/count/used", questionset.getQuetionSetUsedByCount)
     
     // Update a QuestionSet with id
     router.put("/:id", questionset.update);

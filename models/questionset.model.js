@@ -211,4 +211,29 @@ QuestionSet.removeAll = result => {
   });
 };
 
+QuestionSet.getQuetionSetUsedByCount = result => {
+  connection.query("SELECT q1.title, q1.id, q2.count AS count " + 
+                    "FROM  " +
+                    "( " +
+                        "SELECT id , title " +
+                        "FROM question_set " +
+                    ") AS q1 " +
+                    "INNER JOIN " +
+                    "( " +
+                        "select question_set_id, count(question_set_id) as count from user_test_result utr group by question_set_id  " +
+                    ") AS q2 " +
+                    "ON q1.id = q2.question_set_id order by count desc", (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    logger.info("users: ", res);
+    result(null, res);
+  });
+};
+
+
+
 module.exports = QuestionSet;
