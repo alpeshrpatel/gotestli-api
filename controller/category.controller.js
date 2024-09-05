@@ -72,6 +72,23 @@ exports.findOne = async (req, res) => {
   });
 };
 
+//findParentCategories
+exports.findParentCategories = async (req, res) => {
+  Category.findParentCategories((err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found parent Category`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving parent Category"
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 // // Update a Categoryidentified by the id in the request
 // exports.update = (req, res) => {
 //   // Validate Request
