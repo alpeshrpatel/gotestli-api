@@ -58,6 +58,25 @@ Category.findById = (id, result) => {
   });
 };
 
+Category.findParentCategories = (result) => {
+  connection.query(`SELECT title FROM categories WHERE parent_id = 0`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found category: ", res);
+      result(null, res);
+      return;
+    }
+
+    // not found Category with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
 
 Category.getAll = ( result) => {
   let query = "SELECT * FROM categories where show_menu=1";

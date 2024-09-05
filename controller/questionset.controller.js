@@ -35,7 +35,7 @@ exports.create = (req, res) => {
         pass_percentage:req.body.pass_percentage,
         tags:req.body.tags
       });
-
+      console.log("tags: " + req.body.tags)
       // Save QuestionSet in the database
       QuestionSet.create(questionset, (err, data) => {
         if (err)

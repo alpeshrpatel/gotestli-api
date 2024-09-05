@@ -48,6 +48,9 @@ module.exports = app => {
     // Retrieve a single Category with id
     router.get("/:id", category.findOne);
 
+    // Retrieve a parent categories
+    router.get("/parent/categories",category.findParentCategories);
+    
     // Retrieve all Category with id
     router.get("/", category.findAll);
   
