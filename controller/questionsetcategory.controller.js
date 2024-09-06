@@ -1,4 +1,5 @@
 const QuestionSetCategory = require("../models/questionsetcategory.model");
+const generateDateTime = require("../utils/util");
 
 // Create and Save a new QuestionSetCategory
 exports.create = (req, res) => {
@@ -8,6 +9,24 @@ exports.create = (req, res) => {
           message: "Content can not be empty!"
         });
       }
+      console.log(req.body.tagsId)
+      const tagsId = req.body.tagsId;
+      let tagsIddata = tagsId.split(',');
+      let dataSet = []
+     tagsIddata.forEach((tags) => {
+      const createdDate = generateDateTime();
+      const data = [
+        req.body.questionSetId,
+        tags,
+        10,
+        createdDate,
+        null,
+        createdDate
+      ]
+      dataSet.push(data);
+     })
+     console.log(dataSet)
+
 
       // Create a QuestionSetCategory
       const questionSetCategory = new QuestionSetCategory({
@@ -21,7 +40,7 @@ exports.create = (req, res) => {
         });
 
       // Save QuestionSetCategory in the database
-      QuestionSetCategory.create(questionSetCategory, (err, data) => {
+      QuestionSetCategory.create(dataSet, (err, data) => {
         if (err)
           res.status(500).send({
             message:

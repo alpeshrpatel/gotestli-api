@@ -12,7 +12,8 @@ const QuestionSetCategory = function(questionSetCategory){
     }
 
 QuestionSetCategory.create = (newQuestionSetCategory, result) => {
-  connection.query("INSERT INTO question_set_categories SET ?", newQuestionSetCategory, (err, res) => {
+  const query = " INSERT INTO question_set_categories (question_set_id, category_id, created_by, created_date, modified_by, modified_date) VALUES ?";
+  connection.query(query, [newQuestionSetCategory], (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
