@@ -29,7 +29,7 @@ exports.create = (req, res) => {
 
   // Save QuestionSetQuestion in the database
   let dataSet = [];
- 
+  
   req.body.forEach((item, index) => {
     if (item !== null) {
       const createdDate = new Date()

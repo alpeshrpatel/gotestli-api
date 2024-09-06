@@ -3,6 +3,4 @@ function generateDateTime(date) {
   }
 
 
-  module.export = [
-    generateDateTime
-  ]
+  module.exports = generateDateTime;

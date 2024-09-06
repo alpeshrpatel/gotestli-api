@@ -92,7 +92,7 @@ UserResultDetails.addQuestionsOnStartQuiz = (userId, questionSetId,
               CURRENT_TIMESTAMP()  as created_date ,
               ${userId} as modified_by,
               CURRENT_TIMESTAMP()  as modified_date ,
-              1 as status 
+              0 as status 
             from 
               question_master qm ,  
               question_set qs , 
