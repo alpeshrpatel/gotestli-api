@@ -1,29 +1,27 @@
 const connection = require("../config/mysql.db.config");
 const logger = require("../logger");
 // constructor
-const Category = function(category) {
-  this.id = category.id,
-  this.org_id = category.org_id,
-  this.parent_id = category.parent_id,
-  this.title = category.title,
-  this.description = category.description,
-  this.meta_title = category.meta_title,
-  this.slug = category.slug,
-  this.meta_keyword = category.meta_keyword,
-  this.meta_description = category.meta_description,
-  this.status = category.status,
-  this.show_menu = category.show_menu,
-  this.is_parent_id = category.is_parent_id,
-  this.is_show_home = category.is_show_home,
-  this.icon = category.icon,
-  this.position = category.position
+const Category = function (category) {
+  (this.id = category.id),
+    (this.org_id = category.org_id),
+    (this.parent_id = category.parent_id),
+    (this.title = category.title),
+    (this.description = category.description),
+    (this.meta_title = category.meta_title),
+    (this.slug = category.slug),
+    (this.meta_keyword = category.meta_keyword),
+    (this.meta_description = category.meta_description),
+    (this.status = category.status),
+    (this.show_menu = category.show_menu),
+    (this.is_parent_id = category.is_parent_id),
+    (this.is_show_home = category.is_show_home),
+    (this.icon = category.icon),
+    (this.position = category.position);
 
-    // this.created_by=category.created_by,
-    // this.created_date=category.created_date,
-    // this.modified_by=category.modified_by,
-    // this.modified_date=category.modified_date
-
-
+  // this.created_by=category.created_by,
+  // this.created_date=category.created_date,
+  // this.modified_by=category.modified_by,
+  // this.modified_date=category.modified_date
 };
 
 Category.create = (newCategory, result) => {
@@ -59,26 +57,59 @@ Category.findById = (id, result) => {
 };
 
 Category.findParentCategories = (result) => {
-  connection.query(`SELECT title FROM categories WHERE parent_id = 0`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  connection.query(
+    `SELECT title FROM categories WHERE parent_id = 0`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res.length) {
-      console.log("found category: ", res);
-      result(null, res);
-      return;
-    }
+      if (res.length) {
+        console.log("found category: ", res);
+        result(null, res);
+        return;
+      }
 
-    // not found Category with the id
-    result({ kind: "not_found" }, null);
-  });
+      // not found Category with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
 };
 
+Category.findSelectedCategoriesQuestionsets = (title,result) => {
+  const query =
+    `SELECT qs.* ` +
+    `FROM question_set qs  ` +
+    `JOIN categories c2 ON ( ` +
+    `qs.tags LIKE CONCAT('%,', c2.title, ',%') ` +
+    `OR qs.tags LIKE CONCAT(c2.title, ',%') ` +
+    `OR qs.tags LIKE CONCAT('%,', c2.title) ` +
+    `OR qs.tags = c2.title)` +    
+    `WHERE c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
+  connection.query(
+   query,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-Category.getAll = ( result) => {
+      if (res.length) {
+        console.log("found category: ", res);
+        result(null, res);
+        return;
+      }
+
+      // not found Category with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
+
+Category.getAll = (result) => {
   let query = "SELECT * FROM categories where show_menu=1";
   connection.query(query, (err, res) => {
     if (err) {
@@ -92,19 +123,18 @@ Category.getAll = ( result) => {
   });
 };
 
-
 // Category.updateById = (id, category, result) => {
 //   sql.query(
-//     "UPDATE categories SET org_id= ?, question_set_url= ? ," + 
-//             "image= ? ," + 
-//             "short_desc= ? , description= ? ," + 
-//             "start_time= ? , end_time= ? ," + 
-//             "start_date= ? , end_date= ? ," + 
-//             "time_duration= ? , no_of_question= ? ," + 
-//             "status_id= ? , is_demo= ? " + 
+//     "UPDATE categories SET org_id= ?, question_set_url= ? ," +
+//             "image= ? ," +
+//             "short_desc= ? , description= ? ," +
+//             "start_time= ? , end_time= ? ," +
+//             "start_date= ? , end_date= ? ," +
+//             "time_duration= ? , no_of_question= ? ," +
+//             "status_id= ? , is_demo= ? " +
 //             "WHERE id = ?",
-//     [ 
-//       category.org_id, category.question_set_url, category.image, 
+//     [
+//       category.org_id, category.question_set_url, category.image,
 //       category.short_desc, category.description, category.start_time ,
 //       category.end_time, category.start_date, category.end_date ,
 //       category.time_duration, category.no_of_question, category.status_id ,
@@ -149,7 +179,7 @@ Category.remove = (id, result) => {
   });
 };
 
-Category.removeAll = result => {
+Category.removeAll = (result) => {
   connection.query("DELETE FROM categories", (err, res) => {
     if (err) {
       console.log("error: ", err);

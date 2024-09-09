@@ -89,6 +89,24 @@ exports.findParentCategories = async (req, res) => {
   });
 };
 
+//findSelectedCategoriesQuestionsets
+exports.findSelectedCategoriesQuestionsets = async (req, res) => {
+  console.log('category:'+ req.params.title)
+  Category.findSelectedCategoriesQuestionsets(req.params.title, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found Question set`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving Question sets"
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 // // Update a Categoryidentified by the id in the request
 // exports.update = (req, res) => {
 //   // Validate Request

@@ -50,6 +50,9 @@ module.exports = app => {
 
     // Retrieve a parent categories
     router.get("/parent/categories",category.findParentCategories);
+
+    // Retrieve a selected categories questionsets
+    router.get("/selected/questionsets/:title",category.findSelectedCategoriesQuestionsets);
     
     // Retrieve all Category with id
     router.get("/", category.findAll);
