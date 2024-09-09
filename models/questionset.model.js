@@ -127,6 +127,26 @@ QuestionSet.findById = (id, result) => {
   });
 };
 
+QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
+  const query = `select * from question_set qs where title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`
+  connection.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found questionset: ", res);
+      result(null, res);
+      return;
+    }
+
+    // not found QuestionSet with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
 
 QuestionSet.getAll = (result) => {
   let query = "SELECT * FROM question_set";

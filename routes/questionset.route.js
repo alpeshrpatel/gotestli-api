@@ -23,6 +23,9 @@ module.exports = app => {
 
     // Retrieve question sets of instructor
     router.get("/count/used", questionset.getQuetionSetUsedByCount)
+
+    // get question set of searched keyword
+    router.get("/search/result/:keyword", questionset.getQuetionSetBySearchedKeyword)
     
     // Update a QuestionSet with id
     router.put("/:id", questionset.update);

@@ -99,6 +99,24 @@ exports.getQuetionSetUsedByCount =  (req, res) => {
   });
 };
 
+// getQuetionSetBySearchedKeyword
+exports.getQuetionSetBySearchedKeyword =  (req, res) => {
+  QuestionSet.getQuetionSetBySearchedKeyword(req.params.keyword,(err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found QuestionSet `
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving QuestionSet "
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+
  // Get a Questionset of author by Id
  exports.getQuestionSetsOfInstructor =  (req, res) => {
   console.log(req.params.author)
