@@ -58,7 +58,7 @@ Category.findById = (id, result) => {
 
 Category.findParentCategories = (result) => {
   connection.query(
-    `SELECT title FROM categories WHERE parent_id = 0`,
+    `SELECT id,title FROM categories WHERE parent_id = 0`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -86,7 +86,8 @@ Category.findSelectedCategoriesQuestionsets = (title,result) => {
     `qs.tags LIKE CONCAT('%,', c2.title, ',%') ` +
     `OR qs.tags LIKE CONCAT(c2.title, ',%') ` +
     `OR qs.tags LIKE CONCAT('%,', c2.title) ` +
-    `OR qs.tags = c2.title)` +    
+    `OR qs.tags = c2.title ` +
+    `and qs.is_demo = 1) ` +    
     `WHERE c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
   connection.query(
    query,

@@ -149,7 +149,7 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
 
 
 QuestionSet.getAll = (result) => {
-  let query = "SELECT * FROM question_set";
+  let query = "SELECT * FROM question_set where is_demo = 1";
   connection.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);

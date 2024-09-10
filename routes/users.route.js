@@ -46,13 +46,13 @@ module.exports = app => {
     router.post("/", users.create);
   
     // Retrieve a single users with id
-    router.get("/:id", users.findOne);
+    router.get("/:uid", users.findOne);
 
     // Retrieve all users with id
     router.get("/", users.findAll);
   
     // Update a users with id
-    // router.put("/:id", users.update);
+    router.put("/:uid", users.updateUser);
   
     // Delete a users with id
     router.delete("/:id", users.delete);
