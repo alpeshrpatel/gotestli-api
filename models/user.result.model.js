@@ -344,7 +344,7 @@ UserResult.findQuestionSetByUserId = (userid, questionsetid,  result) => {
 };
 
 UserResult.getHistoryOfUser = (userId, questionsetid,  result) => { 
-  connection.query(`SELECT id,percentage,marks_obtained,modified_date,status FROM user_test_result WHERE user_id = ${userId} and question_set_id = ${questionsetid} order by created_date desc`, (err, res) => {
+  connection.query(`SELECT * FROM user_test_result WHERE user_id = ${userId} and question_set_id = ${questionsetid} order by created_date desc`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
