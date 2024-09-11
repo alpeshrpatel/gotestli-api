@@ -1,5 +1,6 @@
 const connection = require("../config/mysql.db.config");
 const logger = require("../logger");
+const generateDateTime = require("../utils/util");
 // constructor
 const Users = function(users) {
     
@@ -27,7 +28,9 @@ const Users = function(users) {
     // this.modified_by = users.modified_by;
     // this.modified_date = users.modified_date;
     this.is_delete = users.is_delete;
-    this.uid = users.uid
+    this.uid = users.uid;
+    this.role = users.role;
+    this.provider = users.provider;
 
 };
 
@@ -44,8 +47,8 @@ Users.create = (newuser, result) => {
   });
 };
 
-Users.findById = (id, result) => {
-  connection.query(`SELECT * FROM users WHERE id = ${id}`, (err, res) => {
+Users.findById = (uid, result) => {
+  connection.query(`SELECT * FROM users WHERE uid = '${uid}'`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -79,42 +82,43 @@ Users.getAll = ( result) => {
 };
 
 
-// users.updateById = (id, users, result) => {
-//   sql.query(
-//     "UPDATE categories SET org_id= ?, question_set_url= ? ," + 
-//             "image= ? ," + 
-//             "short_desc= ? , description= ? ," + 
-//             "start_time= ? , end_time= ? ," + 
-//             "start_date= ? , end_date= ? ," + 
-//             "time_duration= ? , no_of_question= ? ," + 
-//             "status_id= ? , is_demo= ? " + 
-//             "WHERE id = ?",
-//     [ 
-//       users.org_id, users.question_set_url, users.image, 
-//       users.short_desc, users.description, users.start_time ,
-//       users.end_time, users.start_date, users.end_date ,
-//       users.time_duration, users.no_of_question, users.status_id ,
-//       users.is_demo ,
-//       id
-//     ],
-//     (err, res) => {
-//       if (err) {
-//         console.log("error: ", err);
-//         result(null, err);
-//         return;
-//       }
+Users.updateUser = (uid, users, result) => {
+  // first_name: data.first_name || "",
+  // last_name: data.last_name || "",
+  // role: data.role || "",
+  // email: data.email || "",
+  // company: data.company || "",
+  // phone: data.phone || "",
+  const modified_date = generateDateTime();
+  connection.query(
+    "UPDATE users SET first_name= ?, last_name= ?, " + 
+            "email= ? , company= ?, " + 
+            "phone= ? , modified_date = ? " +
+            "WHERE uid = ?",
+    [ 
+      users.first_name, users.last_name, 
+      users.email, users.company, users.phone ,
+      modified_date,
+      uid
+    ],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
 
-//       if (res.affectedRows == 0) {
-//         // not found users with the id
-//         result({ kind: "not_found" }, null);
-//         return;
-//       }
+      if (res.affectedRows == 0) {
+        // not found users with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
 
-//       console.log("updated users: ", { id: id, ...users });
-//       result(null, { id: id, ...users });
-//     }
-//   );
-// };
+      console.log("updated users: ", { id: uid, ...users });
+      result(null, { id: uid, ...users });
+    }
+  );
+};
 
 Users.remove = (id, result) => {
   connection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
