@@ -306,7 +306,8 @@ UserResult.findById = (id, result) => {
 };
 
 UserResult.findByUserId = (user_id, result) => {
-  connection.query(`SELECT * FROM user_test_result WHERE user_id = ${user_id} order by created_date desc`, (err, res) => {
+  const query = `SELECT utr.* , qs.title, qs.pass_percentage FROM user_test_result utr join question_set qs on utr.question_set_id = qs.id WHERE user_id = ? order by created_date desc`
+  connection.query(query, user_id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

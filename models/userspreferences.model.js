@@ -34,7 +34,16 @@ UsersPreferences.create = (newUsersPreferences, result) => {
         SELECT 1 FROM users_preferences WHERE user_id = ? AND category_id = ?
       )
     `;
+    console.log("userid delete " + newUsersPreferences[0][0])
+    connection.query('DELETE from users_preferences where user_id = ? ',newUsersPreferences[0][0],(err,res) => {
+      if (err) {
+        console.log("error: ", err);
+       
+      }
   
+      console.log("deleted UsersPreferences with id: ");
+     
+    })
     
     const insertUserPreference = (index) => {
       if (index >= newUsersPreferences.length) {
@@ -67,7 +76,7 @@ UsersPreferences.create = (newUsersPreferences, result) => {
   
 
 UsersPreferences.getCategoriesByUserId = async (user_id, result) => {
-    connection.execute(`select category_id from users_preferences where user_id = ${user_id}`, (err, res) => {
+    connection.query(`select category_id from users_preferences where user_id = ${user_id}`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -87,7 +96,7 @@ UsersPreferences.getCategoriesByUserId = async (user_id, result) => {
   };
 
   UsersPreferences.findById = async (user_id, result) => {
-    connection.execute(`select * from users_preferences where user_id = ${user_id}`, (err, res) => {
+    connection.query(`select * from users_preferences where user_id = ${user_id}`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);

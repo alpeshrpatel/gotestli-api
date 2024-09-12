@@ -2,36 +2,34 @@ const connection = require("../config/mysql.db.config");
 const logger = require("../logger");
 const generateDateTime = require("../utils/util");
 // constructor
-const Users = function(users) {
-    
-    this.ip_address = users.ip_address;
-    this.username = users.username;
-    this.password = users.password;
-    this.email = users.email;
-    this.activation_selector = users.activation_selector;
-    this.activation_code = users.activation_code;
-    this.forgotten_password_selector = users.forgotten_password_selector;
-    this.forgotten_password_code = users.forgotten_password_code;
-    this.forgotten_password_time = users.forgotten_password_time;
-    this.remember_selector = users.remember_selector;
-    this.remember_code = users.remember_code;
-    this.created_on = users.created_on;
-    this.last_login = users.last_login;
-    this.active = users.active;
-    this.first_name = users.first_name;
-    this.last_name = users.last_name;
-    this.company = users.company;
-    this.phone = users.phone;
-    // this.profile_pic = users.profile_pic;
-    // this.created_by = users.created_by;
-    // this.created_date = users.created_date;
-    // this.modified_by = users.modified_by;
-    // this.modified_date = users.modified_date;
-    this.is_delete = users.is_delete;
-    this.uid = users.uid;
-    this.role = users.role;
-    this.provider = users.provider;
-
+const Users = function (users) {
+  this.ip_address = users.ip_address;
+  this.username = users.username;
+  this.password = users.password;
+  this.email = users.email;
+  this.activation_selector = users.activation_selector;
+  this.activation_code = users.activation_code;
+  this.forgotten_password_selector = users.forgotten_password_selector;
+  this.forgotten_password_code = users.forgotten_password_code;
+  this.forgotten_password_time = users.forgotten_password_time;
+  this.remember_selector = users.remember_selector;
+  this.remember_code = users.remember_code;
+  this.created_on = users.created_on;
+  this.last_login = users.last_login;
+  this.active = users.active;
+  this.first_name = users.first_name;
+  this.last_name = users.last_name;
+  this.company = users.company;
+  this.phone = users.phone;
+  // this.profile_pic = users.profile_pic;
+  // this.created_by = users.created_by;
+  // this.created_date = users.created_date;
+  // this.modified_by = users.modified_by;
+  // this.modified_date = users.modified_date;
+  this.is_delete = users.is_delete;
+  this.uid = users.uid;
+  this.role = users.role;
+  this.provider = users.provider;
 };
 
 Users.create = (newuser, result) => {
@@ -48,7 +46,14 @@ Users.create = (newuser, result) => {
 };
 
 Users.findById = (uid, result) => {
-  connection.query(`SELECT * FROM users WHERE uid = '${uid}'`, (err, res) => {
+  const query =
+    `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
+    `FROM users u ` +
+    `JOIN users_preferences up ON u.id = up.user_id ` +
+    `JOIN categories c ON up.category_id = c.id ` +
+    `WHERE u.uid = "${uid}" GROUP BY u.id;`;
+
+  connection.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -66,8 +71,7 @@ Users.findById = (uid, result) => {
   });
 };
 
-
-Users.getAll = ( result) => {
+Users.getAll = (result) => {
   let query = "SELECT * FROM users";
   connection.query(query, (err, res) => {
     if (err) {
@@ -81,7 +85,6 @@ Users.getAll = ( result) => {
   });
 };
 
-
 Users.updateUser = (uid, users, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",
@@ -91,15 +94,18 @@ Users.updateUser = (uid, users, result) => {
   // phone: data.phone || "",
   const modified_date = generateDateTime();
   connection.query(
-    "UPDATE users SET first_name= ?, last_name= ?, " + 
-            "email= ? , company= ?, " + 
-            "phone= ? , modified_date = ? " +
-            "WHERE uid = ?",
-    [ 
-      users.first_name, users.last_name, 
-      users.email, users.company, users.phone ,
+    "UPDATE users SET first_name= ?, last_name= ?, " +
+      "email= ? , company= ?, " +
+      "phone= ? , modified_date = ? " +
+      "WHERE uid = ?",
+    [
+      users.first_name,
+      users.last_name,
+      users.email,
+      users.company,
+      users.phone,
       modified_date,
-      uid
+      uid,
     ],
     (err, res) => {
       if (err) {
@@ -139,7 +145,7 @@ Users.remove = (id, result) => {
   });
 };
 
-Users.removeAll = result => {
+Users.removeAll = (result) => {
   connection.query("DELETE FROM users", (err, res) => {
     if (err) {
       console.log("error: ", err);
