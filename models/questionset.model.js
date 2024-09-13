@@ -2,61 +2,71 @@ const connection = require("../config/mysql.db.config");
 const { logger } = require("../logger");
 
 // constructor
-const QuestionSet = function(questionset) {
-    this.org_id = questionset.org_id;
-    this.title = questionset.title;
-    this.question_set_url = questionset.question_set_url;
-    this.image = questionset.image;
-    this.author=questionset.author;
-    this.short_desc=questionset.short_desc;
-    this.description=questionset.description;
-    this.start_time=questionset.start_time;
-    this.end_time=questionset.end_time;
-    this.start_date=questionset.start_date;
-    this.end_date=questionset.end_date;
-    this.time_duration=questionset.time_duration;
-    this.no_of_question=questionset.no_of_question;
-    this.status_id=questionset.status_id;
-    this.is_demo=questionset.is_demo;
-    // this.created_by=created_by;
-    // this.created_date=created_date;
-    // this.modified_by=modified_by;
-    // this.modified_date=modified_date;
-    this.totalmarks = questionset.totalmarks;
-    this.pass_percentage = questionset.pass_percentage;
-    this.tags = questionset.tags;
+const QuestionSet = function (questionset) {
+  this.org_id = questionset.org_id;
+  this.title = questionset.title;
+  this.question_set_url = questionset.question_set_url;
+  this.image = questionset.image;
+  this.author = questionset.author;
+  this.short_desc = questionset.short_desc;
+  this.description = questionset.description;
+  this.start_time = questionset.start_time;
+  this.end_time = questionset.end_time;
+  this.start_date = questionset.start_date;
+  this.end_date = questionset.end_date;
+  this.time_duration = questionset.time_duration;
+  this.no_of_question = questionset.no_of_question;
+  this.status_id = questionset.status_id;
+  this.is_demo = questionset.is_demo;
+  // this.created_by=created_by;
+  // this.created_date=created_date;
+  // this.modified_by=modified_by;
+  // this.modified_date=modified_date;
+  this.totalmarks = questionset.totalmarks;
+  this.pass_percentage = questionset.pass_percentage;
+  this.tags = questionset.tags;
 };
 
 QuestionSet.create = (newQuestionSet, result) => {
-  connection.query("INSERT INTO question_set SET ?", newQuestionSet, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  connection.query(
+    "INSERT INTO question_set SET ?",
+    newQuestionSet,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    console.log("created questionset: ", { id: res.insertId, ...newQuestionSet });
-    result(null, { id: res.insertId, ...newQuestionSet });
-  });
+      console.log("created questionset: ", {
+        id: res.insertId,
+        ...newQuestionSet,
+      });
+      result(null, { id: res.insertId, ...newQuestionSet });
+    }
+  );
 };
 
 QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
-  connection.execute(`select question_set_id from question_set_categories where category_id = ${category_id}`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  connection.execute(
+    `select question_set_id from question_set_categories where category_id = ${category_id}`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res.length) {
-      console.log("found questionset: ", res);
-      result(null, res);
-      return;
-    }
+      if (res.length) {
+        console.log("found questionset: ", res);
+        result(null, res);
+        return;
+      }
 
-    // not found QuestionSet with the id
-    result({ kind: "not_found" }, null);
-  });
+      // not found QuestionSet with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
   // return rows;
   // try {
   //   const [rows] = await connection.execute(
@@ -71,64 +81,73 @@ QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
 };
 
 QuestionSet.getQuestionSet = async (question_set_id, result) => {
-  connection.execute(`SELECT qsq.question_id, qm.question, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  connection.execute(
+    `SELECT qsq.question_id, qm.question, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res.length) {
-      console.log("found questionset: ", res);
-      result(null, res);
-      return;
-    }
+      if (res.length) {
+        console.log("found questionset: ", res);
+        result(null, res);
+        return;
+      }
 
-    // not found QuestionSet with the id
-    result({ kind: "not_found" }, null);
-  });
+      // not found QuestionSet with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
 };
 
-QuestionSet.getQuestionSetsOfInstructor =  (author, result) => {
-  connection.execute(`SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where author = '${author}'`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+QuestionSet.getQuestionSetsOfInstructor = (author, result) => {
+  connection.execute(
+    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where author = '${author}'`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res.length) {
-      console.log("found questionset: ", res);
-      result(null, res);
-      return;
-    }
+      if (res.length) {
+        console.log("found questionset: ", res);
+        result(null, res);
+        return;
+      }
 
-    // not found QuestionSet with the id
-    result({ kind: "not_found" }, null);
-  });
+      // not found QuestionSet with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
 };
 
 QuestionSet.findById = (id, result) => {
-  connection.query(`SELECT * FROM question_set WHERE id = ${id}`, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
+  connection.query(
+    `SELECT * FROM question_set WHERE id = ${id}`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
-    if (res.length) {
-      console.log("found questionset: ", res[0]);
-      result(null, res[0]);
-      return;
-    }
+      if (res.length) {
+        console.log("found questionset: ", res[0]);
+        result(null, res[0]);
+        return;
+      }
 
-    // not found QuestionSet with the id
-    result({ kind: "not_found" }, null);
-  });
+      // not found QuestionSet with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
 };
 
 QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
-  const query = `select * from question_set qs where title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`
+  const query = `select * from question_set qs where title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`;
   connection.query(query, (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -146,7 +165,6 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
     result({ kind: "not_found" }, null);
   });
 };
-
 
 QuestionSet.getAll = (result) => {
   let query = "SELECT * FROM question_set where is_demo = 1";
@@ -162,23 +180,20 @@ QuestionSet.getAll = (result) => {
   });
 };
 
-QuestionSet.updateById = (id, questionset, result) => {
+QuestionSet.updateById = (id, questionset, modified_date, result) => {
   connection.query(
-    "UPDATE question_set SET org_id= ?, question_set_url= ? ," + 
-            "image= ? ," + 
-            "short_desc= ? , description= ? ," + 
-            "start_time= ? , end_time= ? ," + 
-            "start_date= ? , end_date= ? ," + 
-            "time_duration= ? , no_of_question= ? ," + 
-            "status_id= ? , is_demo= ? " + 
-            "WHERE id = ?",
-    [ 
-      questionset.org_id, questionset.question_set_url, questionset.image, 
-      questionset.short_desc, questionset.description, questionset.start_time ,
-      questionset.end_time, questionset.start_date, questionset.end_date ,
-      questionset.time_duration, questionset.no_of_question, questionset.status_id ,
-      questionset.is_demo ,
-      id
+    "UPDATE question_set SET title= ?, " +
+      "short_desc= ? , " +
+      "time_duration= ? , " +
+      "is_demo= ? , modified_date= ? " +
+      "WHERE id = ?",
+    [
+      questionset.title,
+      questionset.short_desc,
+      questionset.time_duration,
+      questionset.is_demo,
+      modified_date,
+      id,
     ],
     (err, res) => {
       if (err) {
@@ -218,7 +233,7 @@ QuestionSet.remove = (id, result) => {
   });
 };
 
-QuestionSet.removeAll = result => {
+QuestionSet.removeAll = (result) => {
   connection.query("DELETE FROM question_set", (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -231,29 +246,30 @@ QuestionSet.removeAll = result => {
   });
 };
 
-QuestionSet.getQuetionSetUsedByCount = result => {
-  connection.query("SELECT q1.title, q1.id, q2.count AS count " + 
-                    "FROM  " +
-                    "( " +
-                        "SELECT id , title " +
-                        "FROM question_set " +
-                    ") AS q1 " +
-                    "INNER JOIN " +
-                    "( " +
-                        "select question_set_id, count(question_set_id) as count from user_test_result utr group by question_set_id  " +
-                    ") AS q2 " +
-                    "ON q1.id = q2.question_set_id order by count desc", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
+QuestionSet.getQuetionSetUsedByCount = (result) => {
+  connection.query(
+    "SELECT q1.title, q1.id, q2.count AS count " +
+      "FROM  " +
+      "( " +
+      "SELECT id , title " +
+      "FROM question_set " +
+      ") AS q1 " +
+      "INNER JOIN " +
+      "( " +
+      "select question_set_id, count(question_set_id) as count from user_test_result utr group by question_set_id  " +
+      ") AS q2 " +
+      "ON q1.id = q2.question_set_id order by count desc",
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      logger.info("users: ", res);
+      result(null, res);
     }
-
-    logger.info("users: ", res);
-    result(null, res);
-  });
+  );
 };
-
-
 
 module.exports = QuestionSet;
