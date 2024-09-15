@@ -49,8 +49,8 @@ Users.findById = (uid, result) => {
   const query =
     `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
     `FROM users u ` +
-    `JOIN users_preferences up ON u.id = up.user_id ` +
-    `JOIN categories c ON up.category_id = c.id ` +
+    `LEFT JOIN users_preferences up ON u.id = up.user_id ` +
+    `LEFT JOIN categories c ON up.category_id = c.id ` +
     `WHERE u.uid = "${uid}" GROUP BY u.id;`;
 
   connection.query(query, (err, res) => {

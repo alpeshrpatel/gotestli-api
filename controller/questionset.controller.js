@@ -1,4 +1,5 @@
 const QuestionSet = require("../models/questionset.model");
+const generateDateTime = require("../utils/util");
 
 // Create and Save a new QuestionSet
 exports.create = (req, res) => {
@@ -185,12 +186,13 @@ exports.update = (req, res) => {
       message: "Content can not be empty!"
     });
   }
-
+  const modified_date = generateDateTime();
   console.log(req.body);
 
   QuestionSet.updateById(
     req.params.id,
     new QuestionSet(req.body),
+    modified_date,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
