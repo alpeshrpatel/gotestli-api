@@ -63,6 +63,19 @@ exports.getStudentsList = (req, res) => {
   });
 };
 
+//getDshbDataAnalysis
+exports.getDshbDataAnalysis = (req, res) => {
+
+  UserResult.getDshbDataAnalysis( (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving data.",
+      });
+    else res.send(data);
+  });
+};
+
 exports.calculate = (req, res) => {
   // Validate request
   console.log("requset body"+req.body)
