@@ -21,6 +21,9 @@ module.exports = app => {
   // Retrieve users list who attempted quiz
   router.get("/students/list/:questionSetId", userresult.getStudentsList);
 
+  // Retrieve data for dashboard
+  router.get("/student/dshb/analysis",userresult.getDshbDataAnalysis)
+
    // Update a QuestionSet with id
   //  router.put("/calculate/finalresult", userresult.calculate);
 
