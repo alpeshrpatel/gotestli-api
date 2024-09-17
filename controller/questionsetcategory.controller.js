@@ -18,9 +18,9 @@ exports.create = (req, res) => {
       const data = [
         req.body.questionSetId,
         tags,
-        10,
+        req.body.userId,
         createdDate,
-        null,
+        req.body.userId,
         createdDate
       ]
       dataSet.push(data);

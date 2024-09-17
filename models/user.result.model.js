@@ -18,9 +18,9 @@ const UserResult = function (userresult) {
   this.flag = userresult.flag;
   this.status = userresult.status;
   this, (marks = userresult.masks);
-  // this.created_by = userresult.created_by;
+   this.created_by = userresult.created_by;
   // this.created_date = userresult.created_date;
-  // this.modified_by = userresult.modified_by;
+   this.modified_by = userresult.modified_by;
   // this.modified_date = userresult.modified_date;
 };
 
@@ -238,7 +238,7 @@ UserResult.calculateResult = (userResult, result) => {
         const query = `UPDATE user_test_result SET 
                       total_answered = ? , total_not_answered = ?, 
                       total_reviewed = ? , total_not_visited = 0 , 
-                      percentage = ?, marks_obtained = ?, 
+                      percentage = ?, marks_obtained = ?, modified_by = ?,
                       modified_date = ?, status = ?
                     WHERE id = ?`;
         connection.query(
@@ -249,6 +249,7 @@ UserResult.calculateResult = (userResult, result) => {
             userresult.total_reviewed,
             userresult.percentage,
             userresult.marksObtained,
+            userResult.modified_by,
             modifiedDate,
             userresult.status,
             userresult.id,
@@ -420,13 +421,13 @@ UserResult.getStudentsList = (questionSetId, result) => {
 };
 
 //getDshbDataAnalysis
-UserResult.getDshbDataAnalysis = (result) => {
+UserResult.getDshbDataAnalysis = (userId, result) => {
   const query =
     "SELECT COUNT(*) AS completed_quiz_count, " +
     "AVG(percentage) AS average_percentage, " +
     "(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result)) AS quiz_completion_percentage  FROM " +
-    "user_test_result WHERE status = 1;";
-  connection.query(query, (err, res) => {
+    "user_test_result WHERE status = 1 and user_id = ?;";
+  connection.query(query, userId, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -465,7 +466,7 @@ UserResult.updateById = (id, userresult, result) => {
       "question_set_id= ? , total_question= ? ," +
       "total_answered= ? , total_not_answered= ? ," +
       "total_reviewed= ? , total_not_visited= ? ," +
-      "total_not_visited= ? , flag= ? , " +
+      "total_not_visited= ? , flag= ? , modified_by = ? " +
       "WHERE id = ?",
     [
       userresult.org_id,

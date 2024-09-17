@@ -22,7 +22,7 @@ module.exports = app => {
   router.get("/students/list/:questionSetId", userresult.getStudentsList);
 
   // Retrieve data for dashboard
-  router.get("/student/dshb/analysis",userresult.getDshbDataAnalysis)
+  router.get("/student/dashboard/analysis/:userId",userresult.getDshbDataAnalysis)
 
    // Update a QuestionSet with id
   //  router.put("/calculate/finalresult", userresult.calculate);

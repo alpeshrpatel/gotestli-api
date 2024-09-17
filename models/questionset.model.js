@@ -18,9 +18,9 @@ const QuestionSet = function (questionset) {
   this.no_of_question = questionset.no_of_question;
   this.status_id = questionset.status_id;
   this.is_demo = questionset.is_demo;
-  // this.created_by=created_by;
+   this.created_by=questionset.created_by;
   // this.created_date=created_date;
-  // this.modified_by=modified_by;
+   this.modified_by=questionset.modified_by;
   // this.modified_date=modified_date;
   this.totalmarks = questionset.totalmarks;
   this.pass_percentage = questionset.pass_percentage;
@@ -102,9 +102,9 @@ QuestionSet.getQuestionSet = async (question_set_id, result) => {
   );
 };
 
-QuestionSet.getQuestionSetsOfInstructor = (author, result) => {
+QuestionSet.getQuestionSetsOfInstructor = (userId, result) => {
   connection.execute(
-    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where author = '${author}'`,
+    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}'`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -180,7 +180,7 @@ QuestionSet.getAll = (result) => {
   });
 };
 
-QuestionSet.updateById = (id, questionset, modified_date, result) => {
+QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) => {
   connection.query(
     "UPDATE question_set SET title= ?, " +
       "short_desc= ? , " +
@@ -192,6 +192,7 @@ QuestionSet.updateById = (id, questionset, modified_date, result) => {
       questionset.short_desc,
       questionset.time_duration,
       questionset.is_demo,
+      modified_by,
       modified_date,
       id,
     ],

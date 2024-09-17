@@ -21,9 +21,9 @@ exports.create = (req, res) => {
     // answer : req.body.answer,
     correct_answer: req.body.correct_answer,
     status: req.body.status,
-    // created_by:req.body.created_by,
+     created_by:req.body.created_by,
     // created_date:req.body.created_date,
-    // modified_by:req.body.modified_by,
+     modified_by:req.body.modified_by,
     // modified_date:req.body.modified_date
   });
 

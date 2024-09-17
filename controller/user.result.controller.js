@@ -66,7 +66,7 @@ exports.getStudentsList = (req, res) => {
 //getDshbDataAnalysis
 exports.getDshbDataAnalysis = (req, res) => {
 
-  UserResult.getDshbDataAnalysis( (err, data) => {
+  UserResult.getDshbDataAnalysis(req.params.userId, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -91,6 +91,7 @@ exports.calculate = (req, res) => {
     total_answered: req.body.totalAnswered,
     total_not_answered: req.body.skippedQuestion,
     total_reviewed: req.body.totalReviewed,
+    modified_by:req.body.userId
   });
 
 

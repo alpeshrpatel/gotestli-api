@@ -47,7 +47,7 @@ QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, resul
 
 
 QuestionSetCategory.remove = (id, result) => {
-  connection.query("DELETE FROM question_set_categories WHERE id = ?", id, (err, res) => {
+  connection.query("DELETE FROM question_set_categories WHERE iquestion_set_id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

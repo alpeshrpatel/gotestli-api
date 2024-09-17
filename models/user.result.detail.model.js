@@ -252,7 +252,7 @@ UserResultDetails.updateById = (userresultdetails, result) => {
   //   "' " +
   //   " WHERE id = ?";
   const query = `UPDATE user_test_result_dtl 
-  SET answer = ?, status = ?, modified_date = ?
+  SET answer = ?, modified_by = ?, status = ?, modified_date = ?
   WHERE id = (
       SELECT id 
       FROM (
@@ -268,6 +268,7 @@ UserResultDetails.updateById = (userresultdetails, result) => {
     query,
     [
       userresultdetails.answer,
+      userresultdetails.modified_by,
       userresultdetails.status,
       modifiedDate,
       userresultdetails.user_test_result_id,

@@ -29,7 +29,7 @@ exports.create = (req, res) => {
 
   // Save QuestionSetQuestion in the database
   let dataSet = [];
-  
+
   req.body.forEach((item, index) => {
     if (item !== null) {
       const createdDate = new Date()
@@ -39,9 +39,9 @@ exports.create = (req, res) => {
       const data = [
         item.question_set_id,
         item.question_id,
-        10,
+        item.userId,
         createdDate,
-        null,
+        item.userId,
         createdDate,
       ];
 

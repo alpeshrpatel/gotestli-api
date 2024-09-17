@@ -28,9 +28,9 @@ exports.create = (req, res) => {
         no_of_question:req.body.no_of_question,
         status_id:req.body.status_id,
         is_demo:req.body.is_demo,
-        // created_by:req.body.created_by,
+         created_by:req.body.created_by,
         // created_date:req.body.created_date,
-        // modified_by:req.body.modified_by,
+         modified_by:req.body.modified_by,
         // modified_date:req.body.modified_date
         totalmarks:req.body.totalmarks,
         pass_percentage:req.body.pass_percentage,
@@ -120,8 +120,8 @@ exports.getQuetionSetBySearchedKeyword =  (req, res) => {
 
  // Get a Questionset of author by Id
  exports.getQuestionSetsOfInstructor =  (req, res) => {
-  console.log(req.params.author)
-  QuestionSet.getQuestionSetsOfInstructor (req.params.author, (err, data) => {
+  console.log(req.params.userId)
+  QuestionSet.getQuestionSetsOfInstructor (req.params.userId, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -191,7 +191,8 @@ exports.update = (req, res) => {
 
   QuestionSet.updateById(
     req.params.id,
-    new QuestionSet(req.body),
+    new QuestionSet(req.body.changedQSet),
+    req.body.userId,
     modified_date,
     (err, data) => {
       if (err) {
