@@ -53,6 +53,7 @@ require("./routes/questionoptions.route.js")(app)
 require("./routes/questionsetcategory.route.js")(app)
 require("./routes/questionsetquestion.route.js")(app)
 require("./routes/userspreferences.route.js")(app)
+require("./routes/followerslist.route.js")(app)
 
 
 // set port, listen for requests

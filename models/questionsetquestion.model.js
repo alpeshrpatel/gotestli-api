@@ -49,7 +49,7 @@ QuestionSetQuestion.create = (newQuestionSetQuestion, result) => {
 
 
 QuestionSetQuestion.remove = (id, result) => {
-  connection.query("DELETE FROM question_set_questions WHERE id = ?", id, (err, res) => {
+  connection.query("DELETE FROM question_set_questions WHERE question_set_id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
