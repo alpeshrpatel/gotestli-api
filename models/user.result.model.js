@@ -401,7 +401,7 @@ UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
 
 UserResult.getStudentsList = (questionSetId, result) => {
   connection.query(
-    `SELECT user_id, total_answered, percentage, marks_obtained, status from user_test_result where question_set_id = ${questionSetId}`,
+    `SELECT * from user_test_result where question_set_id = ${questionSetId}`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -423,11 +423,11 @@ UserResult.getStudentsList = (questionSetId, result) => {
 //getDshbDataAnalysis
 UserResult.getDshbDataAnalysis = (userId, result) => {
   const query =
-    "SELECT COUNT(*) AS completed_quiz_count, " +
-    "AVG(percentage) AS average_percentage, " +
-    "(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result)) AS quiz_completion_percentage  FROM " +
-    "user_test_result WHERE status = 1 and user_id = ?;";
-  connection.query(query, userId, (err, res) => {
+    `SELECT COUNT(*) AS completed_quiz_count, ` +
+    `AVG(percentage) AS average_percentage, ` +
+    `(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ${userId})) AS quiz_completion_percentage  FROM ` +
+    `user_test_result WHERE status = 1 and user_id = ${userId};`;
+  connection.query(query,(err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

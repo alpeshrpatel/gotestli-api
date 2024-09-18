@@ -185,7 +185,7 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
     "UPDATE question_set SET title= ?, " +
       "short_desc= ? , " +
       "time_duration= ? , " +
-      "is_demo= ? , modified_date= ? " +
+      "is_demo= ?, modified_by= ? , modified_date= ? " +
       "WHERE id = ?",
     [
       questionset.title,
