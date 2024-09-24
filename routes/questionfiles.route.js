@@ -7,6 +7,8 @@ module.exports = app => {
     router.post("/", QuestionFiles.create);
 
     router.post('/insert/questions', QuestionFiles.insertQuestions);
+
+    router.get('/download/samplefile', QuestionFiles.getSampleFile);
   
     router.get("/:id",QuestionFiles.findById);
     
