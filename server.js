@@ -12,6 +12,7 @@ const option = require("./swagger.js");
 const multer = require("multer");
 const ExcelJS = require("exceljs");
 const path = require("path");
+const fs = require('fs');
 
 const port = 3000;
 
@@ -51,17 +52,17 @@ require("./routes/questionsetcategory.route.js")(app);
 require("./routes/questionsetquestion.route.js")(app);
 require("./routes/userspreferences.route.js")(app);
 require("./routes/followerslist.route.js")(app);
+require("./routes/questionfiles.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
-// Configure multer for file upload storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadFolder); 
+    cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-   
-    cb(null, Date.now() + path.extname(file.originalname));
+    const uniqueFileName = generateUniqueFilename(file.originalname, uploadFolder);
+    cb(null, uniqueFileName); 
   },
 });
 
@@ -70,57 +71,80 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-// Handle file upload request
+const generateUniqueFilename = (originalName, uploadFolder) => {
+  const ext = path.extname(originalName); 
+  const baseName = path.basename(originalName, ext); 
+
+  let filename = originalName;
+  let counter = 1;
+
+  
+  while (fs.existsSync(path.join(uploadFolder, filename))) {
+   
+    filename = `${baseName}(${counter})${ext}`;
+    counter++;
+  }
+
+  return filename; 
+};
+
+
 app.post("/api/file/upload", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).send({ message: "No file uploaded." });
     }
-    const filePath = req.file.path; // Path to the uploaded file
+    console.log("req.file:", req.file);
 
-    // Create a new ExcelJS workbook and read the file
+    const fileName = req.file.filename;
+    const filePath = req.file.path; 
+
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
 
-    // Get the first worksheet
-    // console.log("workbook:",workbook)
-
     const worksheet = workbook.getWorksheet("Project Management Data");
 
-    // Loop through rows of the worksheet
     worksheet.eachRow((row, rowNumber) => {
       console.log(`Row ${rowNumber}:`);
       row.eachCell((cell, colNumber) => {
         console.log(`Cell ${colNumber}: ${cell.value}`);
       });
     });
-    // Check if the first row matches the required format
+
     const expectedHeaders = [
       "question",
       "description",
+      "question_option",
+      "correct_answer",
       "complexity",
       "marks",
       "is_negative",
       "negative_marks",
     ];
     const actualHeaders = [];
-    //  console.log("worksheet : ",worksheet);
+
     worksheet.getRow(6).eachCell((cell, colNumber) => {
-      actualHeaders.push(cell.value ? cell.value.trim().toLowerCase() : '');
+      actualHeaders.push(cell.value ? cell.value.trim().toLowerCase() : "");
     });
 
-    const normalizedExpectedHeaders = expectedHeaders.map(header => header.trim().toLowerCase());
+    const normalizedExpectedHeaders = expectedHeaders.map((header) =>
+      header.trim().toLowerCase()
+    );
     console.log("actual headers: ", actualHeaders);
-    // Validate the headers
+   
     if (
       normalizedExpectedHeaders.length !== actualHeaders.length ||
-      !normalizedExpectedHeaders.every((header, index) => header === actualHeaders[index])
+      !normalizedExpectedHeaders.every(
+        (header, index) => header === actualHeaders[index]
+      )
     ) {
-      return res.status(400).send({ message: "Invalid data format in Excel sheet!" });
+      return res
+        .status(400)
+        .send({ message: "Invalid data format in Excel sheet!" });
     } else {
-      // If headers are valid, loop through the rows to check data
+    
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; // Skip header row
+        if (rowNumber === 1) return; 
 
         console.log(`Row ${rowNumber}:`);
         row.eachCell((cell, colNumber) => {
@@ -139,7 +163,12 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     //   parsedData.push(rowData); // Add row data to parsedData array
     // });
     // console.log("parsed data: ", parsedData);
-    res.status(200).send({ message: "File uploaded successfully!" });
+    res
+      .status(200)
+      .send({
+        message: "File uploaded successfully!",
+        data: { fileName: fileName, filePath: filePath },
+      });
   } catch (error) {
     console.log("error: ", error);
     res.status(500).send({ message: "File upload failed!", error });
