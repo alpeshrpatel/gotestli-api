@@ -120,6 +120,7 @@ workbook.eachSheet((worksheet, sheetId) => {
     });
 
     const expectedHeaders = [
+      "index",
       "question",
       "description",
       "question_option",
