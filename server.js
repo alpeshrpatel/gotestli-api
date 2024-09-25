@@ -102,7 +102,15 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
 
-    const worksheet = workbook.getWorksheet("Project Management Data");
+
+workbook.eachSheet((worksheet, sheetId) => {
+  console.log(`Sheet ${sheetId}: ${worksheet.name}`);
+});
+
+    const worksheet = workbook.getWorksheet("Questions Data");
+    if (!worksheet) {
+      return res.status(400).send({ message: "Worksheet 'Questions Data' not found!" });
+    }
 
     worksheet.eachRow((row, rowNumber) => {
       console.log(`Row ${rowNumber}:`);
