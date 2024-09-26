@@ -300,20 +300,20 @@ exports.insertQuestions = async (req, res) => {
   }
 };
 
-exports.getSampleFile = (req, res) => {
-  const filePath = path.join(
-    __dirname,
-    "../../gotestli-web/client/public/samplefile/SampleExcelFile.xlsx"
-  );
-  res.download(filePath, "SampleExcelFile.xlsx", (err) => {
-    if (err) {
-      console.error("Error downloading file:", err);
-      res.status(500).send({
-        message: "Error downloading the file",
-      });
-    }
-  });
-};
+// exports.getSampleFile = (req, res) => {
+//   const filePath = path.join(
+//     __dirname,
+//     "../../gotestli-web/client/public/samplefile/SampleExcelFile.xlsx"
+//   );
+//   res.download(filePath, "SampleExcelFile.xlsx", (err) => {
+//     if (err) {
+//       console.error("Error downloading file:", err);
+//       res.status(500).send({
+//         message: "Error downloading the file",
+//       });
+//     }
+//   });
+// };
 
 exports.getUploadedFile = (req, res) => {
   const type = req.query.type;
@@ -357,6 +357,21 @@ exports.findById = (req, res) => {
   });
 };
 
+exports.findByFileName = (req, res) => {
+  QuestionFiles.findByFileName(req.query.filename, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found file with filename ${req.query.filename}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving file with filenam " + req.query.filename,
+        });
+      }
+    } else res.send(data);
+  });
+};
 // updateById
 
 // Delete all FollowersLists from the database.

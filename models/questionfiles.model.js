@@ -148,7 +148,6 @@ const updateFilesData = async (fileId,correct,errored,date) => {
       }
      return true;
     });
- 
 }
 
 const insertQuestionOptions = async (questionId, data, userId, date) => {
@@ -237,6 +236,27 @@ QuestionFiles.findById = async (user_id, result) => {
   );
 };
 
+QuestionFiles.findByFileName = async (filename, result) => {
+  connection.query(
+    `select * from question_files where file_name = '${filename}'`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+
+      if (res.length) {
+        console.log("found user: ", res);
+        result(null, res);
+        return;
+      }
+
+      // not found user with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
 // QuestionFiles.remove = (instructor_id, follower_id, result) => {
 //   connection.query(
 //     `DELETE FROM followers_list WHERE instructor_id= ${instructor_id} and follower_id = ${follower_id};`,

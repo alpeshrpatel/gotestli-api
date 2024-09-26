@@ -8,11 +8,13 @@ module.exports = app => {
 
     router.post('/insert/questions', QuestionFiles.insertQuestions);
 
-    router.get('/download/samplefile', QuestionFiles.getSampleFile);
+    // router.get('/download/samplefile', QuestionFiles.getSampleFile);
 
     router.get('/download', QuestionFiles.getUploadedFile);
   
     router.get("/:id",QuestionFiles.findById);
+
+    router.get("/",QuestionFiles.findByFileName);
     
     // // Delete a QuestionFiles with id
     // router.delete("/instructor/:instructor_id/follower/:follower_id", QuestionFiles.delete);
