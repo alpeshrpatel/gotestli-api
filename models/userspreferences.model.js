@@ -118,7 +118,7 @@ UsersPreferences.getCategoriesByUserId = async (user_id, result) => {
 
 
 UsersPreferences.remove = (id, result) => {
-  connection.query("DELETE FROM question_set_categories WHERE id = ?", id, (err, res) => {
+  connection.query("DELETE FROM users_preferences WHERE user_id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -136,17 +136,17 @@ UsersPreferences.remove = (id, result) => {
   });
 };
 
-UsersPreferences.removeAll = result => {
-  connection.query("DELETE FROM question_set_categories", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(null, err);
-      return;
-    }
+// UsersPreferences.removeAll = (user_id,result) => {
+//   connection.query("DELETE FROM users_preferences WHERE user_id = ?",user_id, (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(null, err);
+//       return;
+//     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
-    result(null, res);
-  });
-};
+//     console.log(`deleted ${res.affectedRows} question_set`);
+//     result(null, res);
+//   });
+// };
 
 module.exports = UsersPreferences;

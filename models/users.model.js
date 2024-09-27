@@ -45,7 +45,33 @@ Users.create = (newuser, result) => {
   });
 };
 
-Users.findById = (uid, result) => {
+Users.findById = (userid, result) => {
+  const query =
+    `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
+    `FROM users u ` +
+    `LEFT JOIN users_preferences up ON u.id = up.user_id ` +
+    `LEFT JOIN categories c ON up.category_id = c.id ` +
+    `WHERE u.id = "${userid}" GROUP BY u.id;`;
+
+  connection.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found users: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found users with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
+Users.findUser = (uid, result) => {
   const query =
     `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
     `FROM users u ` +
@@ -85,7 +111,7 @@ Users.getAll = (result) => {
   });
 };
 
-Users.updateUser = (uid, users, result) => {
+Users.updateUser = (userid, users, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",
   // role: data.role || "",
@@ -97,7 +123,7 @@ Users.updateUser = (uid, users, result) => {
     "UPDATE users SET first_name= ?, last_name= ?, " +
       "email= ? , company= ?, " +
       "phone= ? , modified_date = ? " +
-      "WHERE uid = ?",
+      "WHERE id = ?",
     [
       users.first_name,
       users.last_name,
@@ -105,7 +131,7 @@ Users.updateUser = (uid, users, result) => {
       users.company,
       users.phone,
       modified_date,
-      uid,
+      userid,
     ],
     (err, res) => {
       if (err) {
@@ -120,8 +146,8 @@ Users.updateUser = (uid, users, result) => {
         return;
       }
 
-      console.log("updated users: ", { id: uid, ...users });
-      result(null, { id: uid, ...users });
+      console.log("updated users: ", { id: userid, ...users });
+      result(null, { id: userid, ...users });
     }
   );
 };
