@@ -46,13 +46,16 @@ module.exports = app => {
     router.post("/", users.create);
   
     // Retrieve a single users with id
-    router.get("/:uid", users.findOne);
+    router.get("/:userid", users.findOne);
+
+    // Retrieve a user data to set in localstorage using uid
+    router.get("/uid/:uid",users.findUser)
 
     // Retrieve all users with id
     router.get("/", users.findAll);
   
     // Update a users with id
-    router.put("/:uid", users.updateUser);
+    router.put("/:userid", users.updateUser);
   
     // Delete a users with id
     router.delete("/:id", users.delete);

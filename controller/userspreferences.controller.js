@@ -134,14 +134,15 @@ exports.delete = (req, res) => {
   });
 };
 
-// Delete all UsersPreferencess from the database.
-exports.deleteAll = (req, res) => {
-  UsersPreferences.removeAll((err, data) => {
-    if (err)
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while removing all UsersPreferencess."
-      });
-    else res.send({ message: `All UsersPreferencess were deleted successfully!` });
-  });
-};
+// // Delete all UsersPreferencess from the database.
+// exports.deleteAll = (req, res) => {
+//   const user_id = req.body.user_id
+//   UsersPreferences.removeAll(user_id,(err, data) => {
+//     if (err)
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while removing all UsersPreferencess."
+//       });
+//     else res.send({ message: `All UsersPreferencess were deleted successfully!` });
+//   });
+// };

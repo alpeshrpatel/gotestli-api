@@ -63,7 +63,23 @@ exports.findAll = async (req, res) => {
 
 // Find a single users by Id
 exports.findOne = async (req, res) => {
-  Users.findById(req.params.uid, (err, data) => {
+  Users.findById(req.params.userid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found user with id ${req.params.userid}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving user with id " + req.params.userid,
+        });
+      }
+    } else res.send(data);
+  });
+};
+
+exports.findUser = async (req, res) => {
+  Users.findUser(req.params.uid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -77,7 +93,6 @@ exports.findOne = async (req, res) => {
     } else res.send(data);
   });
 };
-
 // // Update a users identified by the id in the request
 exports.updateUser = (req, res) => {
   // Validate Request
@@ -89,15 +104,15 @@ exports.updateUser = (req, res) => {
 
   console.log(req.body);
 
-  Users.updateUser(req.params.uid, req.body, (err, data) => {
+  Users.updateUser(req.params.userid, req.body, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found users with id ${req.params.uid}.`,
+          message: `Not found users with id ${req.params.userid}.`,
         });
       } else {
         res.status(500).send({
-          message: "Error updating users with id " + req.params.uid,
+          message: "Error updating users with id " + req.params.userid,
         });
       }
     } else res.send(data);

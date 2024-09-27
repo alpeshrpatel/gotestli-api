@@ -12,7 +12,7 @@ module.exports = app => {
     router.delete("/:id", UsersPreferences.delete);
   
     // Delete all UsersPreferencess
-    router.delete("/", UsersPreferences.deleteAll);
+    // router.delete("/", UsersPreferences.deleteAll);
 
     // Retrieve a categories with question_id
     router.get("/categories/:id", UsersPreferences.getCategoriesByUserId);
