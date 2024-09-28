@@ -53,6 +53,7 @@ require("./routes/questionsetquestion.route.js")(app);
 require("./routes/userspreferences.route.js")(app);
 require("./routes/followerslist.route.js")(app);
 require("./routes/questionfiles.route.js")(app);
+require("./routes/sendemail.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
@@ -161,17 +162,6 @@ workbook.eachSheet((worksheet, sheetId) => {
         });
       });
     }
-
-    // Initialize an array to store parsed data
-    // const parsedData = [];
-    // worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-    //   const rowData = [];
-    //   row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-    //     rowData.push(cell.value); // Add cell data to rowData array
-    //   });
-    //   parsedData.push(rowData); // Add row data to parsedData array
-    // });
-    // console.log("parsed data: ", parsedData);
     res
       .status(200)
       .send({
