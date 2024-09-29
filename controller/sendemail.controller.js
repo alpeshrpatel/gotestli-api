@@ -3,10 +3,7 @@ require("dotenv").config();
 const sendMail = require('../models/sendemail.model')
 
 exports.sendReminder = async (req, res) => {
-  const {studentData, quizData, instructor} = req.body;
-  console.log("stu:",studentData);
-  console.log("quiz:",quizData);
-  console.log("instructor",instructor)
+  const {userResultId,studentData, quizData, instructor} = req.body;
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -66,14 +63,12 @@ exports.sendReminder = async (req, res) => {
       `, 
   };
 
-  sendMail(transporter, mailOptions, (err, data) => {
+  sendMail.sendMail(userResultId,quizData,transporter, mailOptions, (err, data) => {
     if (err) {
-      
       res.status(500).send({
         message: err.message || "Some error occurred while sending the email.",
       });
     } else {
-     
       res.send({
         message: "Email sent successfully!",
         info: data,
@@ -81,3 +76,21 @@ exports.sendReminder = async (req, res) => {
     }
   });
 };
+
+exports.updateReminderStatus = async (req,res) => {
+  const id = req.body.studentId;
+  console.log("id:",id)
+  sendMail.updateReminderStatus(id,(err,data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || "Some error occurred while update.",
+      });
+    } else {
+     
+      res.send({
+        message: "updated successfully!",
+        info: data,
+      });
+    }
+  })
+}
