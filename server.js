@@ -54,6 +54,7 @@ require("./routes/userspreferences.route.js")(app);
 require("./routes/followerslist.route.js")(app);
 require("./routes/questionfiles.route.js")(app);
 require("./routes/sendemail.route.js")(app);
+require("./controller/cronservice.controller.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
