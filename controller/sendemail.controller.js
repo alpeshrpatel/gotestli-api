@@ -1,20 +1,20 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const sendMail = require('../models/sendemail.model')
+const sendMail = require("../models/sendemail.model");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for port 465, false for other ports
+  auth: {
+    user: process.env.USER,
+    pass: process.env.APP_PASSWORD,
+  },
+});
 
 exports.sendReminder = async (req, res) => {
-  const {userResultId,studentData, quizData, instructor} = req.body;
-
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // true for port 465, false for other ports
-    auth: {
-      user: process.env.USER,
-      pass: process.env.APP_PASSWORD,
-    },
-  });
+  const { userResultId, studentData, quizData, instructor } = req.body;
 
   const mailOptions = {
     from: {
@@ -40,8 +40,8 @@ exports.sendReminder = async (req, res) => {
     Best regards,
     ${instructor}
     Instructor ✨
-      `, 
-      html: `
+      `,
+    html: `
       <p>Hi <b>${studentData.first_name}</b>,</p>
       
       <p>I hope you're doing great! 🌟 This is a friendly reminder to complete your quiz on <b>${quizData.title}</b>. ⏰ The quiz is an important step in reinforcing what you've learned, and I know you'll do amazing! 💪</p>
@@ -60,37 +60,112 @@ exports.sendReminder = async (req, res) => {
       <p>Best regards,<br/>
       ${instructor}<br/>
       <b>Instructor</b> ✨</p>
-      `, 
+      `,
   };
 
-  sendMail.sendMail(userResultId,quizData,transporter, mailOptions, (err, data) => {
+  sendMail.sendMail(
+    userResultId,
+    quizData,
+    transporter,
+    mailOptions,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};
+
+exports.updateReminderStatus = async (req, res) => {
+  const id = req.body.studentId;
+  console.log("id:", id);
+  sendMail.updateReminderStatus(id, (err, data) => {
     if (err) {
       res.status(500).send({
-        message: err.message || "Some error occurred while sending the email.",
+        message: err.message || "Some error occurred while update.",
       });
     } else {
       res.send({
-        message: "Email sent successfully!",
+        message: "updated successfully!",
         info: data,
       });
     }
   });
 };
 
-exports.updateReminderStatus = async (req,res) => {
-  const id = req.body.studentId;
-  console.log("id:",id)
-  sendMail.updateReminderStatus(id,(err,data) => {
-    if (err) {
-      res.status(500).send({
-        message: err.message || "Some error occurred while update.",
-      });
-    } else {
-     
-      res.send({
-        message: "updated successfully!",
-        info: data,
-      });
+exports.sendNotifyMailToInsructor = async (req,res) => {
+  const {notificationDetails} = req.body
+  const mailOptionsToNotifyInstructor = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: notificationDetails.email,
+    subject: "📊 Question Upload Report: Excel File Processed Successfully!",
+    text: `
+Hi ${notificationDetails.first_name},
+
+We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:
+
+✔️ **Successful Insertions:**
+- ${notificationDetails.correct_rows && notificationDetails.correct_rows?.split(',').length || 0} questions were successfully inserted into the database.
+
+❌ **Errors During Insertion:**
+- ${notificationDetails.error_rows && notificationDetails.error_rows?.split(',').length || 0} rows encountered errors. 
+  - Row indexes: ${notificationDetails.error_rows}
+
+Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!
+
+Best regards,
+Your Team
+`,
+    html: `
+<p>Hi <b>${notificationDetails.first_name}</b>,</p>
+
+<p>We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:</p>
+
+<h3>✔️ <b>Successful Insertions:</b></h3>
+<ul>
+  <li><b>${notificationDetails.correct_rows && notificationDetails.correct_rows?.split(',').length || 0}</b> questions were successfully inserted into the database.</li>
+</ul>
+
+<h3>❌ <b>Errors During Insertion:</b></h3>
+<ul>
+  <li><b>${notificationDetails.error_rows && notificationDetails.error_rows?.split(',').length || 0}</b> rows encountered errors.</li>
+  <li>Row indexes: <b>${notificationDetails.error_rows}</b></li>
+</ul>
+
+<p>Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!</p>
+
+<p>Best regards,<br/>
+Team Gotestli</p>
+`,
+  };
+
+  sendMail.sendNotifyMailToInsructor(
+    transporter,
+    mailOptionsToNotifyInstructor,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
     }
-  })
+  );
+
 }
