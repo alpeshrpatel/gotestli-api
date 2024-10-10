@@ -44,6 +44,9 @@ module.exports = app => {
      */
     // Create a new user
     router.post("/", users.create);
+
+    // generate token for logged in user
+    router.get("/generate/token/:id", users.generateToken);
   
     // Retrieve a single users with id
     router.get("/:userid", users.findOne);

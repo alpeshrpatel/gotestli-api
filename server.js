@@ -13,6 +13,7 @@ const multer = require("multer");
 const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require('fs');
+const jwt = require('jsonwebtoken');
 
 const port = 3000;
 
@@ -38,6 +39,24 @@ app.use((req, res, next) => {
   // Modify the response body or perform any other actions
   console.log(`Intercepted request: ${req.method} ${req.url}`);
   console.log(JSON.stringify(req.body));
+  // const authHeader = req.headers.authorization;
+  //   console.log(authHeader);
+    
+  //   if (authHeader) {
+  //     const token = authHeader.split(" ")[1]; 
+
+  //     jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  //       if (err) {
+  //         return res.status(403).json({ message: "Invalid token" });
+  //       }
+
+       
+  //       // req.user = user;
+  //       next();
+  //     });
+  //   } else {
+  //     res.status(401).json({ message: "Token is missing" });
+  //   }
   next();
 });
 
