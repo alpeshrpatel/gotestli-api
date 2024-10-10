@@ -1,4 +1,5 @@
 const Users = require("../models/users.model.js");
+const jwt = require("jsonwebtoken");
 
 // Create and Save a new users
 exports.create = (req, res) => {
@@ -49,6 +50,13 @@ exports.create = (req, res) => {
     else res.send(data);
   });
 };
+
+exports.generateToken = async (req,res) => {
+  const {id} = req.params;
+   // Generate JWT token
+   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, { expiresIn: '30s' });
+   res.json({ token });
+}
 
 // Retrieve all Users from the database (with condition).
 exports.findAll = async (req, res) => {
