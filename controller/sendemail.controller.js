@@ -101,8 +101,8 @@ exports.updateReminderStatus = async (req, res) => {
   });
 };
 
-exports.sendNotifyMailToInsructor = async (req,res) => {
-  const {notificationDetails} = req.body
+exports.sendNotifyMailToInsructor = async (req, res) => {
+  const { notificationDetails } = req.body;
   const mailOptionsToNotifyInstructor = {
     from: {
       name: "Gotestli",
@@ -116,10 +116,18 @@ Hi ${notificationDetails.first_name},
 We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:
 
 ✔️ **Successful Insertions:**
-- ${notificationDetails.correct_rows && notificationDetails.correct_rows?.split(',').length || 0} questions were successfully inserted into the database.
+- ${
+      (notificationDetails.correct_rows &&
+        notificationDetails.correct_rows?.split(",").length) ||
+      0
+    } questions were successfully inserted into the database.
 
 ❌ **Errors During Insertion:**
-- ${notificationDetails.error_rows && notificationDetails.error_rows?.split(',').length || 0} rows encountered errors. 
+- ${
+      (notificationDetails.error_rows &&
+        notificationDetails.error_rows?.split(",").length) ||
+      0
+    } rows encountered errors. 
   - Row indexes: ${notificationDetails.error_rows}
 
 Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!
@@ -134,12 +142,20 @@ Your Team
 
 <h3>✔️ <b>Successful Insertions:</b></h3>
 <ul>
-  <li><b>${notificationDetails.correct_rows && notificationDetails.correct_rows?.split(',').length || 0}</b> questions were successfully inserted into the database.</li>
+  <li><b>${
+    (notificationDetails.correct_rows &&
+      notificationDetails.correct_rows?.split(",").length) ||
+    0
+  }</b> questions were successfully inserted into the database.</li>
 </ul>
 
 <h3>❌ <b>Errors During Insertion:</b></h3>
 <ul>
-  <li><b>${notificationDetails.error_rows && notificationDetails.error_rows?.split(',').length || 0}</b> rows encountered errors.</li>
+  <li><b>${
+    (notificationDetails.error_rows &&
+      notificationDetails.error_rows?.split(",").length) ||
+    0
+  }</b> rows encountered errors.</li>
   <li>Row indexes: <b>${notificationDetails.error_rows}</b></li>
 </ul>
 
@@ -150,9 +166,74 @@ Team Gotestli</p>
 `,
   };
 
-  sendMail.sendNotifyMailToInsructor(
+  sendMail.sendNotifyMail(
     transporter,
     mailOptionsToNotifyInstructor,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};
+
+exports.getInTouchSubscribedMail = async (req,res) => {
+  const {email} = req.body;
+  console.log("email received"+ email)
+  const mailOptionsForGetInTouch = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: "Welcome to Gotestli! 🎉 Stay Tuned for Updates!",
+    text: `
+  Hi there,
+  
+  Thank you for joining the Gotestli community! 🎉
+  
+  We're excited to have you on board. By signing up, you'll be the first to know about new releases, exciting features, and exclusive bonuses we have in store just for you. 🚀
+  
+  Here’s what you can look forward to:
+  - 🆕 Early access to new features
+  - 🎁 Special giveaways and bonuses
+  - 📊 Updates on the latest quizzes and question sets
+  
+  Stay tuned, and keep an eye on your inbox for some great surprises!
+  
+  Best regards,
+  Team Gotestli
+  `,
+    html: `
+  <p>Hi <b>there</b>,</p>
+  
+  <p>Thank you for joining the Gotestli community! 🎉</p>
+  
+  <p>We’re excited to have you with us. By signing up, you'll be the first to know about:</p>
+  <ul>
+    <li>🆕 Early access to new features</li>
+    <li>🎁 Special giveaways and bonuses</li>
+    <li>📊 Updates on the latest quizzes and question sets</li>
+  </ul>
+  
+  <p>Stay tuned and keep an eye on your inbox for some amazing updates!</p>
+  
+  <p>Best regards,<br/>
+  Team Gotestli</p>
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForGetInTouch,
     (err, data) => {
       if (err) {
         res.status(500).send({

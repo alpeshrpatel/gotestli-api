@@ -54,7 +54,7 @@ exports.create = (req, res) => {
 exports.generateToken = async (req,res) => {
   const {id} = req.params;
    // Generate JWT token
-   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, { expiresIn: '30s' });
+   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, { expiresIn: '1h' });
    res.json({ token });
 }
 
