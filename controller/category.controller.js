@@ -55,6 +55,23 @@ exports.findAll = async(req, res) => {
   });
 };
 
+//getParentCategoryOfQuestionSet
+exports.getParentCategoryOfQuestionSet = async (req, res) => {
+  Category.getParentCategoryOfQuestionSet(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found parent category with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving parent Category with id " + req.params.id
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 // Find a single Categoryby Id
 exports.findOne = async (req, res) => {
   Category.findById(req.params.id, (err, data) => {

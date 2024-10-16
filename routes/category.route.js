@@ -57,8 +57,8 @@ module.exports = app => {
     // Retrieve all Category with id
     router.get("/", category.findAll);
   
-    // Update a Category with id
-    // router.put("/:id", category.update);
+    // get a parent category of category
+    router.get("/questionset/parent/category/:id",category.getParentCategoryOfQuestionSet);
   
     // Delete a Category with id
     router.delete("/:id", category.delete);
