@@ -58,7 +58,7 @@ const sendMail = async (userResultId,quizData, transporter, mailOptions, result)
     }
   }
 
-  const sendNotifyMailToInsructor = async(transporter, mailOptions, result) => {
+  const sendNotifyMail = async(transporter, mailOptions, result) => {
     try {
       let info = await transporter.sendMail(mailOptions);
       console.log("Email sent successfully!");
@@ -72,5 +72,5 @@ const sendMail = async (userResultId,quizData, transporter, mailOptions, result)
   module.exports = {
     sendMail,
     updateReminderStatus,
-    sendNotifyMailToInsructor
+    sendNotifyMail
   };

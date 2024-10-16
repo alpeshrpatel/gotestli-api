@@ -12,7 +12,8 @@ const option = require("./swagger.js");
 const multer = require("multer");
 const ExcelJS = require("exceljs");
 const path = require("path");
-const fs = require('fs');
+const fs = require("fs");
+const jwt = require("jsonwebtoken");
 
 const port = 3000;
 
@@ -38,7 +39,36 @@ app.use((req, res, next) => {
   // Modify the response body or perform any other actions
   console.log(`Intercepted request: ${req.method} ${req.url}`);
   console.log(JSON.stringify(req.body));
-  next();
+
+  if (
+    req.url.startsWith("/api/category/selected") ||
+    req.url.startsWith("/api/users") ||
+    req.url == "/api/questionset" ||
+    req.url.startsWith("/api/category/parent/categories") ||
+    req.url == "/api/sendemail/instructor/uploadfile/result" ||
+    req.url.startsWith("/api/contact/messages") ||
+    req.url.startsWith("/api/waitinglist") ||
+    req.url == '/api/sendemail/getintouch/subscribed'
+  ) {
+    return next();
+  }
+  const authHeader = req.headers.authorization;
+  console.log(authHeader);
+
+  if (authHeader) {
+    const token = authHeader.split(" ")[1];
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).json({ message: "Invalid token" });
+      }
+
+      // req.user = user;
+      next();
+    });
+  } else {
+    res.status(401).json({ message: "Token is missing" });
+  }
 });
 
 require("./routes/questionset.route.js")(app);
@@ -55,6 +85,8 @@ require("./routes/followerslist.route.js")(app);
 require("./routes/questionfiles.route.js")(app);
 require("./routes/sendemail.route.js")(app);
 require("./controller/cronservice.controller.js")(app);
+require("./routes/contactmessages.route.js")(app);
+require("./routes/waitinglist.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
@@ -63,8 +95,11 @@ const storage = multer.diskStorage({
     cb(null, uploadFolder);
   },
   filename: (req, file, cb) => {
-    const uniqueFileName = generateUniqueFilename(file.originalname, uploadFolder);
-    cb(null, uniqueFileName); 
+    const uniqueFileName = generateUniqueFilename(
+      file.originalname,
+      uploadFolder
+    );
+    cb(null, uniqueFileName);
   },
 });
 
@@ -74,22 +109,19 @@ const upload = multer({
 });
 
 const generateUniqueFilename = (originalName, uploadFolder) => {
-  const ext = path.extname(originalName); 
-  const baseName = path.basename(originalName, ext); 
+  const ext = path.extname(originalName);
+  const baseName = path.basename(originalName, ext);
 
   let filename = originalName;
   let counter = 1;
 
-  
   while (fs.existsSync(path.join(uploadFolder, filename))) {
-   
     filename = `${baseName}(${counter})${ext}`;
     counter++;
   }
 
-  return filename; 
+  return filename;
 };
-
 
 app.post("/api/file/upload", upload.single("file"), async (req, res) => {
   try {
@@ -99,19 +131,20 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     console.log("req.file:", req.file);
 
     const fileName = req.file.filename;
-    const filePath = req.file.path; 
+    const filePath = req.file.path;
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.readFile(filePath);
 
-
-workbook.eachSheet((worksheet, sheetId) => {
-  console.log(`Sheet ${sheetId}: ${worksheet.name}`);
-});
+    workbook.eachSheet((worksheet, sheetId) => {
+      console.log(`Sheet ${sheetId}: ${worksheet.name}`);
+    });
 
     const worksheet = workbook.getWorksheet("Questions Data");
     if (!worksheet) {
-      return res.status(400).send({ message: "Worksheet 'Questions Data' not found!" });
+      return res
+        .status(400)
+        .send({ message: "Worksheet 'Questions Data' not found!" });
     }
 
     worksheet.eachRow((row, rowNumber) => {
@@ -142,7 +175,7 @@ workbook.eachSheet((worksheet, sheetId) => {
       header.trim().toLowerCase()
     );
     console.log("actual headers: ", actualHeaders);
-   
+
     if (
       normalizedExpectedHeaders.length !== actualHeaders.length ||
       !normalizedExpectedHeaders.every(
@@ -153,9 +186,8 @@ workbook.eachSheet((worksheet, sheetId) => {
         .status(400)
         .send({ message: "Invalid data format in Excel sheet!" });
     } else {
-    
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return; 
+        if (rowNumber === 1) return;
 
         console.log(`Row ${rowNumber}:`);
         row.eachCell((cell, colNumber) => {
@@ -163,12 +195,10 @@ workbook.eachSheet((worksheet, sheetId) => {
         });
       });
     }
-    res
-      .status(200)
-      .send({
-        message: "File uploaded successfully!",
-        data: { fileName: fileName, filePath: filePath },
-      });
+    res.status(200).send({
+      message: "File uploaded successfully!",
+      data: { fileName: fileName, filePath: filePath },
+    });
   } catch (error) {
     console.log("error: ", error);
     res.status(500).send({ message: "File upload failed!", error });

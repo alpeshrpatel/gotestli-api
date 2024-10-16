@@ -11,6 +11,9 @@ module.exports = app => {
      // send notification mail to instructor after uploading questions to db
      router.post("/instructor/uploadfile/result", sendMail.sendNotifyMailToInsructor);
 
+     //send mail for get in touch subscription
+     router.post("/getintouch/subscribed", sendMail.getInTouchSubscribedMail)
+
     app.use('/api/sendemail',router)
 
 };
