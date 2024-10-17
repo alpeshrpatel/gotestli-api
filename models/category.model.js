@@ -37,6 +37,39 @@ Category.create = (newCategory, result) => {
   });
 };
 
+//getParentCategoryOfQuestionSet
+Category.getParentCategoryOfQuestionSet = (id, result) => {
+  const query = `WITH RECURSIVE hierarchy_cte AS (
+    SELECT id, parent_id, title
+    FROM categories
+    WHERE id = ${id}  
+    UNION ALL
+    SELECT t.id, t.parent_id, t.title
+    FROM categories t
+    INNER JOIN hierarchy_cte h ON h.parent_id = t.id  
+)
+SELECT id, title 
+FROM hierarchy_cte
+WHERE parent_id = 0;`;
+
+  connection.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found category: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Category with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
 Category.findById = (id, result) => {
   connection.query(`SELECT * FROM categories WHERE id = ${id}`, (err, res) => {
     if (err) {
@@ -78,7 +111,7 @@ Category.findParentCategories = (result) => {
   );
 };
 
-Category.findSelectedCategoriesQuestionsets = (title,result) => {
+Category.findSelectedCategoriesQuestionsets = (title, result) => {
   const query =
     `SELECT qs.* ` +
     `FROM question_set qs  ` +
@@ -87,27 +120,24 @@ Category.findSelectedCategoriesQuestionsets = (title,result) => {
     `OR qs.tags LIKE CONCAT(c2.title, ',%') ` +
     `OR qs.tags LIKE CONCAT('%,', c2.title) ` +
     `OR qs.tags = c2.title ` +
-    `and qs.is_demo = 1) ` +    
+    `and qs.is_demo = 1) ` +
     `WHERE c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
-  connection.query(
-   query,
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
-
-      if (res.length) {
-        console.log("found category: ", res);
-        result(null, res);
-        return;
-      }
-
-      // not found Category with the id
-      result({ kind: "not_found" }, null);
+  connection.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
     }
-  );
+
+    if (res.length) {
+      console.log("found category: ", res);
+      result(null, res);
+      return;
+    }
+
+    // not found Category with the id
+    result({ kind: "not_found" }, null);
+  });
 };
 
 Category.getAll = (result) => {

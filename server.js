@@ -87,6 +87,7 @@ require("./routes/sendemail.route.js")(app);
 require("./controller/cronservice.controller.js")(app);
 require("./routes/contactmessages.route.js")(app);
 require("./routes/waitinglist.route.js")(app);
+require("./routes/badge.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
