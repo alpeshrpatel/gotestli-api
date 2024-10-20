@@ -25,9 +25,9 @@ FROM (
 ON DUPLICATE KEY UPDATE 
     count = count + 1, 
     badge_name = CASE
-        WHEN count = 1 THEN 'Trailblazer'
-        WHEN count = 9 THEN 'Virtuoso'
-        WHEN count = 14 THEN 'Legend'
+        WHEN count = 5 THEN 'Trailblazer'
+        WHEN count = 10 THEN 'Virtuoso'
+        WHEN count = 15 THEN 'Legend'
         ELSE badge_name  
     END;`;
   connection.query(query, (err, res) => {
