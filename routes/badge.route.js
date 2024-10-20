@@ -5,6 +5,9 @@ module.exports = app => {
   
     // Create a new Badge
     router.put("/qsetid/:id/userid/:userId", Badge.create);
+
+    //get a badges of a user
+    router.get("/:id", Badge.getBadges);
   
   
    

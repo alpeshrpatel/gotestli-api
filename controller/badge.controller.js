@@ -21,3 +21,19 @@ exports.create =  (req, res) => {
     });
   };
  
+  exports.getBadges =  (req, res) => {
+    Badge.getBadges(req.params.id, (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found badge with id ${req.params.id}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error retrieving badge with id " + req.params.id
+          });
+        }
+      } else res.send(data);
+    });
+  };
+ 
