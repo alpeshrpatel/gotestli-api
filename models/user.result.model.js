@@ -337,7 +337,7 @@ UserResult.findById = (id, result) => {
 };
 
 UserResult.findByUserId = (user_id, result) => {
-  const query = `SELECT utr.* , qs.title, qs.pass_percentage FROM user_test_result utr join question_set qs on utr.question_set_id = qs.id WHERE user_id = ? order by created_date desc`;
+  const query = `SELECT utr.* , qs.title, qs.pass_percentage, qs.author, qs.tags, u.first_name, u.last_name FROM user_test_result utr join question_set qs join users u on utr.question_set_id = qs.id and utr.user_id = u.id WHERE user_id = ? order by created_date desc`;
   connection.query(query, user_id, (err, res) => {
     if (err) {
       console.log("error: ", err);
