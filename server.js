@@ -48,7 +48,8 @@ app.use((req, res, next) => {
     req.url == "/api/sendemail/instructor/uploadfile/result" ||
     req.url.startsWith("/api/contact/messages") ||
     req.url.startsWith("/api/waitinglist") ||
-    req.url == '/api/sendemail/getintouch/subscribed'
+    req.url == '/api/sendemail/getintouch/subscribed' ||
+    req.url.startsWith("/api/reviews/rating/qset")
   ) {
     return next();
   }
@@ -88,7 +89,8 @@ require("./controller/cronservice.controller.js")(app);
 require("./routes/contactmessages.route.js")(app);
 require("./routes/waitinglist.route.js")(app);
 require("./routes/badge.route.js")(app);
-require("./routes/surveys.route.js")(app);
+require("./routes/reviews.route.js")(app);
+require("./routes/wishlist.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
