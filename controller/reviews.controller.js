@@ -11,7 +11,7 @@ exports.create = (req, res) => {
   }
 
   // Create a Reviews
-  const Reviews = new Reviews({
+  const reviews = new Reviews({
     questionset_id: req.body.questionset_id,
     satisfaction: req.body.satisfaction,
     difficulty: req.body.difficulty,
@@ -24,7 +24,7 @@ exports.create = (req, res) => {
   });
 
   // Save Reviews in the database
-  Reviews.create(Reviews, (err, data) => {
+  Reviews.create(reviews, (err, data) => {
     if (err)
       res.status(500).send({
         message:
