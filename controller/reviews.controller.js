@@ -54,7 +54,7 @@ exports.getUserReview = (req, res) => {
   Reviews.getUserReview(req.params.qsetid, req.params.userid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
-        res.status(404).send({
+        res.send({
           message: `Not found review.`,
         });
       } else {
