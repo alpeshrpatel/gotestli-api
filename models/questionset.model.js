@@ -82,7 +82,7 @@ QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
 
 QuestionSet.getQuestionSet = async (question_set_id, result) => {
   connection.execute(
-    `SELECT qsq.question_id, qm.question, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`,
+    `SELECT qsq.question_id, qm.question, qm.paragraph, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
