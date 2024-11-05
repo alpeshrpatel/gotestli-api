@@ -76,6 +76,24 @@ exports.findOne = (req, res) => {
   });
 };
 
+//find a paragraph
+exports.findParagraph = (req, res) => {
+  console.log("req.params.id : " + req.params.id)
+  QuestionMaster.findParagraph(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found paragraph with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving paragraph with id " + req.params.id
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 // Update a QuestionMaster identified by the id in the request
 exports.update = (req, res) => {
   // Validate Request

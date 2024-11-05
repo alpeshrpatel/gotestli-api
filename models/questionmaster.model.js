@@ -51,7 +51,24 @@ QuestionMaster.findById = (id, result) => {
   });
 };
 
+QuestionMaster.findParagraph = (id, result) => {
+  connection.execute(`SELECT paragraph FROM question_paragraph WHERE id = ${id}`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
 
+    if (res.length) {
+      console.log("found paragraph: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found paragraph with the id
+    result({ kind: "not_found" }, null);
+  });
+};
 
 QuestionMaster.findAll = (result) => {
   let query = "SELECT * FROM question_master";

@@ -11,6 +11,9 @@ module.exports = app => {
   
     // Retrieve a single QuestionSet with id
     router.get("/", questionmaster.findAll);
+
+    // Retrieve a paragraph of question
+    router.get("/paragraph/:id", questionmaster.findParagraph)
     
     // Update a QuestionSet with id
     router.put("/:id", questionmaster.update);
