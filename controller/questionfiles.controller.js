@@ -358,6 +358,7 @@ exports.findById = (req, res) => {
 };
 
 exports.findByFileName = (req, res) => {
+  console.log(req.query.filename)
   QuestionFiles.findByFileName(req.query.filename, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {

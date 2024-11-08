@@ -55,7 +55,7 @@ app.use((req, res, next) => {
     return next();
   }
   const authHeader = req.headers.authorization;
-  console.log(authHeader);
+  console.log('authheader',authHeader);
 
   if (authHeader) {
     const token = authHeader.split(" ")[1];

@@ -129,7 +129,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
 };
 
 QuestionMaster.remove = (id, result) => {
-  connection.execute("DELETE FROM question_master WHERE id = ?", id, (err, res) => {
+  connection.query("DELETE FROM question_master WHERE id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
