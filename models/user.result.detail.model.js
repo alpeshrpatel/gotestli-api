@@ -31,10 +31,41 @@ UserResultDetails.getAnswers = (questionId, result) => {
 };
 
 
-UserResultDetails.create = (newUserResultDetails, result) => {
+// UserResultDetails.create = (newUserResultDetails, result) => {
 
-  const query = "INSERT INTO user_test_result_dtl(user_test_result_id,question_set_question_id, question_type,answer,created_by, modified_by,status) values  ?";
-  connection.query(query, [newUserResultDetails], (err, res) => {
+//   const query = "INSERT INTO user_test_result_dtl(user_test_result_id,question_set_question_id, question_type,answer,created_by, modified_by,status) values  ?";
+//   connection.query(query, [newUserResultDetails], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(err, null);
+//       return;
+//     }
+
+//     console.log("created userresultdetails: ", { id: res.insertId, ...newUserResultDetails });
+//     result(null, { id: res.insertId, ...newUserResultDetails });
+//   });
+// };
+UserResultDetails.create = (newUserResultDetails, result) => {
+  // Ensure `newUserResultDetails` has the properties in the same order as the columns in the table
+  const query = `
+    INSERT INTO user_test_result_dtl
+      (user_test_result_id, question_set_question_id, question_type, answer, created_by, modified_by, status)
+    VALUES
+      (?, ?, ?, ?, ?, ?, ?);
+  `;
+  
+  // Assuming newUserResultDetails is an object with the appropriate keys
+  const values = [
+    newUserResultDetails.user_test_result_id,
+    newUserResultDetails.question_set_question_id,
+    newUserResultDetails.question_type,
+    newUserResultDetails.answer,
+    newUserResultDetails.created_by,
+    newUserResultDetails.modified_by,
+    newUserResultDetails.status
+  ];
+
+  connection.query(query, values, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

@@ -273,7 +273,7 @@ module.exports = app => {
     // Retrieve a paragraph of question
     router.get("/paragraph/:id", questionmaster.findParagraph)
     
-    /**
+   /**
  * @swagger
  * /api/questionmaster/{id}:
  *   put:
@@ -288,53 +288,54 @@ module.exports = app => {
  *         schema:
  *           type: integer
  *           example: 1
- *       - in: body
- *         name: question
- *         description: The question details to be updated.
- *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             question:
- *               type: string
- *               description: The new question text.
- *               example: "What is a greenhouse made of?"
- *             description:
- *               type: string
- *               description: The description of the question.
- *               example: "A greenhouse is a building that is used to grow plants."
- *             paragraph_id:
- *               type: integer
- *               description: The ID of the associated paragraph, if any.
- *               example: 3
- *             question_type_id:
- *               type: integer
- *               description: The type of the question (e.g., multiple choice, true/false).
- *               example: 2
- *             status_id:
- *               type: integer
- *               description: The status of the question (e.g., active, inactive).
- *               example: 1
- *             max_option_selection:
- *               type: integer
- *               description: The maximum number of options a user can select (if applicable).
- *               example: 4
- *             complexity:
- *               type: string
- *               description: The complexity level of the question.
- *               example: "easy"
- *             marks:
- *               type: integer
- *               description: The marks awarded for the question.
- *               example: 10
- *             is_negative:
- *               type: integer
- *               description: Whether the question has negative marking (0 for no, 1 for yes).
- *               example: 0
- *             negative_marks:
- *               type: number
- *               description: The negative marks for the question, if applicable.
- *               example: 2
+ *     requestBody:
+ *       description: The question details to be updated.
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               question:
+ *                 type: string
+ *                 description: The new question text.
+ *                 example: "What is a greenhouse made of?"
+ *               description:
+ *                 type: string
+ *                 description: The description of the question.
+ *                 example: "A greenhouse is a building that is used to grow plants."
+ *               paragraph_id:
+ *                 type: integer
+ *                 description: The ID of the associated paragraph, if any.
+ *                 example: 3
+ *               question_type_id:
+ *                 type: integer
+ *                 description: The type of the question (e.g., multiple choice, true/false).
+ *                 example: 2
+ *               status_id:
+ *                 type: integer
+ *                 description: The status of the question (e.g., active, inactive).
+ *                 example: 1
+ *               max_option_selection:
+ *                 type: integer
+ *                 description: The maximum number of options a user can select (if applicable).
+ *                 example: 4
+ *               complexity:
+ *                 type: string
+ *                 description: The complexity level of the question.
+ *                 example: "easy"
+ *               marks:
+ *                 type: integer
+ *                 description: The marks awarded for the question.
+ *                 example: 10
+ *               is_negative:
+ *                 type: integer
+ *                 description: Whether the question has negative marking (0 for no, 1 for yes).
+ *                 example: 0
+ *               negative_marks:
+ *                 type: number
+ *                 description: The negative marks for the question, if applicable.
+ *                 example: 2
  *     responses:
  *       200:
  *         description: Successfully updated the question.
