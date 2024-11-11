@@ -33,7 +33,7 @@ QuestionMaster.create = (newQuestionMaster, result) => {
 };
 
 QuestionMaster.findById = (id, result) => {
-  connection.execute(`SELECT question FROM question_master WHERE id = ${id}`, (err, res) => {
+  connection.execute(`SELECT question, explanation FROM question_master WHERE id = ${id}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

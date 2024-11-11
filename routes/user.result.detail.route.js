@@ -25,17 +25,9 @@ module.exports = app => {
  *                 type: integer
  *                 description: The ID of the question in the question set.
  *                 example: 212
- *               question_type:
- *                 type: integer
- *                 description: The type of the question in the question set.
- *                 example: 212
- *               answer:
- *                 type: string
- *                 description: The answer provided by the user.
- *                 example: "A"
  *               correct_answer:
  *                 type: string
- *                 description: The correct answer provided by the user.
+ *                 description: The answer provided by the user.
  *                 example: "A"
  *               status:
  *                 type: integer

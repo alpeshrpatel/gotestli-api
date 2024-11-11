@@ -45,21 +45,22 @@ UserResultDetails.getAnswers = (questionId, result) => {
 //     result(null, { id: res.insertId, ...newUserResultDetails });
 //   });
 // };
+
 UserResultDetails.create = (newUserResultDetails, result) => {
   // Ensure `newUserResultDetails` has the properties in the same order as the columns in the table
   const query = `
     INSERT INTO user_test_result_dtl
-      (user_test_result_id, question_set_question_id, question_type, answer, created_by, modified_by, status)
+      (user_test_result_id, question_set_question_id, correct_answer, created_by, modified_by, status)
     VALUES
-      (?, ?, ?, ?, ?, ?, ?);
+      (?, ?, ?, ?, ?, ?);
   `;
   
   // Assuming newUserResultDetails is an object with the appropriate keys
   const values = [
     newUserResultDetails.user_test_result_id,
     newUserResultDetails.question_set_question_id,
-    newUserResultDetails.question_type,
-    newUserResultDetails.answer,
+    // newUserResultDetails.question_type,
+    newUserResultDetails.correct_answer,
     newUserResultDetails.created_by,
     newUserResultDetails.modified_by,
     newUserResultDetails.status
