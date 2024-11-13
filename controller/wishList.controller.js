@@ -39,6 +39,21 @@ exports.findById =  (req, res) => {
     });
   };
 
+  exports.getQsetId =  (req, res) => {
+    WishList.getQsetId(req.params.id, (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.send({
+            message: `Not found wishlist with id ${req.params.id}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error retrieving wishlist with id " + req.params.id
+          });
+        }
+      } else res.send(data);
+    });
+  };
 
 // Delete all WishLists from the database.
 exports.deleteOne = (req, res) => {

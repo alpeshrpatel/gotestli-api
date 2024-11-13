@@ -25,33 +25,70 @@ UserResultDetails.getAnswers = (questionId, result) => {
         console.error(err);
         return result(err, null);
       }
-      result(null, rows); 
+      result(null, rows);
     }
   );
 };
 
+// UserResultDetails.create = (newUserResultDetails, result) => {
+
+//   const query = "INSERT INTO user_test_result_dtl(user_test_result_id,question_set_question_id, question_type,answer,created_by, modified_by,status) values  ?";
+//   connection.query(query, [newUserResultDetails], (err, res) => {
+//     if (err) {
+//       console.log("error: ", err);
+//       result(err, null);
+//       return;
+//     }
+
+//     console.log("created userresultdetails: ", { id: res.insertId, ...newUserResultDetails });
+//     result(null, { id: res.insertId, ...newUserResultDetails });
+//   });
+// };
 
 UserResultDetails.create = (newUserResultDetails, result) => {
+  // Ensure `newUserResultDetails` has the properties in the same order as the columns in the table
+  const query = `
+    INSERT INTO user_test_result_dtl
+      (user_test_result_id, question_set_question_id, correct_answer, created_by, modified_by, status)
+    VALUES
+      (?, ?, ?, ?, ?, ?);
+  `;
 
-  const query = "INSERT INTO user_test_result_dtl(user_test_result_id,question_set_question_id, question_type,answer,created_by, modified_by,status) values  ?";
-  connection.query(query, [newUserResultDetails], (err, res) => {
+  // Assuming newUserResultDetails is an object with the appropriate keys
+  const values = [
+    newUserResultDetails.user_test_result_id,
+    newUserResultDetails.question_set_question_id,
+    // newUserResultDetails.question_type,
+    newUserResultDetails.correct_answer,
+    newUserResultDetails.created_by,
+    newUserResultDetails.modified_by,
+    newUserResultDetails.status,
+  ];
+
+  connection.query(query, values, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
       return;
     }
 
-    console.log("created userresultdetails: ", { id: res.insertId, ...newUserResultDetails });
+    console.log("created userresultdetails: ", {
+      id: res.insertId,
+      ...newUserResultDetails,
+    });
     result(null, { id: res.insertId, ...newUserResultDetails });
   });
 };
 
-
-UserResultDetails.addAllQuestionForQuestionSet = (listUserResultDetails, result) => {
-  console.log("listuserresult:"+listUserResultDetails)
-  const query =  "INSERT INTO user_test_result_dtl " +
-  "(user_test_result_id, question_set_question_id, question_type, answer, correct_answer, created_by, created_date, modified_by, modified_date, status) " +
-  "VALUES ?";
+UserResultDetails.addAllQuestionForQuestionSet = (
+  listUserResultDetails,
+  result
+) => {
+  console.log("listuserresult:" + listUserResultDetails);
+  const query =
+    "INSERT INTO user_test_result_dtl " +
+    "(user_test_result_id, question_set_question_id, question_type, answer, correct_answer, created_by, created_date, modified_by, modified_date, status) " +
+    "VALUES ?";
   connection.query(query, [listUserResultDetails], (err, res) => {
     if (err) {
       console.log("error: ", err);
@@ -59,66 +96,69 @@ UserResultDetails.addAllQuestionForQuestionSet = (listUserResultDetails, result)
       return;
     }
 
-    console.log("created userresultdetails: ", { id: res.insertId, ...listUserResultDetails });
+    console.log("created userresultdetails: ", {
+      id: res.insertId,
+      ...listUserResultDetails,
+    });
     result(null, { id: res.insertId, ...listUserResultDetails });
   });
 };
 
-
-UserResultDetails.addQuestionsOnStartQuiz = (userId, questionSetId,
-  userResultId, createdDate, result) => {
-
+UserResultDetails.addQuestionsOnStartQuiz = (
+  userId,
+  questionSetId,
+  userResultId,
+  createdDate,
+  result
+) => {
   console.log("questionSetId --> " + questionSetId);
 
   console.log("userResultId --> " + userResultId);
-  connection.query(`
+  connection.query(
+    `
         INSERT INTO user_test_result_dtl (
-                user_test_result_id,
-                question_set_question_id,
-                question_type,
-                correct_answer,
-                created_by,
-                created_date,
-                modified_by,
-                modified_date,
-                status
-              ) 
-            SELECT  
-              utr.id  as user_test_result_id ,   
-              qm.id as question_set_question_id,
-              qm.question_type_id as question_type , 
-              qo.question_option as correct_answer,
-              ${userId} as created_by,
-              CURRENT_TIMESTAMP()  as created_date ,
-              ${userId} as modified_by,
-              CURRENT_TIMESTAMP()  as modified_date ,
-              0 as status 
-            from 
-              question_master qm ,  
-              question_set qs , 
-              user_test_result utr , 
-              question_options qo ,
-              question_set_questions qsq 
-            where 
-              qm.id = qo.question_id 
-              and qo.is_correct_answer =1 
-              and qs.id = utr.question_set_id 
-              and qs.id = qsq.question_set_id 
-              and qsq.question_id = qm.id
-              and qs.id = ${questionSetId}
-              and utr.id = ${userResultId}  `, 
-     (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
+        user_test_result_id,
+        question_set_question_id,
+        question_type,
+        correct_answer,
+        created_by,
+        created_date,
+        modified_by,
+        modified_date,
+        status
+    ) 
+    SELECT  
+        utr.id as user_test_result_id,   
+        qm.id as question_set_question_id,
+        qm.question_type_id as question_type, 
+        GROUP_CONCAT(qo.question_option ORDER BY qo.id SEPARATOR '/') as correct_answer,
+        ${userId} as created_by,
+        CURRENT_TIMESTAMP() as created_date,
+        ${userId} as modified_by,
+        CURRENT_TIMESTAMP() as modified_date,
+        0 as status
+    FROM 
+        question_master qm 
+        JOIN question_options qo ON qm.id = qo.question_id AND qo.is_correct_answer = 1
+        JOIN question_set_questions qsq ON qsq.question_id = qm.id
+        JOIN question_set qs ON qs.id = qsq.question_set_id
+        JOIN user_test_result utr ON utr.question_set_id = qs.id
+    WHERE 
+        qs.id = ${questionSetId}
+        AND utr.id = ${userResultId}
+    GROUP BY qm.id; `,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+
+      console.log("created userresultdetails: ", { id: res.insertId });
+      result(null, { id: res.insertId });
     }
-
-    console.log("created userresultdetails: ", { id: res.insertId });
-    result(null, { id: res.insertId });
-  });
+  );
 };
-
 
 UserResultDetails.findById = (id, result) => {
   connection.query(
@@ -168,7 +208,8 @@ UserResultDetails.findUserResultDetailsByUserResultId = (
 };
 
 UserResultDetails.getUserResultAnswers = (
-  userResultId, questionSetLength,
+  userResultId,
+  questionSetLength,
   result
 ) => {
   connection.query(
@@ -192,10 +233,7 @@ UserResultDetails.getUserResultAnswers = (
   );
 };
 
-UserResultDetails.getStatus = (
-  userResultId, questionId,
-  result
-) => {
+UserResultDetails.getStatus = (userResultId, questionId, result) => {
   connection.query(
     ` SELECT status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  AND question_set_question_id = ${questionId} ORDER BY id DESC LIMIT 1`,
     (err, res) => {
@@ -237,7 +275,7 @@ UserResultDetails.getAll = (title, result) => {
 };
 // userResultId, questionId, findSelectedOption, status
 UserResultDetails.updateById = (userresultdetails, result) => {
-   console.log("userresultdetails : " + JSON.stringify(userresultdetails));
+  console.log("userresultdetails : " + JSON.stringify(userresultdetails));
   // const updatestmt =
   //   "UPDATE user_test_result_dtl SET " +
   //   "user_test_result_id= ?, " +
@@ -263,7 +301,10 @@ UserResultDetails.updateById = (userresultdetails, result) => {
           LIMIT 1
       ) AS temp
   )`;
-  const modifiedDate = new Date().toISOString().replace("T", " ").substring(0, 19)
+  const modifiedDate = new Date()
+    .toISOString()
+    .replace("T", " ")
+    .substring(0, 19);
   connection.query(
     query,
     [
@@ -294,7 +335,6 @@ UserResultDetails.updateById = (userresultdetails, result) => {
       }
 
       console.log("updated userresultdetails: ", {
-        
         ...userresultdetails,
       });
       result(null, { ...userresultdetails });

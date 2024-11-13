@@ -193,10 +193,26 @@ UserResult.calculateResult = (userResult, result) => {
         let passPercentage = res[0].pass_percentage;
         let correct = 0;
 
+        function areAnswersEqual(correctAnswer, userAnswer) {
+          if (correctAnswer.includes("/") && userAnswer.includes("/")) {
+            const correctAnswerArray = correctAnswer.split("/");
+            const userAnswerArray = userAnswer.split("/");
+      
+            correctAnswerArray.sort();
+            userAnswerArray.sort();
+      
+            return (
+              JSON.stringify(correctAnswerArray) === JSON.stringify(userAnswerArray)
+            );
+          } else {
+            return correctAnswer === userAnswer;
+          }
+        }
+
         res.forEach((record) => {
           // console.log(record.marks + " : "+record.answer + " : " + record.correct_answer);
           totalMarks += record.marks;
-          if (record.answer == record.correct_answer) {
+          if (areAnswersEqual(record.correct_answer, record.answer)) {
             achievedMarks += record.marks;
             correct = correct + 1;
           }

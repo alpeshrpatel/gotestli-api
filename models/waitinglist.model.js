@@ -31,7 +31,7 @@ WaitingList.create = (newWaitingList, result) => {
 
 WaitingList.findById = async (id, result) => {
   connection.query(
-    `select * from contact_messages where id = ${id}`,
+    `select * from waiting_list where id = ${id}`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -54,7 +54,7 @@ WaitingList.findById = async (id, result) => {
 
 
 WaitingList.removeAll = (result) => {
-  connection.query("DELETE FROM contact_messages", (err, res) => {
+  connection.query("DELETE FROM waiting_list", (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

@@ -26,7 +26,7 @@ QuestionSetCategory.create = (newQuestionSetCategory, result) => {
 };
 
 QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, result) => {
-    connection.execute(`select category_id from question_set_categories where question_set_id = ${question_set_id}`, (err, res) => {
+    connection.query(`select category_id from question_set_categories where question_set_id = ${question_set_id}`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);
@@ -47,7 +47,7 @@ QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, resul
 
 
 QuestionSetCategory.remove = (id, result) => {
-  connection.query("DELETE FROM question_set_categories WHERE iquestion_set_id = ?", id, (err, res) => {
+  connection.query("DELETE FROM question_set_categories WHERE question_set_id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);

@@ -89,8 +89,8 @@ console.log(req.body)
             });
           }
 
-          const correctAnswer =
-            result.length > 0 ? result[0].correctAnswer : null;
+          let correctAnswer = ''
+            result.length > 0 ? result.forEach((answer) => correctAnswer+','+answer.correctAnswer) : null; //result[0].correctAnswer
           const createdDate = new Date()
             .toISOString()
             .replace("T", " ")

@@ -35,7 +35,11 @@ WishList.create = (newWishList, result) => {
 
 WishList.findById = async (id, result) => {
   connection.query(
-    `select * from wishlist where user_id = ${id}`,
+    `SELECT qs.*
+FROM wishlist w
+JOIN question_set qs ON w.questionset_id = qs.id
+WHERE w.user_id = ${id};
+`,
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -55,7 +59,28 @@ WishList.findById = async (id, result) => {
   );
 };
 
+WishList.getQsetId = async (id, result) => {
+  connection.query(
+    `SELECT * FROM wishlist WHERE user_id = ${id};
+`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
 
+      if (res.length) {
+       
+        result(null, res);
+        return;
+      }
+
+      // not found user with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
 
 WishList.remove = (qsetid, id, result) => {
     console.log("Attempting to delete with:", { questionset_id: qsetid, user_id: id });
