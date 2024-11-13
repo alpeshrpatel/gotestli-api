@@ -130,6 +130,60 @@ module.exports = app => {
  */
 
     router.get("/:id",WishList.findById);
+
+     /**
+ * @swagger
+ * /api/wishlist/getqsetid/{id}:
+ *   get:
+ *     summary: Retrieve a WishList entry by UserID
+ *     description: Fetches a WishList entry using the provided UserID.
+ *     tags: [WishList]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: The UserID of the WishList entry to retrieve.
+ *         schema:
+ *           type: integer
+ *           example: 71
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved the WishList of a user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                   example: 71
+ *                 questionset_id:
+ *                   type: integer
+ *                   example: 44
+ *                 user_id:
+ *                   type: integer
+ *                   example: 45
+ *                 created_by:
+ *                   type: integer
+ *                   example: 45
+ *                 modified_by:
+ *                   type: integer
+ *                   example: 45
+ *                 created_date:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-10-28 09:36:07"
+ *                 modified_date:
+ *                   type: string
+ *                   format: date-time
+ *                   example: "2024-10-28 09:36:07"
+ *       404:
+ *         description: WishList entry not found for the given UserID
+ *       500:
+ *         description: Server error
+ */
+
+     router.get("/getqsetid/:id",WishList.getQsetId);
   
     /**
  * @swagger
