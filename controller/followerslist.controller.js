@@ -38,6 +38,22 @@ exports.findById =  (req, res) => {
     });
   };
 
+  //getFollowerDetail
+  exports.getFollowerDetail =  (req, res) => {
+    FollowersList.getFollowerDetail(req.params.id, (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.send({
+            message: `Not found user with id ${req.params.id}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error retrieving user with id " + req.params.id
+          });
+        }
+      } else res.send(data);
+    });
+  };
 // updateById
 
 

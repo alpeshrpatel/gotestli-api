@@ -91,6 +91,28 @@ FollowersList.findById = async (user_id, result) => {
   );
 };
 
+FollowersList.getFollowerDetail = async (user_id, result) => {
+  connection.query(
+    `SELECT * FROM followers_list fl JOIN users u ON fl.follower_id = u.id WHERE fl.instructor_id = ${user_id}`,
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+
+      if (res.length) {
+        console.log("found user: ", res);
+        result(null, res);
+        return;
+      }
+
+      // not found user with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
+
 FollowersList.remove = (instructor_id, follower_id, result) => {
   connection.query(
     `DELETE FROM followers_list WHERE instructor_id= ${instructor_id} and follower_id = ${follower_id};`,

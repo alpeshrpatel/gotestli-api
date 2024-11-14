@@ -108,6 +108,7 @@ module.exports = app => {
 
     router.get("/:id",FollowersList.findById);
     
+    router.get("/follower/detail/:id",FollowersList.getFollowerDetail)
     /**
  * @swagger
  * /api/followers/list/instructor/{instructor_id}/follower/{follower_id}:
