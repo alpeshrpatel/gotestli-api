@@ -50,7 +50,8 @@ app.use((req, res, next) => {
     req.url.startsWith("/api/waitinglist") ||
     req.url == '/api/sendemail/getintouch/subscribed' ||
     req.url.startsWith("/api/reviews/rating/qset") ||
-    req.url.startsWith("/api/questionset/search/result")
+    req.url.startsWith("/api/questionset/search/result") || 
+    req.url.startsWith("/api/question/files/insert/questions")
   ) {
     return next();
   }

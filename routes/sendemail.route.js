@@ -12,7 +12,10 @@ module.exports = app => {
      router.post("/instructor/uploadfile/result", sendMail.sendNotifyMailToInsructor);
 
      //send mail for get in touch subscription
-     router.post("/getintouch/subscribed", sendMail.getInTouchSubscribedMail)
+     router.post("/getintouch/subscribed", sendMail.getInTouchSubscribedMail);
+
+     //send mail whenever new question set published by instructor
+     router.post('/followers/update', sendMail.sendUpdateToFollowers);
 
     app.use('/api/sendemail',router)
 

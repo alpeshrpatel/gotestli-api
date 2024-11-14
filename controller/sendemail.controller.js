@@ -250,3 +250,67 @@ exports.getInTouchSubscribedMail = async (req,res) => {
   );
 
 }
+
+exports.sendUpdateToFollowers = async (req,res) => {
+  const {username,email,instructor,title} = req.body;
+  console.log("email received"+ email)
+
+  const mailOptionsForSendUpdate = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: `📢 New Quiz Alert from ${instructor}! 🚀 Check it Out Now!`,
+  text: `
+Hi ${username},
+
+Great news! ${instructor} just released a brand new quiz: "${title}" on Gotestli, and you're invited to be one of the first to check it out. 🎉
+
+By staying updated, you get:
+- 🌟 Exclusive access to fresh quizzes
+- 📈 A chance to improve your knowledge and skills
+- 🎯 Opportunities to engage and learn with other members of the Gotestli community
+
+Don't miss out on the fun and the learning. Dive into the latest quiz now and see how well you can do!
+
+Happy learning,
+Team Gotestli
+  `,
+  html: `
+<p>Hi <b>${username}</b>,</p>
+
+<p>Great news! <b>${instructor}</b> just released a brand new quiz: "<b>${title}</b>" on Gotestli, and you're invited to be one of the first to check it out. 🎉</p>
+
+<p>By staying updated, you get:</p>
+<ul>
+  <li>🌟 Exclusive access to fresh quizzes</li>
+  <li>📈 A chance to improve your knowledge and skills</li>
+  <li>🎯 Opportunities to engage and learn with other members of the Gotestli community</li>
+</ul>
+
+<p>Don't miss out on the fun and the learning. Dive into the latest quiz now and see how well you can do!</p>
+
+<p>Happy learning,<br/>
+Team Gotestli</p>
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForSendUpdate,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+}

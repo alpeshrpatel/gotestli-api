@@ -156,15 +156,19 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
     VALUES ?`;
   const question_options = data[2].split(":");
   console.log("data3", data[3]);
-  const correct_answer = question_options.map((option) =>
-    typeof data[3] == "string"
-      ? data[3].toLowerCase() == option.toLowerCase()
+  const correct_answer = question_options.map((option) => {
+    if (typeof data[3] === "string" && data[3].includes(':')) {
+      return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
+    } else {
+      return typeof data[3] === "string"
+        ? data[3].toLowerCase() === option.toLowerCase()
+          ? 1
+          : 0
+        : data[3] === option
         ? 1
-        : 0
-      : data[3] == option
-      ? 1
-      : 0
-  );
+        : 0;
+    }
+  });
   const options = [
     [
       questionId,
