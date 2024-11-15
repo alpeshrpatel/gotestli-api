@@ -1,4 +1,6 @@
 const connection = require("../config/mysql.db.config");
+const separator = require("../constants");
+
 const util = require("../utils/util");
 
 // constructor
@@ -194,9 +196,9 @@ UserResult.calculateResult = (userResult, result) => {
         let correct = 0;
 
         function areAnswersEqual(correctAnswer, userAnswer) {
-          if (correctAnswer.includes("/") && userAnswer.includes("/")) {
-            const correctAnswerArray = correctAnswer.split("/");
-            const userAnswerArray = userAnswer.split("/");
+          if (correctAnswer.includes(separator) && userAnswer.includes(separator)) {
+            const correctAnswerArray = correctAnswer.split(separator);
+            const userAnswerArray = userAnswer.split(separator);
       
             correctAnswerArray.sort();
             userAnswerArray.sort();

@@ -73,6 +73,7 @@ QuestionFiles.insertQuestions = async (
     if (!errorRows.includes(i)) {
       console.log("dataset: ", dataSet[i]);
       const data = dataSet[i];
+      const question_type = data[3].includes(':') ? 7 : 2
       const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const values = [
         0,
