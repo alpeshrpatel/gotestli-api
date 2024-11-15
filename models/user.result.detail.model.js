@@ -1,4 +1,5 @@
 const connection = require("../config/mysql.db.config");
+const separator = require("../constants");
 const queries = require("../queries");
 const util = require("../utils/util");
 // constructor
@@ -131,7 +132,7 @@ UserResultDetails.addQuestionsOnStartQuiz = (
         utr.id as user_test_result_id,   
         qm.id as question_set_question_id,
         qm.question_type_id as question_type, 
-        GROUP_CONCAT(qo.question_option ORDER BY qo.id SEPARATOR '/') as correct_answer,
+        GROUP_CONCAT(qo.question_option ORDER BY qo.id SEPARATOR '${separator}') as correct_answer,
         ${userId} as created_by,
         CURRENT_TIMESTAMP() as created_date,
         ${userId} as modified_by,
