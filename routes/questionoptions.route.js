@@ -1,3 +1,5 @@
+const { cacheMiddleware, cache } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const options = require("../controller/questionoptions.controller");
   
@@ -38,7 +40,7 @@ module.exports = app => {
  */
 
     // Retrieve a single options with id
-    router.get("/:id", options.findOne);
+    router.get("/:id",cacheMiddleware, options.findOne);
 
     /**
  * @swagger
@@ -99,7 +101,7 @@ module.exports = app => {
  */
 
     // Retrieve all the options
-    router.get("/", options.findAll);
+    router.get("/",cacheMiddleware, options.findAll);
 
   /**
  * @swagger

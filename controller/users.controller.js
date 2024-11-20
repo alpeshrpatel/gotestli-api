@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware.js");
 const Users = require("../models/users.model.js");
 const jwt = require("jsonwebtoken");
 
@@ -65,7 +66,10 @@ exports.findAll = async (req, res) => {
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving users.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
@@ -82,7 +86,10 @@ exports.findOne = async (req, res) => {
           message: "Error retrieving user with id " + req.params.userid,
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -98,7 +105,10 @@ exports.findUser = async (req, res) => {
           message: "Error retrieving user with id " + req.params.uid,
         });
       }
-    } else res.send(data);
+    }else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 // // Update a users identified by the id in the request
@@ -110,7 +120,7 @@ exports.updateUser = (req, res) => {
     });
   }
 
-  console.log(req.body);
+  
 
   Users.updateUser(req.params.userid, req.body, (err, data) => {
     if (err) {

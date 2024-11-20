@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const QuestionMaster = require("../models/questionmaster.model");
 
 // Create and Save a new QuestionMaster
@@ -54,13 +55,16 @@ exports.findAll = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving questionmasters."
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 // Find a single QuestionMaster by Id
 exports.findOne = (req, res) => {
-  console.log("req.params.id : " + req.params.id)
+  
   QuestionMaster.findById(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -72,13 +76,16 @@ exports.findOne = (req, res) => {
           message: "Error retrieving QuestionMaster with id " + req.params.id
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
 //find a paragraph
 exports.findParagraph = (req, res) => {
-  console.log("req.params.id : " + req.params.id)
+  
   QuestionMaster.findParagraph(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -90,7 +97,10 @@ exports.findParagraph = (req, res) => {
           message: "Error retrieving paragraph with id " + req.params.id
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -103,7 +113,7 @@ exports.update = (req, res) => {
     });
   }
 
-  //console.log(req.body);
+  
 
   QuestionMaster.updateById(
     req.params.id,

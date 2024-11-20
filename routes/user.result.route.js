@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = (app) => {
   const userresult = require("../controller/user.result.controller");
 
@@ -9,36 +11,35 @@ module.exports = (app) => {
   router.post("/", userresult.create);
 
   // Retrieve a single QuestionSet with id
-  router.get("/:id", userresult.findOne);
+  router.get("/:id",cacheMiddleware, userresult.findOne);
 
   // Retrieve a single QuestionSet with id
-  router.get("/user/:userid",  userresult.findByUserId);
+  router.get("/user/:userid",cacheMiddleware,  userresult.findByUserId);
 
   // Retrieve a single QuestionSet with id
   router.get(
     "/user/:userid/questionset/:questionsetid",
-    
+    cacheMiddleware,
     userresult.findQuestionSetByUserId
   );
 
   // Retrieve a history of results of user
   router.get(
     "/history/user/:userid/questionset/:questionsetid",
-    
     userresult.getHistoryOfUser
   );
 
   // Retrieve users list who attempted quiz
   router.get(
     "/students/list/:questionSetId",
-   
+   cacheMiddleware,
     userresult.getStudentsList
   );
   
   // Retrieve data for dashboard
   router.get(
     "/student/dashboard/analysis/:userId",
-   
+   cacheMiddleware,
     userresult.getDshbDataAnalysis
   );
 

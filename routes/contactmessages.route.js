@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const ContactMessages = require("../controller/contactmessages.controller");
   
@@ -101,7 +103,7 @@ module.exports = app => {
  *         description: Internal server error
  */
 
-    router.get("/:id",ContactMessages.findById);
+    router.get("/:id",cacheMiddleware,ContactMessages.findById);
   
     /**
  * @swagger

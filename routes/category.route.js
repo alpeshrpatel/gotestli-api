@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = (app) => {
   const category = require("../controller/category.controller");
 
@@ -170,7 +172,7 @@ module.exports = (app) => {
    */
 
   // Retrieve a single Category with id
-  router.get("/:id", category.findOne);
+  router.get("/:id",cacheMiddleware, category.findOne);
 
   /**
  * @swagger
@@ -200,7 +202,7 @@ module.exports = (app) => {
  */
 
   // Retrieve a parent categories
-  router.get("/parent/categories", category.findParentCategories);
+  router.get("/parent/categories",cacheMiddleware, category.findParentCategories);
 
   /**
  * @swagger
@@ -307,7 +309,7 @@ module.exports = (app) => {
 
   // Retrieve a selected categories questionsets
   router.get(
-    "/selected/questionsets/:title",
+    "/selected/questionsets/:title",cacheMiddleware,
     category.findSelectedCategoriesQuestionsets
   );
 
@@ -389,7 +391,7 @@ module.exports = (app) => {
  */
 
   // Retrieve all Category with id
-  router.get("/", category.findAll);
+  router.get("/",cacheMiddleware, category.findAll);
 
   /**
  * @swagger
@@ -425,7 +427,7 @@ module.exports = (app) => {
 
   // get a parent category of category
   router.get(
-    "/questionset/parent/category/:id",
+    "/questionset/parent/category/:id",cacheMiddleware,
     category.getParentCategoryOfQuestionSet
   );
 

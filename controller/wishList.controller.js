@@ -1,10 +1,11 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const WishList = require("../models/wishList.model");
 const generateDateTime = require("../utils/util");
 
 // Create and Save a new WishList
 exports.create = (req, res) => {
       // Validate request
-      console.log(req.body)
+      
       if (!req.body) {
         res.status(400).send({
           message: "Content can not be empty!"
@@ -35,7 +36,10 @@ exports.findById =  (req, res) => {
             message: "Error retrieving wishlist with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 
@@ -51,13 +55,16 @@ exports.findById =  (req, res) => {
             message: "Error retrieving wishlist with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 
 // Delete all WishLists from the database.
 exports.deleteOne = (req, res) => {
-    console.log(req.params.questionSetId,req.params.userId)
+    
   WishList.remove(req.params.questionSetId,req.params.userId,(err, data) => {
     if (err)
       res.status(500).send({

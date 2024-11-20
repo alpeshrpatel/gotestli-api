@@ -15,12 +15,12 @@ const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 
-const port = 3000;
+
 
 // Define the CORS options
 const corsOptions = {
   credentials: true,
-  origin: ["http://localhost:3000"], // Whitelist the domains you want to allow
+  origin: [process.env.BACKEND_URL], // Whitelist the domains you want to allow
 };
 
 const app = express();
@@ -37,8 +37,7 @@ app.get("/", (req, res) => {
 // Custom middleware to intercept all requests
 app.use((req, res, next) => {
   // Modify the response body or perform any other actions
-  console.log(`Intercepted request: ${req.method} ${req.url}`);
-  console.log(JSON.stringify(req.body));
+  
 
   if (
     req.url.startsWith("/api/category/selected") ||
@@ -56,7 +55,7 @@ app.use((req, res, next) => {
     return next();
   }
   const authHeader = req.headers.authorization;
-  console.log('authheader',authHeader);
+ 
 
   if (authHeader) {
     const token = authHeader.split(" ")[1];
@@ -73,6 +72,7 @@ app.use((req, res, next) => {
     res.status(401).json({ message: "Token is missing" });
   }
 });
+
 
 require("./routes/questionset.route.js")(app);
 require("./routes/category.route.js")(app);
@@ -134,7 +134,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     if (!req.file) {
       return res.status(400).send({ message: "No file uploaded." });
     }
-    console.log("req.file:", req.file);
+    
 
     const fileName = req.file.filename;
     const filePath = req.file.path;
@@ -143,7 +143,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     await workbook.xlsx.readFile(filePath);
 
     workbook.eachSheet((worksheet, sheetId) => {
-      console.log(`Sheet ${sheetId}: ${worksheet.name}`);
+     
     });
 
     const worksheet = workbook.getWorksheet("Questions Data");
@@ -154,9 +154,9 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     }
 
     worksheet.eachRow((row, rowNumber) => {
-      console.log(`Row ${rowNumber}:`);
+      
       row.eachCell((cell, colNumber) => {
-        console.log(`Cell ${colNumber}: ${cell.value}`);
+        
       });
     });
 
@@ -180,7 +180,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     const normalizedExpectedHeaders = expectedHeaders.map((header) =>
       header.trim().toLowerCase()
     );
-    console.log("actual headers: ", actualHeaders);
+    
 
     if (
       normalizedExpectedHeaders.length !== actualHeaders.length ||
@@ -195,9 +195,9 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
       worksheet.eachRow((row, rowNumber) => {
         if (rowNumber === 1) return;
 
-        console.log(`Row ${rowNumber}:`);
+        
         row.eachCell((cell, colNumber) => {
-          console.log(`Cell ${colNumber}: ${cell.value}`);
+          
         });
       });
     }
@@ -206,7 +206,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
       data: { fileName: fileName, filePath: filePath },
     });
   } catch (error) {
-    console.log("error: ", error);
+    
     res.status(500).send({ message: "File upload failed!", error });
   }
 });
@@ -214,12 +214,12 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+    console.log(`Server is running on port ${PORT}.`);
   connection.getConnection((err) => {
     if (err) {
       console.error("Error connecting to MySQL:", err);
       return;
     }
-    console.log("Connected to MySQL!");
+      console.log("Connected to MySQL!");
   });
 });

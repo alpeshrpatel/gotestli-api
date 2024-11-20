@@ -19,13 +19,13 @@ Options.findById = (id, result) => {
     `SELECT question_option AS options FROM question_options WHERE question_id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found options: ", res[0]);
+         // console.log("found options: ", res[0]);
         result(null, res);
         return;
       }
@@ -41,7 +41,7 @@ Options.getAll = (result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -57,7 +57,7 @@ Options.remove = (id, result) => {
     id,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -68,7 +68,7 @@ Options.remove = (id, result) => {
         return;
       }
 
-      console.log("deleted Options with id: ", id);
+       // console.log("deleted Options with id: ", id);
       result(null, res);
     }
   );
@@ -77,12 +77,12 @@ Options.remove = (id, result) => {
 Options.removeAll = (result) => {
   connection.execute("DELETE FROM question_options", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} options`);
+     // console.log(`deleted ${res.affectedRows} options`);
     result(null, res);
   });
 };

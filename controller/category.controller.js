@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware.js");
 const Category = require("../models/category.model.js");
 
 // Create and Save a new category
@@ -51,7 +52,10 @@ exports.findAll = async(req, res) => {
         message:
           err.message || "Some error occurred while retrieving categories."
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
@@ -68,7 +72,10 @@ exports.getParentCategoryOfQuestionSet = async (req, res) => {
           message: "Error retrieving parent Category with id " + req.params.id
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -85,7 +92,10 @@ exports.findOne = async (req, res) => {
           message: "Error retrieving Category with id " + req.params.id
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -102,13 +112,15 @@ exports.findParentCategories = async (req, res) => {
           message: "Error retrieving parent Category"
         });
       }
-    } else res.send(data);
+    } else {
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
 //findSelectedCategoriesQuestionsets
 exports.findSelectedCategoriesQuestionsets = async (req, res) => {
-  console.log('category:'+ req.params.title)
   Category.findSelectedCategoriesQuestionsets(req.params.title, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -120,7 +132,10 @@ exports.findSelectedCategoriesQuestionsets = async (req, res) => {
           message: "Error retrieving Question sets"
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -133,7 +148,7 @@ exports.findSelectedCategoriesQuestionsets = async (req, res) => {
 //     });
 //   }
 
-//   console.log(req.body);
+
 
 //   Category.updateById(
 //     req.params.id,

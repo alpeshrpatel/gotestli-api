@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const UserResultDetail = require("../models/user.result.detail.model");
 
 const { usertestresult } = require("../queries");
@@ -77,7 +78,7 @@ exports.addAllQuestionForQuestionSet = (req, res) => {
   }
 
   let dataSet = [];
-console.log(req.body)
+
   req.body.forEach((item, index) => {
     if (item !== null) {
       UserResultDetail.getAnswers(
@@ -144,13 +145,16 @@ exports.findAll = (req, res) => {
           err.message ||
           "Some error occurred while retrieving userresultdetails.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 // Find a single UserResultDetail by Id
 exports.findOne = (req, res) => {
-  console.log("req.params.id : " + req.params.id);
+  
   UserResultDetail.findById(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -162,7 +166,10 @@ exports.findOne = (req, res) => {
           message: "Error retrieving UserResultDetail with id " + req.params.id,
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -171,11 +178,11 @@ exports.findUserResultDetailsByUserResultId = (req, res) => {
   UserResultDetail.findUserResultDetailsByUserResultId(
     req.params.userresultid,
     (err, data) => {
-      console.log("response :" + res.status);
+     
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
-            // console.log("404");
+       
             message: `Not found UserResultDetail with id ${req.params.userresultid}.`,
           });
         } else {
@@ -185,7 +192,10 @@ exports.findUserResultDetailsByUserResultId = (req, res) => {
               req.params.userresultid,
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     }
   );
 };
@@ -195,7 +205,7 @@ exports.getUserResultAnswers = (req, res) => {
     req.params.userResultId,
     req.params.questionSetLength,
     (err, data) => {
-      console.log("response :" + res.status);
+    
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
@@ -208,7 +218,10 @@ exports.getUserResultAnswers = (req, res) => {
               req.params.userResultId,
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     }
   );
 };
@@ -218,7 +231,7 @@ exports.getStatus = (req, res) => {
     req.params.userResultId,
     req.params.questionId,
     (err, data) => {
-      console.log("response :" + res.status);
+     
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({
@@ -231,7 +244,10 @@ exports.getStatus = (req, res) => {
               req.params.userResultId,
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     }
   );
 };
@@ -248,7 +264,7 @@ exports.update = (req, res) => {
   const userDetails = new UserResultDetail(req.body);
 
   UserResultDetail.updateById( userDetails, (err, data) => {
-    // console.log("req.body " + JSON.stringify(req.body));
+    
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

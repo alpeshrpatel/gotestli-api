@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const FollowersList = require("../controller/followerslist.controller");
   
@@ -106,9 +108,9 @@ module.exports = app => {
  *         description: Internal server error
  */
 
-    router.get("/:id",FollowersList.findById);
+    router.get("/:id",cacheMiddleware,FollowersList.findById);
     
-    router.get("/follower/detail/:id",FollowersList.getFollowerDetail)
+    router.get("/follower/detail/:id",cacheMiddleware,FollowersList.getFollowerDetail)
     /**
  * @swagger
  * /api/followers/list/instructor/{instructor_id}/follower/{follower_id}:

@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const UsersPreferences = require("../models/userspreferences.model");
 const generateDateTime = require("../utils/util");
 
@@ -9,7 +10,7 @@ exports.create = (req, res) => {
           message: "Content can not be empty!"
         });
       }
-      console.log(req.body.tagsId)
+   
       const tagsId = req.body.tagsId;
       let tagsIddata = tagsId.split(',');
       let dataSet = []
@@ -25,7 +26,7 @@ exports.create = (req, res) => {
       ]
       dataSet.push(data);
      })
-     console.log(dataSet)
+    
 
 
       // Create a UsersPreferences
@@ -62,7 +63,10 @@ exports.findById =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 
@@ -81,7 +85,10 @@ exports.getCategoriesByUserId =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
  
@@ -96,7 +103,7 @@ exports.getCategoriesByUserId =  (req, res) => {
 //     });
 //   }
 
-//   console.log(req.body);
+
 
 //   UsersPreferences.updateById(
 //     req.params.id,

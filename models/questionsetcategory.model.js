@@ -15,12 +15,12 @@ QuestionSetCategory.create = (newQuestionSetCategory, result) => {
   const query = " INSERT INTO question_set_categories (question_set_id, category_id, created_by, created_date, modified_by, modified_date) VALUES ?";
   connection.query(query, [newQuestionSetCategory], (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created QuestionSetCategory: ", { id: res.insertId, ...newQuestionSetCategory });
+     // console.log("created QuestionSetCategory: ", { id: res.insertId, ...newQuestionSetCategory });
     result(null, { id: res.insertId, ...newQuestionSetCategory });
   });
 };
@@ -28,13 +28,13 @@ QuestionSetCategory.create = (newQuestionSetCategory, result) => {
 QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, result) => {
     connection.query(`select category_id from question_set_categories where question_set_id = ${question_set_id}`, (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
   
       if (res.length) {
-        console.log("found categories: ", res);
+         // console.log("found categories: ", res);
         result(null, res);
         return;
       }
@@ -49,7 +49,7 @@ QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, resul
 QuestionSetCategory.remove = (id, result) => {
   connection.query("DELETE FROM question_set_categories WHERE question_set_id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -60,7 +60,7 @@ QuestionSetCategory.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted QuestionSetCategory with id: ", id);
+     // console.log("deleted QuestionSetCategory with id: ", id);
     result(null, res);
   });
 };
@@ -68,12 +68,12 @@ QuestionSetCategory.remove = (id, result) => {
 QuestionSetCategory.removeAll = result => {
   connection.query("DELETE FROM question_set_categories", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };

@@ -32,12 +32,12 @@ ON DUPLICATE KEY UPDATE
     END;`;
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      
       result(err, null);
       return;
     }
 
-    console.log("created Badge: ", { id: res.insertId });
+  
     result(null, { id: res.insertId });
   });
 };
@@ -46,12 +46,12 @@ Badge.getBadges = (id, result) => {
   const query = `SELECT b.*, c.title FROM badge b INNER JOIN categories c ON b.category_id = c.id WHERE b.user_id =${id};`;
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+     
       result(err, null);
       return;
     }
 
-    console.log("created Badge: ", res);
+
     result(null, res);
   });
 };

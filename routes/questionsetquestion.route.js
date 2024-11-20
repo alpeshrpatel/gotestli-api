@@ -1,3 +1,5 @@
+const { cache, cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const QuestionSetQuestion = require("../controller/questionsetquestion.controller");
   
@@ -30,7 +32,7 @@ module.exports = app => {
  */
 
     // Retrieve last questionset id to insert into qs
-    router.get("/questionsetid", QuestionSetQuestion.findOne);
+    router.get("/questionsetid",cacheMiddleware, QuestionSetQuestion.findOne);
 
  /**
  * @swagger

@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const UsersPreferences = require("../controller/userspreferences.controller");
   
@@ -127,7 +129,7 @@ module.exports = app => {
  *         description: Server error
  */
 
-    router.get("/:id",UsersPreferences.findById);
+    router.get("/:id",cacheMiddleware,UsersPreferences.findById);
     
     /**
  * @swagger
@@ -201,7 +203,7 @@ module.exports = app => {
  */
 
     // Retrieve a categories with question_id
-    router.get("/categories/:id", UsersPreferences.getCategoriesByUserId);
+    router.get("/categories/:id",cacheMiddleware, UsersPreferences.getCategoriesByUserId);
   
     app.use('/api/users/preference', router);
   };

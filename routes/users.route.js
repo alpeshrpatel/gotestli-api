@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const users = require("../controller/users.controller");
   
@@ -301,7 +303,7 @@ module.exports = app => {
  */
 
     // Retrieve a single users with id
-    router.get("/:userid", users.findOne);
+    router.get("/:userid",cacheMiddleware, users.findOne);
 
     /**
  * @swagger
@@ -434,7 +436,7 @@ module.exports = app => {
  */
 
     // Retrieve a user data to set in localstorage using uid
-    router.get("/uid/:uid",users.findUser)
+    router.get("/uid/:uid",cacheMiddleware,users.findUser)
 
     /**
  * @swagger
@@ -497,7 +499,7 @@ module.exports = app => {
  */
 
     // Retrieve all users with id
-    router.get("/", users.findAll);
+    router.get("/",cacheMiddleware, users.findAll);
   
     /**
  * @swagger

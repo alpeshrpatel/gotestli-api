@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const QuestionSetCategory = require("../models/questionsetcategory.model");
 const generateDateTime = require("../utils/util");
 
@@ -9,7 +10,7 @@ exports.create = (req, res) => {
           message: "Content can not be empty!"
         });
       }
-      console.log(req.body.tagsId)
+    
       const tagsId = req.body.tagsId;
       let tagsIddata = tagsId.split(',');
       let dataSet = []
@@ -25,7 +26,7 @@ exports.create = (req, res) => {
       ]
       dataSet.push(data);
      })
-     console.log(dataSet)
+    
 
 
       // Create a QuestionSetCategory
@@ -63,7 +64,10 @@ exports.getCategoriesByQuestionSetId =  (req, res) => {
             message: "Error retrieving QuestionSet with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
  
@@ -78,7 +82,7 @@ exports.getCategoriesByQuestionSetId =  (req, res) => {
 //     });
 //   }
 
-//   console.log(req.body);
+
 
 //   QuestionSetCategory.updateById(
 //     req.params.id,

@@ -16,15 +16,15 @@ const Reviews = function (reviews) {
 Reviews.create = (newReviews, result) => {
   connection.query("INSERT INTO reviews SET ?", newReviews, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created Reviews: ", {
-      id: res.insertId,
-      ...newReviews,
-    });
+     // console.log("created Reviews: ", {
+    //   id: res.insertId,
+    //   ...newReviews,
+    // });
     result(null, { id: res.insertId, ...newReviews });
   });
 };
@@ -87,13 +87,13 @@ FROM (
     query,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found rating: ", res[0]);
+         // console.log("found rating: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -107,13 +107,13 @@ FROM (
 Reviews.getUserReview = (qsetid,userid,result) => {
   connection.query(`SELECT * FROM reviews where questionset_id=${qsetid} and created_by=${userid}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found review: ", res[0]);
+       // console.log("found review: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -147,7 +147,7 @@ Reviews.updateReview = (qsetid,userid, data, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -158,7 +158,7 @@ Reviews.updateReview = (qsetid,userid, data, result) => {
         return;
       }
 
-      console.log("updated review: ", { id: userid, ...data });
+       // console.log("updated review: ", { id: userid, ...data });
       result(null, { id: userid, ...data });
     }
   );

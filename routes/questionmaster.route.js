@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const questionmaster = require("../controller/questionmaster.controller");
   
@@ -169,7 +171,7 @@ module.exports = app => {
  */
 
     // Retrieve a single QuestionSet with id
-    router.get("/:id", questionmaster.findOne);
+    router.get("/:id",cacheMiddleware, questionmaster.findOne);
   
     /**
  * @swagger
@@ -222,7 +224,7 @@ module.exports = app => {
  */
 
     // Retrieve a single QuestionSet with id
-    router.get("/", questionmaster.findAll);
+    router.get("/",cacheMiddleware, questionmaster.findAll);
 
     /**
  * @swagger
@@ -271,7 +273,7 @@ module.exports = app => {
  */
 
     // Retrieve a paragraph of question
-    router.get("/paragraph/:id", questionmaster.findParagraph)
+    router.get("/paragraph/:id",cacheMiddleware, questionmaster.findParagraph)
     
    /**
  * @swagger

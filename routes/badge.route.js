@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const Badge = require("../controller/badge.controller");
   
@@ -174,7 +176,7 @@ module.exports = app => {
  */
 
     //get a badges of a user
-    router.get("/:id", Badge.getBadges);
+    router.get("/:id",cacheMiddleware, Badge.getBadges);
   
   
    

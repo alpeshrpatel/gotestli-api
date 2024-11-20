@@ -86,7 +86,7 @@ exports.sendReminder = async (req, res) => {
 
 exports.updateReminderStatus = async (req, res) => {
   const id = req.body.studentId;
-  console.log("id:", id);
+  
   sendMail.updateReminderStatus(id, (err, data) => {
     if (err) {
       res.status(500).send({
@@ -187,7 +187,7 @@ Team Gotestli</p>
 
 exports.getInTouchSubscribedMail = async (req,res) => {
   const {email} = req.body;
-  console.log("email received"+ email)
+  
   const mailOptionsForGetInTouch = {
     from: {
       name: "Gotestli",
@@ -253,7 +253,7 @@ exports.getInTouchSubscribedMail = async (req,res) => {
 
 exports.sendUpdateToFollowers = async (req,res) => {
   const {username,email,instructor,title} = req.body;
-  console.log("email received"+ email)
+  
 
   const mailOptionsForSendUpdate = {
     from: {

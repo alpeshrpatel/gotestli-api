@@ -6,7 +6,7 @@ async function getPendingQuestionFiles(result) {
     try {
        connection.query(`SELECT * from question_files where status = 0`,(err,res) => {
         if (err) {
-            console.log("error: ", err);
+             
             result(err, null);
             return;
           }
@@ -31,8 +31,8 @@ async function insertQuestionsFromFile(file,result) {
             filePath: file.file_path,
             userId:file.user_id
         });
-        console.log(response)
-        console.log(`Successfully inserted questions for file ID: ${file.id}`);
+         // console.log(response)
+         // console.log(`Successfully inserted questions for file ID: ${file.id}`);
 
         // Update the status of the file to 1 (processed)
         const date = generateDateTime()
@@ -42,7 +42,7 @@ async function insertQuestionsFromFile(file,result) {
                 result(err); 
                 return;
             }
-            console.log(`File ID ${file.id} status updated to processed`);
+             // console.log(`File ID ${file.id} status updated to processed`);
 
             result(null); 
         })
@@ -60,11 +60,11 @@ async function sendNotifyMailToIns(file,result){
             result(err); 
             return;
         }
-        console.log(`File ID ${file.id} instructor details retrieved`);
+         // console.log(`File ID ${file.id} instructor details retrieved`);
         if(res.length > 0){
             const apiUrl = "http://localhost:3000/api/sendemail/instructor/uploadfile/result";
             const response = await axios.post(apiUrl,{notificationDetails:res[0]});
-            console.log(response)
+             // console.log(response)
         }
         result(null); 
     })

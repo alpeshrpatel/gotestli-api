@@ -22,12 +22,12 @@ const QuestionMaster = function(questionmaster) {
 QuestionMaster.create = (newQuestionMaster, result) => {
   connection.execute("INSERT INTO question_master SET ?", newQuestionMaster, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created questionmaster: ", { id: res.insertId, ...newQuestionMaster });
+     // console.log("created questionmaster: ", { id: res.insertId, ...newQuestionMaster });
     result(null, { id: res.insertId, ...newQuestionMaster });
   });
 };
@@ -35,13 +35,13 @@ QuestionMaster.create = (newQuestionMaster, result) => {
 QuestionMaster.findById = (id, result) => {
   connection.execute(`SELECT question, explanation FROM question_master WHERE id = ${id}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found questionmaster: ", res[0]);
+       // console.log("found questionmaster: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -54,13 +54,13 @@ QuestionMaster.findById = (id, result) => {
 QuestionMaster.findParagraph = (id, result) => {
   connection.execute(`SELECT paragraph FROM question_paragraph WHERE id = ${id}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found paragraph: ", res[0]);
+       // console.log("found paragraph: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -72,20 +72,20 @@ QuestionMaster.findParagraph = (id, result) => {
 
 QuestionMaster.findAll = (result) => {
   let query = "SELECT * FROM question_master";
-  // console.log("tags : " + tags);
+  //  // console.log("tags : " + tags);
   // tags = req.params.id;
   // if (tags) {
   //   query += ` WHERE tags LIKE '%${tags}%'`;
   // }
-  console.log("findAll : " + query)
+   // console.log("findAll : " + query)
   connection.execute(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    // console.log("question_master: ", res);
+    //  // console.log("question_master: ", res);
     result(null, res);
   });
 };
@@ -111,7 +111,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -122,7 +122,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
         return;
       }
 
-      console.log("updated questionmaster: ", { id: id, ...questionmaster });
+       // console.log("updated questionmaster: ", { id: id, ...questionmaster });
       result(null, { id: id, ...questionmaster });
     }
   );
@@ -131,7 +131,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
 QuestionMaster.remove = (id, result) => {
   connection.query("DELETE FROM question_master WHERE id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -142,7 +142,7 @@ QuestionMaster.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted questionmaster with id: ", id);
+     // console.log("deleted questionmaster with id: ", id);
     result(null, res);
   });
 };
@@ -150,12 +150,12 @@ QuestionMaster.remove = (id, result) => {
 QuestionMaster.removeAll = result => {
   connection.execute("DELETE FROM question_master", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_master`);
+     // console.log(`deleted ${res.affectedRows} question_master`);
     result(null, res);
   });
 };

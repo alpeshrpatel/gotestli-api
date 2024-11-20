@@ -11,4 +11,4 @@ var dataSet=[];
 			data=[];
 		}	
 	})
-console.log("...java Script Array... \n"+JSON.stringify(dataSet));
+ // console.log("...java Script Array... \n"+JSON.stringify(dataSet));

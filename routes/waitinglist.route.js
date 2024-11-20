@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const WaitingList = require("../controller/waitinglist.controller");
   
@@ -92,7 +94,7 @@ module.exports = app => {
  *         description: Server error
  */
 
-    router.get("/:id",WaitingList.findById);
+    router.get("/:id",cacheMiddleware,WaitingList.findById);
   
     /**
  * @swagger

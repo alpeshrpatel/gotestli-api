@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const QuestionSetQuestion = require("../models/questionsetquestion.model");
 
 // Find a last questionsetid
@@ -13,7 +14,10 @@ exports.findOne = (req, res) => {
           message: "Error retrieving QuestionSetId. "
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 

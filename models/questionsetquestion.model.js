@@ -14,13 +14,13 @@ const QuestionSetQuestion = function(questionSetQuestion){
     QuestionSetQuestion.findById = (result) => {
       connection.query(`SELECT id FROM question_set ORDER BY id DESC LIMIT 1`, (err, res) => {
         if (err) {
-          console.log("error: ", err);
+           
           result(err, null);
           return;
         }
     
         if (res.length) {
-          console.log("found questionsetId: ", res[0]);
+           // console.log("found questionsetId: ", res[0]);
           result(null, res[0]);
           return;
         }
@@ -31,16 +31,16 @@ const QuestionSetQuestion = function(questionSetQuestion){
     };
 
 QuestionSetQuestion.create = (newQuestionSetQuestion, result) => {
-    console.log(newQuestionSetQuestion)
+     // console.log(newQuestionSetQuestion)
     const query = " INSERT INTO question_set_questions (question_set_id, question_id, created_by, created_date, modified_by, modified_date) VALUES ?";
   connection.query(query, [newQuestionSetQuestion], (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created QuestionSetQuestion: ", { ...newQuestionSetQuestion });
+     // console.log("created QuestionSetQuestion: ", { ...newQuestionSetQuestion });
     result(null, { ...newQuestionSetQuestion });
   });
 };
@@ -51,7 +51,7 @@ QuestionSetQuestion.create = (newQuestionSetQuestion, result) => {
 QuestionSetQuestion.remove = (id, result) => {
   connection.query("DELETE FROM question_set_questions WHERE question_set_id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -62,7 +62,7 @@ QuestionSetQuestion.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted QuestionSetQuestion with id: ", id);
+     // console.log("deleted QuestionSetQuestion with id: ", id);
     result(null, res);
   });
 };
@@ -70,12 +70,12 @@ QuestionSetQuestion.remove = (id, result) => {
 QuestionSetQuestion.removeAll = result => {
   connection.query("DELETE FROM question_set_questions", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };
