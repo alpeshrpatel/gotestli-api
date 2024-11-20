@@ -216,8 +216,8 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
 
 // set port, listen for requests
 const PORT = process.env.APP_PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}.`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
   connection.getConnection((err) => {
     if (err) {
       console.error("Error connecting to MySQL:", err);
@@ -226,3 +226,14 @@ app.listen(PORT, () => {
       console.log("Connected to MySQL!");
   });
 });
+
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}.`);
+//   connection.getConnection((err) => {
+//     if (err) {
+//       console.error("Error connecting to MySQL:", err);
+//       return;
+//     }
+//       console.log("Connected to MySQL!");
+//   });
+// });
