@@ -17,15 +17,15 @@ ContactMessages.create = (newContactMessages, result) => {
     [newContactMessages.name, newContactMessages.email, newContactMessages.message],
     (err, res) => {
       if (err) {
-        console.log("Error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created ContactMessages: ", {
-        id: res.insertId,
-        ...newContactMessages,
-      });
+       // console.log("created ContactMessages: ", {
+      //   id: res.insertId,
+      //   ...newContactMessages,
+      // });
       result(null, { id: res.insertId, ...newContactMessages });
     }
   );
@@ -38,13 +38,13 @@ ContactMessages.findById = async (id, result) => {
     `select * from contact_messages where id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found user: ", res);
+         // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -60,12 +60,12 @@ ContactMessages.findById = async (id, result) => {
 ContactMessages.removeAll = (result) => {
   connection.query("DELETE FROM contact_messages", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };

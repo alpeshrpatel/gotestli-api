@@ -13,15 +13,15 @@ WaitingList.create = (newWaitingList, result) => {
     [newWaitingList.email],
     (err, res) => {
       if (err) {
-        console.log("Error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created WaitingList: ", {
-        id: res.insertId,
-        ...newWaitingList,
-      });
+       // console.log("created WaitingList: ", {
+      //   id: res.insertId,
+      //   ...newWaitingList,
+      // });
       result(null, { id: res.insertId, ...newWaitingList });
     }
   );
@@ -34,13 +34,13 @@ WaitingList.findById = async (id, result) => {
     `select * from waiting_list where id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found user: ", res);
+         // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -56,12 +56,12 @@ WaitingList.findById = async (id, result) => {
 WaitingList.removeAll = (result) => {
   connection.query("DELETE FROM waiting_list", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };

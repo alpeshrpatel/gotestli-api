@@ -1,8 +1,9 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const UserResult = require("../models/user.result.model");
 
 // Retrieve all UserResult by UserId (with condition).
 exports.findByUserId = (req, res) => {
-  // console.log("req.params.id : " + req.params.id)
+  
   const userId = req.params.userid;
   UserResult.findByUserId(userId, (err, data) => {
     if (err)
@@ -10,14 +11,16 @@ exports.findByUserId = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving userresults.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 // Retrieve all UserResult by UserId (with condition).
 exports.findQuestionSetByUserId = (req, res) => {
-  console.log("req.params.id : " + req.params.userid);
-  console.log("req.params.id : " + req.params.questionsetid);
+ 
   const userid = req.params.userid;
   const questionsetid = req.params.questionsetid; // query = {questionset:1}
 
@@ -27,14 +30,16 @@ exports.findQuestionSetByUserId = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving userresults.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 // Retrieve UserResult by UserId and questionId (with condition).
 exports.getHistoryOfUser = (req, res) => {
-  console.log("req.params.id : " + req.params.userid);
-  console.log("req.params.id : " + req.params.questionsetid);
+ 
   const userId = req.params.userid;
   const questionsetid = req.params.questionsetid;
 
@@ -44,12 +49,15 @@ exports.getHistoryOfUser = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving userresults.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 exports.getStudentsList = (req, res) => {
-  console.log("req.params.id : " + req.params.questionSetId);
+  
 
   const questionSetId = req.params.questionSetId;
 
@@ -59,7 +67,10 @@ exports.getStudentsList = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving students list.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      }
   });
 };
 
@@ -72,13 +83,16 @@ exports.getDshbDataAnalysis = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving data.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      }
   });
 };
 
 exports.calculate = (req, res) => {
   // Validate request
-  console.log("requset body"+req.body)
+ 
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
@@ -93,9 +107,6 @@ exports.calculate = (req, res) => {
     total_reviewed: req.body.totalReviewed,
     modified_by:req.body.userId
   });
-
-
-  console.log("-----userresult : " + JSON.stringify(userresult));
 
   // Save UserResult in the database
   UserResult.calculateResult(userresult, (err, data) => {
@@ -162,13 +173,16 @@ exports.findAll = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving userresults.",
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
 // Find a single UserResult by Id
 exports.findOne = (req, res) => {
-  console.log("req.params.id : " + req.params.id);
+ 
   UserResult.findById(req.params.id, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -180,7 +194,10 @@ exports.findOne = (req, res) => {
           message: "Error retrieving UserResult with id " + req.params.id,
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 
@@ -193,7 +210,7 @@ exports.update = (req, res) => {
     });
   }
 
-  console.log(req.body);
+
 
   UserResult.updateById(
     req.params.id,
@@ -209,7 +226,10 @@ exports.update = (req, res) => {
             message: "Error updating UserResult with id " + req.params.id,
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     }
   );
 };

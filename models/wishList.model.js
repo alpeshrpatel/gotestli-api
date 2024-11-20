@@ -17,15 +17,15 @@ WishList.create = (newWishList, result) => {
     [newWishList.questionset_id,newWishList.user_id,newWishList.user_id,newWishList.user_id],
     (err, res) => {
       if (err) {
-        console.log("Error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created WishList: ", {
-        id: res.insertId,
-        ...newWishList,
-      });
+       // console.log("created WishList: ", {
+      //   id: res.insertId,
+      //   ...newWishList,
+      // });
       result(null, { id: res.insertId, ...newWishList });
     }
   );
@@ -42,13 +42,13 @@ WHERE w.user_id = ${id};
 `,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found user: ", res);
+         // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -65,7 +65,7 @@ WishList.getQsetId = async (id, result) => {
 `,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
@@ -83,18 +83,18 @@ WishList.getQsetId = async (id, result) => {
 };
 
 WishList.remove = (qsetid, id, result) => {
-    console.log("Attempting to delete with:", { questionset_id: qsetid, user_id: id });
+     // console.log("Attempting to delete with:", { questionset_id: qsetid, user_id: id });
     connection.query(
       `DELETE FROM wishlist WHERE questionset_id = ? AND user_id = ?`,
       [qsetid, id],
       (err, res) => {
         if (err) {
-          console.log("error: ", err);
+           
           result(null, err);
           return;
         }
   
-        console.log(`deleted ${res.affectedRows} wishlist items`);
+         // console.log(`deleted ${res.affectedRows} wishlist items`);
         result(null, res);
       }
     );

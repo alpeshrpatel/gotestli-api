@@ -27,12 +27,12 @@ const Category = function (category) {
 Category.create = (newCategory, result) => {
   connection.query("INSERT INTO categories SET ?", newCategory, (err, res) => {
     if (err) {
-      console.log("error= ", err);
+     
       result(err, null);
       return;
     }
 
-    console.log("created category: ", { id: res.insertId, ...newCategory });
+
     result(null, { id: res.insertId, ...newCategory });
   });
 };
@@ -54,13 +54,13 @@ WHERE parent_id = 0;`;
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found category: ", res[0]);
+ 
       result(null, res[0]);
       return;
     }
@@ -73,13 +73,13 @@ WHERE parent_id = 0;`;
 Category.findById = (id, result) => {
   connection.query(`SELECT * FROM categories WHERE id = ${id}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found category: ", res[0]);
+     
       result(null, res[0]);
       return;
     }
@@ -94,13 +94,13 @@ Category.findParentCategories = (result) => {
     `SELECT id,title FROM categories WHERE parent_id = 0`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found category: ", res);
+    
         result(null, res);
         return;
       }
@@ -124,13 +124,13 @@ Category.findSelectedCategoriesQuestionsets = (title, result) => {
     `WHERE c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found category: ", res);
+     
       result(null, res);
       return;
     }
@@ -144,7 +144,7 @@ Category.getAll = (result) => {
   let query = "SELECT * FROM categories where show_menu=1";
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -174,7 +174,7 @@ Category.getAll = (result) => {
 //     ],
 //     (err, res) => {
 //       if (err) {
-//         console.log("error: ", err);
+//          
 //         result(null, err);
 //         return;
 //       }
@@ -185,7 +185,6 @@ Category.getAll = (result) => {
 //         return;
 //       }
 
-//       console.log("updated category: ", { id: id, ...category });
 //       result(null, { id: id, ...category });
 //     }
 //   );
@@ -194,7 +193,7 @@ Category.getAll = (result) => {
 Category.remove = (id, result) => {
   connection.query("DELETE FROM question_set WHERE id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -205,7 +204,7 @@ Category.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted category with id: ", id);
+    
     result(null, res);
   });
 };
@@ -213,12 +212,12 @@ Category.remove = (id, result) => {
 Category.removeAll = (result) => {
   connection.query("DELETE FROM categories", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} categories`);
+    
     result(null, res);
   });
 };

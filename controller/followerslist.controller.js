@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const FollowersList = require("../models/followerslist.model");
 const generateDateTime = require("../utils/util");
 
@@ -34,7 +35,10 @@ exports.findById =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 
@@ -51,7 +55,10 @@ exports.findById =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 // updateById
@@ -69,7 +76,10 @@ exports.getCategoriesByUserId =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
  

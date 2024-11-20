@@ -35,12 +35,12 @@ const Users = function (users) {
 Users.create = (newuser, result) => {
   connection.query("INSERT INTO users SET ?", newuser, (err, res) => {
     if (err) {
-      console.log("error= ", err);
+       // console.log("error= ", err);
       result(err, null);
       return;
     }
 
-    console.log("created users: ", { id: res.insertId, ...newuser });
+     // console.log("created users: ", { id: res.insertId, ...newuser });
     result(null, { id: res.insertId, ...newuser });
   });
 };
@@ -55,13 +55,13 @@ Users.findById = (userid, result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found users: ", res[0]);
+       // console.log("found users: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -81,13 +81,13 @@ Users.findUser = (uid, result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found users: ", res[0]);
+       // console.log("found users: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -101,7 +101,7 @@ Users.getAll = (result) => {
   let query = "SELECT * FROM users";
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -135,7 +135,7 @@ Users.updateUser = (userid, users, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -146,7 +146,7 @@ Users.updateUser = (userid, users, result) => {
         return;
       }
 
-      console.log("updated users: ", { id: userid, ...users });
+       // console.log("updated users: ", { id: userid, ...users });
       result(null, { id: userid, ...users });
     }
   );
@@ -155,7 +155,7 @@ Users.updateUser = (userid, users, result) => {
 Users.remove = (id, result) => {
   connection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -166,7 +166,7 @@ Users.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted users with id: ", id);
+     // console.log("deleted users with id: ", id);
     result(null, res);
   });
 };
@@ -174,12 +174,12 @@ Users.remove = (id, result) => {
 Users.removeAll = (result) => {
   connection.query("DELETE FROM users", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} users`);
+     // console.log(`deleted ${res.affectedRows} users`);
     result(null, res);
   });
 };

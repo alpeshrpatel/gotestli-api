@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const QuestionSetCategory = require("../controller/questionsetcategory.controller");
   
@@ -174,7 +176,7 @@ module.exports = app => {
  */
 
     // Retrieve a categories with question_id
-    router.get("/questionset/:id", QuestionSetCategory.getCategoriesByQuestionSetId);
+    router.get("/questionset/:id",cacheMiddleware, QuestionSetCategory.getCategoriesByQuestionSetId);
   
     app.use('/api/questionset/category', router);
   };

@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const WishList = require("../controller/wishList.controller");
   

@@ -39,8 +39,8 @@ app.get("/", (req, res) => {
 // Custom middleware to intercept all requests
 app.use((req, res, next) => {
   // Modify the response body or perform any other actions
-  console.log(`Intercepted request: ${req.method} ${req.url}`);
-  console.log(JSON.stringify(req.body));
+   // console.log(`Intercepted request: ${req.method} ${req.url}`);
+  //  // console.log(JSON.stringify(req.body));
   next(); 
 });
 
@@ -59,21 +59,21 @@ require("./routes/questionsetcategory.route.js")(app)
 // // Custom middleware to intercept all requests
 // app.use((req, res, next) => {
 //   // Modify the response body or perform any other actions
-//   console.log(`Intercepted response: ${res.json} `);
-//   console.log(JSON.stringify(res));
+//    // console.log(`Intercepted response: ${res.json} `);
+//    // console.log(JSON.stringify(res));
 //   next(); 
 // });
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+   // console.log(`Server is running on port ${PORT}.`);
   connection.getConnection(err => {
     if (err) {
       console.error('Error connecting to MySQL:', err);
       return;
     }
-    console.log('Connected to MySQL!');
+     // console.log('Connected to MySQL!');
   });
 });
 // ====================================

@@ -1,3 +1,7 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
+
+
 module.exports = app => {
     const questionset = require("../controller/questionset.controller");
   
@@ -371,7 +375,7 @@ module.exports = app => {
  */
 
     //Retrieve all question sets
-    router.get("/", questionset.findAll)
+    router.get("/",cacheMiddleware, questionset.findAll)
 
     /**
  * @swagger
@@ -423,7 +427,7 @@ module.exports = app => {
  */
 
     // Retrieve a single QuestionSet with id
-    router.get("/category/:id", questionset.getQuestionSetIdByCategoryId);
+    router.get("/category/:id",cacheMiddleware, questionset.getQuestionSetIdByCategoryId);
 
     /**
  * @swagger
@@ -495,7 +499,7 @@ module.exports = app => {
  */
 
     //Retrieve questions of questionset
-    router.get("/questions/:id", questionset.getQuestionSet);
+    router.get("/questions/:id",cacheMiddleware, questionset.getQuestionSet);
 
     /**
  * @swagger
@@ -574,7 +578,7 @@ module.exports = app => {
  */
 
     // Retrieve question sets of instructor
-    router.get("/instructor/:userId", questionset.getQuestionSetsOfInstructor)
+    router.get("/instructor/:userId",cacheMiddleware, questionset.getQuestionSetsOfInstructor)
 
     /**
  * @swagger
@@ -622,7 +626,7 @@ module.exports = app => {
  */
 
     // Retrieve question sets of instructor
-    router.get("/count/used", questionset.getQuetionSetUsedByCount)
+    router.get("/count/used",cacheMiddleware, questionset.getQuetionSetUsedByCount)
 
     /**
  * @swagger
@@ -761,7 +765,7 @@ module.exports = app => {
  */
 
     // get question set of searched keyword
-    router.get("/search/result/:keyword", questionset.getQuetionSetBySearchedKeyword)
+    router.get("/search/result/:keyword",cacheMiddleware, questionset.getQuetionSetBySearchedKeyword)
 /**
  * @swagger
  * /api/questionset/{id}:

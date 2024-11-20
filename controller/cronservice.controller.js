@@ -8,7 +8,7 @@ const {
 module.exports = (app) => {
   cron.schedule("0 0 * * *", async () => {
     try {
-      console.log("Running Cron Job to insert questions...");
+      //  // console.log("Running Cron Job to insert questions...");
 
       // Fetch question files with status = 0
 
@@ -19,7 +19,7 @@ module.exports = (app) => {
         }
 
         if (questionFiles.length === 0) {
-          console.log("No pending question files found.");
+          
           return;
         }
         processQuestionFiles(0, questionFiles);
@@ -32,7 +32,7 @@ module.exports = (app) => {
 
 function processQuestionFiles(index, questionFiles) {
   if (index >= questionFiles.length) {
-    console.log("Cron Job completed successfully.");
+   
     return;
   }
 

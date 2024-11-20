@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const Reviews = require("../controller/reviews.controller");
   
@@ -153,7 +155,7 @@ module.exports = app => {
  */
 
      //rating calculation of one questionset
-     router.get('/rating/qset/:id',Reviews.getRating);
+     router.get('/rating/qset/:id',cacheMiddleware,Reviews.getRating);
 
      /**
  * @swagger

@@ -36,12 +36,12 @@ UserResultDetails.getAnswers = (questionId, result) => {
 //   const query = "INSERT INTO user_test_result_dtl(user_test_result_id,question_set_question_id, question_type,answer,created_by, modified_by,status) values  ?";
 //   connection.query(query, [newUserResultDetails], (err, res) => {
 //     if (err) {
-//       console.log("error: ", err);
+//        
 //       result(err, null);
 //       return;
 //     }
 
-//     console.log("created userresultdetails: ", { id: res.insertId, ...newUserResultDetails });
+//      // console.log("created userresultdetails: ", { id: res.insertId, ...newUserResultDetails });
 //     result(null, { id: res.insertId, ...newUserResultDetails });
 //   });
 // };
@@ -68,15 +68,15 @@ UserResultDetails.create = (newUserResultDetails, result) => {
 
   connection.query(query, values, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created userresultdetails: ", {
-      id: res.insertId,
-      ...newUserResultDetails,
-    });
+     // console.log("created userresultdetails: ", {
+    //   id: res.insertId,
+    //   ...newUserResultDetails,
+    // });
     result(null, { id: res.insertId, ...newUserResultDetails });
   });
 };
@@ -85,22 +85,22 @@ UserResultDetails.addAllQuestionForQuestionSet = (
   listUserResultDetails,
   result
 ) => {
-  console.log("listuserresult:" + listUserResultDetails);
+   // console.log("listuserresult:" + listUserResultDetails);
   const query =
     "INSERT INTO user_test_result_dtl " +
     "(user_test_result_id, question_set_question_id, question_type, answer, correct_answer, created_by, created_date, modified_by, modified_date, status) " +
     "VALUES ?";
   connection.query(query, [listUserResultDetails], (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
-    console.log("created userresultdetails: ", {
-      id: res.insertId,
-      ...listUserResultDetails,
-    });
+     // console.log("created userresultdetails: ", {
+    //   id: res.insertId,
+    //   ...listUserResultDetails,
+    // });
     result(null, { id: res.insertId, ...listUserResultDetails });
   });
 };
@@ -112,9 +112,9 @@ UserResultDetails.addQuestionsOnStartQuiz = (
   createdDate,
   result
 ) => {
-  console.log("questionSetId --> " + questionSetId);
+   // console.log("questionSetId --> " + questionSetId);
 
-  console.log("userResultId --> " + userResultId);
+   // console.log("userResultId --> " + userResultId);
   connection.query(
     `
         INSERT INTO user_test_result_dtl (
@@ -150,12 +150,12 @@ UserResultDetails.addQuestionsOnStartQuiz = (
     GROUP BY qm.id; `,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created userresultdetails: ", { id: res.insertId });
+       // console.log("created userresultdetails: ", { id: res.insertId });
       result(null, { id: res.insertId });
     }
   );
@@ -166,13 +166,13 @@ UserResultDetails.findById = (id, result) => {
     `SELECT * FROM user_test_result_dtl WHERE id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found UserResultDetails: ", res);
+         // console.log("found UserResultDetails: ", res);
         result(null, res);
         return;
       }
@@ -191,13 +191,13 @@ UserResultDetails.findUserResultDetailsByUserResultId = (
     `SELECT * FROM user_test_result_dtl WHERE user_test_result_id = ${userresultid}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found UserResultDetails: ", res);
+         // console.log("found UserResultDetails: ", res);
         result(null, res);
         return;
       }
@@ -217,13 +217,13 @@ UserResultDetails.getUserResultAnswers = (
     ` SELECT question_set_question_id, answer, status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  ORDER BY id DESC LIMIT ${questionSetLength}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found selected options: ", res);
+         // console.log("found selected options: ", res);
         result(null, res);
         return;
       }
@@ -239,13 +239,13 @@ UserResultDetails.getStatus = (userResultId, questionId, result) => {
     ` SELECT status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  AND question_set_question_id = ${questionId} ORDER BY id DESC LIMIT 1`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found status: ", res);
+         // console.log("found status: ", res);
         result(null, res);
         return;
       }
@@ -265,18 +265,18 @@ UserResultDetails.getAll = (title, result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log("user_test_result_dtl: ", res);
+     // console.log("user_test_result_dtl: ", res);
     result(null, res);
   });
 };
 // userResultId, questionId, findSelectedOption, status
 UserResultDetails.updateById = (userresultdetails, result) => {
-  console.log("userresultdetails : " + JSON.stringify(userresultdetails));
+   // console.log("userresultdetails : " + JSON.stringify(userresultdetails));
   // const updatestmt =
   //   "UPDATE user_test_result_dtl SET " +
   //   "user_test_result_id= ?, " +
@@ -321,13 +321,13 @@ UserResultDetails.updateById = (userresultdetails, result) => {
       //id,
     ],
     (err, res) => {
-      // console.log(JSON.stringify(res))
+      //  // console.log(JSON.stringify(res))
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
-      console.log(res.affectedRows);
+       // console.log(res.affectedRows);
 
       if (res.affectedRows == 0) {
         // not found UserResultDetails with the id
@@ -335,9 +335,9 @@ UserResultDetails.updateById = (userresultdetails, result) => {
         return;
       }
 
-      console.log("updated userresultdetails: ", {
-        ...userresultdetails,
-      });
+       // console.log("updated userresultdetails: ", {
+      //   ...userresultdetails,
+      // });
       result(null, { ...userresultdetails });
     }
   );
@@ -349,7 +349,7 @@ UserResultDetails.remove = (id, result) => {
     id,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -360,7 +360,7 @@ UserResultDetails.remove = (id, result) => {
         return;
       }
 
-      console.log("deleted userresultdetails with id: ", id);
+       // console.log("deleted userresultdetails with id: ", id);
       result(null, res);
     }
   );
@@ -369,12 +369,12 @@ UserResultDetails.remove = (id, result) => {
 UserResultDetails.removeAll = (result) => {
   connection.query("DELETE FROM user_test_result_dtl", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} user_test_result_dtl`);
+     // console.log(`deleted ${res.affectedRows} user_test_result_dtl`);
     result(null, res);
   });
 };

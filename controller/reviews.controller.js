@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const Reviews = require("../models/reviews.model");
 const generateDateTime = require("../utils/util");
 
@@ -46,7 +47,12 @@ exports.getRating = (req, res) => {
           message: "Error retrieving rating with id " + req.params.id,
         });
       }
-    } else res.send(data);
+    } else {
+      const key = req.originalUrl;
+     
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    } 
   });
 };
 

@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware.js");
 const Options = require("../models/questionoptions.model.js");
 
 
@@ -10,7 +11,10 @@ exports.findAll = async(req, res) => {
         message:
           err.message || "Some error occurred while retrieving options."
       });
-    else res.send(data);
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
   });
 };
 
@@ -27,7 +31,10 @@ exports.findOne = async (req, res) => {
           message: "Error retrieving option with id " + req.params.id
         });
       }
-    } else res.send(data);
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
   });
 };
 

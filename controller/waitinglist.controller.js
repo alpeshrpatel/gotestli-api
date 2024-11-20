@@ -1,10 +1,11 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const WaitingList = require("../models/waitinglist.model");
 const generateDateTime = require("../utils/util");
 
 // Create and Save a new WaitingList
 exports.create = (req, res) => {
       // Validate request
-      console.log(req.body)
+     
       if (!req.body) {
         res.status(400).send({
           message: "Content can not be empty!"
@@ -35,7 +36,10 @@ exports.findById =  (req, res) => {
             message: "Error retrieving user with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
     });
   };
 

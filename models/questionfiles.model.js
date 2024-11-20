@@ -17,12 +17,12 @@ const QuestionFiles = function (questionFiles) {
 //   const query = " INSERT INTO users_preferences (user_id, category_id, created_by, created_date, modified_by, modified_date) VALUES ?";
 //   connection.query(query, [newQuestionFiles], (err, res) => {
 //     if (err) {
-//       console.log("error: ", err);
+//        
 //       result(err, null);
 //       return;
 //     }
 
-//     console.log("created QuestionFiles: ", { id: res.insertId, ...newQuestionFiles });
+//      // console.log("created QuestionFiles: ", { id: res.insertId, ...newQuestionFiles });
 //     result(null, { id: res.insertId, ...newQuestionFiles });
 //   });
 // };
@@ -46,15 +46,15 @@ QuestionFiles.create = (newQuestionFiles, createdDate, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("Error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created entry in QuestionFiles: ", {
-        id: res.insertId,
-        ...newQuestionFiles,
-      });
+       // console.log("created entry in QuestionFiles: ", {
+      //   id: res.insertId,
+      //   ...newQuestionFiles,
+      // });
       result(null, { id: res.insertId, ...newQuestionFiles });
     }
   );
@@ -71,7 +71,7 @@ QuestionFiles.insertQuestions = async (
   let size = Object.keys(dataSet).length;
   for (let i = 7; i < 7 + size; i++) {
     if (!errorRows.includes(i)) {
-      console.log("dataset: ", dataSet[i]);
+       // console.log("dataset: ", dataSet[i]);
       const data = dataSet[i];
       const question_type = data[3].includes(':') ? 7 : 2
       const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -93,11 +93,11 @@ QuestionFiles.insertQuestions = async (
       try {
         connection.query(query, values, async (err, res) => {
           if (err) {
-            console.log("Error: ", err);
+             
             result(err, null);
             return;
           }
-          console.log("insert id:", res.insertId);
+           // console.log("insert id:", res.insertId);
           const optionInsertResult = await insertQuestionOptions(
             res.insertId,
             data,
@@ -106,13 +106,11 @@ QuestionFiles.insertQuestions = async (
           );
 
           if (optionInsertResult) {
-            console.log(
-              `Question and options inserted with ID: ${res.insertId}`
-            );
+            
           }
         });
       } catch (error) {
-        console.log("Error inserting question:", error);
+         // console.log("Error inserting question:", error);
         result(error, null);
         return;
       }
@@ -127,9 +125,9 @@ QuestionFiles.insertQuestions = async (
   // update file data in question_files
   const res =  await updateFilesData(fileId,correct,errored,date)
     if(res){
-      console.log('updated successfully!');
+       // console.log('updated successfully!');
     }else{
-      console.log('some error')
+       // console.log('some error')
     }
   if (errorRows.length > 0) {
     result(null, { message: "Questions of this Rows are not inserted: ", errored });
@@ -156,7 +154,7 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
     INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
     VALUES ?`;
   const question_options = data[2].split(":");
-  console.log("data3", data[3]);
+   // console.log("data3", data[3]);
   const correct_answer = question_options.map((option) => {
     if (typeof data[3] === "string" && data[3].includes(':')) {
       return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
@@ -224,13 +222,13 @@ QuestionFiles.findById = async (user_id, result) => {
     `select * from question_files where user_id = ${user_id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found user: ", res);
+         // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -246,13 +244,13 @@ QuestionFiles.findByFileName = async (filename, result) => {
     `select * from question_files where file_name = '${filename}'`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found user: ", res);
+         // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -268,7 +266,7 @@ QuestionFiles.findByFileName = async (filename, result) => {
 
 //     (err, res) => {
 //       if (err) {
-//         console.log("error: ", err);
+//          
 //         result(null, err);
 //         return;
 //       }
@@ -279,7 +277,7 @@ QuestionFiles.findByFileName = async (filename, result) => {
 //         return;
 //       }
 
-//       console.log("deleted QuestionFiles ");
+//        // console.log("deleted QuestionFiles ");
 //       result(null, res);
 //     }
 //   );
@@ -288,12 +286,12 @@ QuestionFiles.findByFileName = async (filename, result) => {
 QuestionFiles.removeAll = (result) => {
   connection.query("DELETE FROM question_files", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };

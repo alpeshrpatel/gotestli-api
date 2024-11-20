@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
     const QuestionFiles = require("../controller/questionfiles.controller");
   
@@ -257,7 +259,7 @@ module.exports = app => {
  *                   example: "Question File not found."
  */
 
-    router.get("/:id",QuestionFiles.findById);
+    router.get("/:id",cacheMiddleware,QuestionFiles.findById);
 
     /**
  * @swagger
@@ -320,7 +322,7 @@ module.exports = app => {
  *         description: File not found
  */
 
-    router.get("/",QuestionFiles.findByFileName);
+    router.get("/",cacheMiddleware,QuestionFiles.findByFileName);
     
     // // Delete a QuestionFiles with id
     // router.delete("/instructor/:instructor_id/follower/:follower_id", QuestionFiles.delete);

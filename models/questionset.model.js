@@ -33,15 +33,15 @@ QuestionSet.create = (newQuestionSet, result) => {
     newQuestionSet,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
-      console.log("created questionset: ", {
-        id: res.insertId,
-        ...newQuestionSet,
-      });
+       // console.log("created questionset: ", {
+      //   id: res.insertId,
+      //   ...newQuestionSet,
+      // });
       result(null, { id: res.insertId, ...newQuestionSet });
     }
   );
@@ -52,13 +52,13 @@ QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
     `select question_set_id from question_set_categories where category_id = ${category_id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found questionset: ", res);
+         // console.log("found questionset: ", res);
         result(null, res);
         return;
       }
@@ -85,13 +85,13 @@ QuestionSet.getQuestionSet = async (question_set_id, result) => {
     `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found questionset: ", res);
+         // console.log("found questionset: ", res);
         result(null, res);
         return;
       }
@@ -107,13 +107,13 @@ QuestionSet.getQuestionSetsOfInstructor = (userId, result) => {
     `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}'`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found questionset: ", res);
+         // console.log("found questionset: ", res);
         result(null, res);
         return;
       }
@@ -129,13 +129,13 @@ QuestionSet.findById = (id, result) => {
     `SELECT * FROM question_set WHERE id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found questionset: ", res[0]);
+         // console.log("found questionset: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -150,13 +150,13 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
   const query = `select * from question_set qs where title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`;
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found questionset: ", res);
+       // console.log("found questionset: ", res);
       result(null, res);
       return;
     }
@@ -170,12 +170,12 @@ QuestionSet.getAll = (result) => {
   let query = "SELECT * FROM question_set where is_demo = 1";
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    logger.info("users: ", res);
+    // logger.info("users: ", res);
     result(null, res);
   });
 };
@@ -198,7 +198,7 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -209,7 +209,7 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
         return;
       }
 
-      console.log("updated questionset: ", { id: id, ...questionset });
+       // console.log("updated questionset: ", { id: id, ...questionset });
       result(null, { id: id, ...questionset });
     }
   );
@@ -218,7 +218,7 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
 QuestionSet.remove = (id, result) => {
   connection.query("DELETE FROM question_set WHERE id = ?", id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
@@ -229,7 +229,7 @@ QuestionSet.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted questionset with id: ", id);
+     // console.log("deleted questionset with id: ", id);
     result(null, res);
   });
 };
@@ -237,12 +237,12 @@ QuestionSet.remove = (id, result) => {
 QuestionSet.removeAll = (result) => {
   connection.query("DELETE FROM question_set", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} question_set`);
+     // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };
@@ -262,7 +262,7 @@ QuestionSet.getQuetionSetUsedByCount = (result) => {
       "ON q1.id = q2.question_set_id order by count desc",
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }

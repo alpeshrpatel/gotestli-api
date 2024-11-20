@@ -1,3 +1,4 @@
+const { cache } = require("../middleware/cacheMiddleware");
 const Badge = require("../models/badge.model");
 const generateDateTime = require("../utils/util");
 
@@ -33,7 +34,10 @@ exports.create =  (req, res) => {
             message: "Error retrieving badge with id " + req.params.id
           });
         }
-      } else res.send(data);
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      }
     });
   };
  

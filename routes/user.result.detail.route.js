@@ -1,3 +1,5 @@
+const { cacheMiddleware } = require("../middleware/cacheMiddleware");
+
 module.exports = app => {
   const userresultdetails = require("../controller/user.result.details.controller");
 
@@ -220,7 +222,7 @@ module.exports = app => {
  */
 
   // Retrieve a single UserResultDetails with id
-  router.get("/:id", userresultdetails.findOne);
+  router.get("/:id",cacheMiddleware, userresultdetails.findOne);
 
   /**
  * @swagger
@@ -286,7 +288,7 @@ module.exports = app => {
  */
 
   // Retrieve a single UserResultDetails with id
-  router.get("/userresult/:userresultid", userresultdetails.findUserResultDetailsByUserResultId);
+  router.get("/userresult/:userresultid",cacheMiddleware, userresultdetails.findUserResultDetailsByUserResultId);
 
   /**
  * @swagger
@@ -339,7 +341,7 @@ module.exports = app => {
  */
 
   // Retrieve selected options from test_result_dtl
-  router.get("/get/answers/userresult/:userResultId/length/:questionSetLength",userresultdetails.getUserResultAnswers);
+  router.get("/get/answers/userresult/:userResultId/length/:questionSetLength",cacheMiddleware,userresultdetails.getUserResultAnswers);
 
   /**
  * @swagger
@@ -382,7 +384,7 @@ module.exports = app => {
  */
 
   // Retrieve updated status of  test_result_dtl
-  router.get("/status/userresult/:userResultId/questionid/:questionId",userresultdetails.getStatus);
+  router.get("/status/userresult/:userResultId/questionid/:questionId",cacheMiddleware,userresultdetails.getStatus);
 
   /**
  * @swagger

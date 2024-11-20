@@ -146,7 +146,7 @@ UserResult.updateUserResult = (userresult, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -157,7 +157,7 @@ UserResult.updateUserResult = (userresult, result) => {
         return;
       }
 
-      // console.log("updated userresult: ", { id: id, ...userresult });
+      //  // console.log("updated userresult: ", { id: id, ...userresult });
       result(null, { id: userresult.id, ...userresult });
     }
   );
@@ -169,7 +169,7 @@ UserResult.updateUserResult = (userresult, result) => {
  * @param {*} result
  */
 UserResult.calculateResult = (userResult, result) => {
-  // console.log("userResult --> "  + JSON.stringify(userResult));
+  //  // console.log("userResult --> "  + JSON.stringify(userResult));
   let passingStatus;
   let percentage;
   let marks;
@@ -185,7 +185,7 @@ UserResult.calculateResult = (userResult, result) => {
                       and utr.id = ${userResult.id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
@@ -212,7 +212,7 @@ UserResult.calculateResult = (userResult, result) => {
         }
 
         res.forEach((record) => {
-          // console.log(record.marks + " : "+record.answer + " : " + record.correct_answer);
+          //  // console.log(record.marks + " : "+record.answer + " : " + record.correct_answer);
           totalMarks += record.marks;
           if (areAnswersEqual(record.correct_answer, record.answer)) {
             achievedMarks += record.marks;
@@ -221,32 +221,32 @@ UserResult.calculateResult = (userResult, result) => {
         }, 0);
 
         percentage = Math.round((100 * achievedMarks) / totalMarks);
-        console.log("achievedMarks : " + achievedMarks);
-        console.log("passPercentage : " + passPercentage);
+         // console.log("achievedMarks : " + achievedMarks);
+         // console.log("passPercentage : " + passPercentage);
 
-        console.log("totalMarks : " + totalMarks);
-        console.log("percentage : " + percentage);
+         // console.log("totalMarks : " + totalMarks);
+         // console.log("percentage : " + percentage);
 
         if (percentage < passPercentage) {
           passingStatus = "Fail";
         } else {
           passingStatus = "Pass";
         }
-        console.log(passingStatus);
-        console.log("userResult : " + JSON.stringify(userResult));
+         // console.log(passingStatus);
+         // console.log("userResult : " + JSON.stringify(userResult));
 
         userResult.marksObtained = achievedMarks;
         userResult.percentage = percentage;
         userResult.status = 1;
         userResult.passingStatus = passingStatus;
 
-        // console.log(userResult);
+        //  // console.log(userResult);
 
         let userresult = userResult;
 
         // updateUserResult(userResult);
 
-        // console.log("updated userresult: ", { ...userResult });
+        //  // console.log("updated userresult: ", { ...userResult });
         // result(null, { ...userResult });
         const modifiedDate = new Date()
           .toISOString()
@@ -274,7 +274,7 @@ UserResult.calculateResult = (userResult, result) => {
           ],
           (err, res) => {
             if (err) {
-              console.log("error: ", err);
+               
               result(null, err);
               return;
             }
@@ -285,13 +285,13 @@ UserResult.calculateResult = (userResult, result) => {
               return;
             }
 
-            console.log("updated userresult: ", {
-              id: userResult.id,
-              correct: correct,
-              wrong: userResult.total_question - correct,
-              percentage: percentage,
-              passPercentage: passPercentage,
-            });
+            //  // console.log("updated userresult: ", {
+            //   id: userResult.id,
+            //   correct: correct,
+            //   wrong: userResult.total_question - correct,
+            //   percentage: percentage,
+            //   passPercentage: passPercentage,
+            // });
             result(null, {
               id: userResult.id,
               correct: correct,
@@ -318,15 +318,15 @@ UserResult.create = (newUserResult, result) => {
     [newUserResult],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
-      console.log("user_result_id : /////////////" + res.insertId);
-      console.log("created userresult: ", {
-        id: res.insertId,
-        ...newUserResult,
-      });
+       // console.log("user_result_id : /////////////" + res.insertId);
+       // console.log("created userresult: ", {
+      //   id: res.insertId,
+      //   ...newUserResult,
+      // });
       result(null, { userResultId: res.insertId });
     }
   );
@@ -337,13 +337,13 @@ UserResult.findById = (id, result) => {
     `SELECT * FROM user_test_result WHERE id = ${id}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        console.log("found UserResult: ", res[0]);
+         // console.log("found UserResult: ", res[0]);
         result(null, res[0]);
         return;
       }
@@ -358,13 +358,13 @@ UserResult.findByUserId = (user_id, result) => {
   const query = `SELECT utr.* ,qs.*, u.first_name, u.last_name FROM user_test_result utr join question_set qs join users u on utr.question_set_id = qs.id and utr.user_id = u.id WHERE user_id = ? order by utr.created_date desc`;
   connection.query(query, user_id, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
 
     if (res.length) {
-      console.log("found UserResult: ", res);
+       // console.log("found UserResult: ", res);
       result(null, res);
       return;
     }
@@ -379,13 +379,13 @@ UserResult.findQuestionSetByUserId = (userid, questionsetid, result) => {
     `SELECT id FROM user_test_result WHERE user_id = ${userid} and question_set_id = ${questionsetid} order by created_date desc`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
 
       if (res.length) {
-        // console.log("found UserResult: ", res);
+        //  // console.log("found UserResult: ", res);
         result(null, res);
         return;
       }
@@ -401,7 +401,7 @@ UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
     `SELECT * FROM user_test_result WHERE user_id = ${userId} and question_set_id = ${questionsetid} order by created_date desc`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
@@ -422,7 +422,7 @@ UserResult.getStudentsList = (questionSetId, result) => {
     `SELECT * from user_test_result where question_set_id = ${questionSetId}`,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(err, null);
         return;
       }
@@ -447,7 +447,7 @@ UserResult.getDshbDataAnalysis = (userId, result) => {
     `user_test_result WHERE status = 1 and user_id = ${userId};`;
   connection.query(query,(err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(err, null);
       return;
     }
@@ -467,12 +467,12 @@ UserResult.getAll = (result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log("user_test_result: ", res);
+     // console.log("user_test_result: ", res);
     result(null, res);
   });
 };
@@ -501,7 +501,7 @@ UserResult.updateById = (id, userresult, result) => {
     ],
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -512,7 +512,7 @@ UserResult.updateById = (id, userresult, result) => {
         return;
       }
 
-      console.log("updated userresult: ", { id: id, ...userresult });
+       // console.log("updated userresult: ", { id: id, ...userresult });
       result(null, { id: id, ...userresult });
     }
   );
@@ -524,7 +524,7 @@ UserResult.remove = (id, result) => {
     id,
     (err, res) => {
       if (err) {
-        console.log("error: ", err);
+         
         result(null, err);
         return;
       }
@@ -535,7 +535,7 @@ UserResult.remove = (id, result) => {
         return;
       }
 
-      console.log("deleted userresult with id: ", id);
+       // console.log("deleted userresult with id: ", id);
       result(null, res);
     }
   );
@@ -544,12 +544,12 @@ UserResult.remove = (id, result) => {
 UserResult.removeAll = (result) => {
   connection.query("DELETE FROM user_test_result", (err, res) => {
     if (err) {
-      console.log("error: ", err);
+       
       result(null, err);
       return;
     }
 
-    console.log(`deleted ${res.affectedRows} user_test_result`);
+     // console.log(`deleted ${res.affectedRows} user_test_result`);
     result(null, res);
   });
 };
