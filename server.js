@@ -14,7 +14,10 @@ const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
+const dotenv = require('dotenv');
 
+const env = process.env.NODE_ENV || 'development';
+dotenv.config({ path: `.env.${env}` });
 
 
 // Define the CORS options
@@ -212,7 +215,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
 });
 
 // set port, listen for requests
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}.`);
   connection.getConnection((err) => {
