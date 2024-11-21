@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "NODE_ENV=development nodemon server.js",
-    "start:prod": "NODE_ENV=production node server.js"
+    "start:dev": "cross-env NODE_ENV=development nodemon server.js",
+    "start:prod": "cross-env NODE_ENV=production node server.js"
   },
   "keywords": [],
   "author": "",
@@ -28,5 +28,8 @@
     "swagger-ui-express": "^5.0.1",
     "underscore": "^1.13.7",
     "winston": "^3.14.2"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
