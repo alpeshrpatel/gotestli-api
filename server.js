@@ -96,6 +96,7 @@ require("./routes/waitinglist.route.js")(app);
 require("./routes/badge.route.js")(app);
 require("./routes/reviews.route.js")(app);
 require("./routes/wishlist.route.js")(app);
+require("./routes/appfeedback.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
