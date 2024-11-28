@@ -193,7 +193,7 @@ exports.findUserResultDetailsByUserResultId = (req, res) => {
           });
         }
       } else{
-        cache.set(req.originalUrl, data);
+        // cache.set(req.originalUrl, data);
         res.send(data);
       };
     }
@@ -219,7 +219,7 @@ exports.getUserResultAnswers = (req, res) => {
           });
         }
       } else{
-        cache.set(req.originalUrl, data);
+        // cache.set(req.originalUrl, data);
         res.send(data);
       };
     }
@@ -245,7 +245,7 @@ exports.getStatus = (req, res) => {
           });
         }
       } else{
-        cache.set(req.originalUrl, data);
+        // cache.set(req.originalUrl, data);
         res.send(data);
       };
     }
