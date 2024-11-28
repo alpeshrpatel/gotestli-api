@@ -288,7 +288,7 @@ module.exports = app => {
  */
 
   // Retrieve a single UserResultDetails with id
-  router.get("/userresult/:userresultid",cacheMiddleware, userresultdetails.findUserResultDetailsByUserResultId);
+  router.get("/userresult/:userresultid", userresultdetails.findUserResultDetailsByUserResultId);
 
   /**
  * @swagger
@@ -341,7 +341,7 @@ module.exports = app => {
  */
 
   // Retrieve selected options from test_result_dtl
-  router.get("/get/answers/userresult/:userResultId/length/:questionSetLength",cacheMiddleware,userresultdetails.getUserResultAnswers);
+  router.get("/get/answers/userresult/:userResultId/length/:questionSetLength",userresultdetails.getUserResultAnswers);
 
   /**
  * @swagger
@@ -384,7 +384,7 @@ module.exports = app => {
  */
 
   // Retrieve updated status of  test_result_dtl
-  router.get("/status/userresult/:userResultId/questionid/:questionId",cacheMiddleware,userresultdetails.getStatus);
+  router.get("/status/userresult/:userResultId/questionid/:questionId",userresultdetails.getStatus);
 
   /**
  * @swagger
