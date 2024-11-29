@@ -375,7 +375,7 @@ module.exports = app => {
  */
 
     //Retrieve all question sets
-    router.get("/",cacheMiddleware, questionset.findAll)
+    router.get("/", questionset.findAll)
 
     /**
  * @swagger
@@ -427,7 +427,7 @@ module.exports = app => {
  */
 
     // Retrieve a single QuestionSet with id
-    router.get("/category/:id",cacheMiddleware, questionset.getQuestionSetIdByCategoryId);
+    router.get("/category/:id", questionset.getQuestionSetIdByCategoryId);
 
     /**
  * @swagger
@@ -499,7 +499,7 @@ module.exports = app => {
  */
 
     //Retrieve questions of questionset
-    router.get("/questions/:id",cacheMiddleware, questionset.getQuestionSet);
+    router.get("/questions/:id", questionset.getQuestionSet);
 
     /**
  * @swagger
@@ -578,7 +578,7 @@ module.exports = app => {
  */
 
     // Retrieve question sets of instructor
-    router.get("/instructor/:userId",cacheMiddleware, questionset.getQuestionSetsOfInstructor)
+    router.get("/instructor/:userId", questionset.getQuestionSetsOfInstructor)
 
     /**
  * @swagger
@@ -626,7 +626,7 @@ module.exports = app => {
  */
 
     // Retrieve question sets of instructor
-    router.get("/count/used",cacheMiddleware, questionset.getQuetionSetUsedByCount)
+    router.get("/count/used", questionset.getQuetionSetUsedByCount)
 
     /**
  * @swagger

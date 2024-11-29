@@ -14,7 +14,7 @@ module.exports = (app) => {
   router.get("/:id",cacheMiddleware, userresult.findOne);
 
   // Retrieve a single QuestionSet with id
-  router.get("/user/:userid",cacheMiddleware,  userresult.findByUserId);
+  router.get("/user/:userid",  userresult.findByUserId);
 
   // Retrieve a single QuestionSet with id
   router.get(
@@ -32,14 +32,12 @@ module.exports = (app) => {
   // Retrieve users list who attempted quiz
   router.get(
     "/students/list/:questionSetId",
-   cacheMiddleware,
     userresult.getStudentsList
   );
   
   // Retrieve data for dashboard
   router.get(
     "/student/dashboard/analysis/:userId",
-   cacheMiddleware,
     userresult.getDshbDataAnalysis
   );
 
