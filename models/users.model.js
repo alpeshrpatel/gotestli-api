@@ -122,7 +122,7 @@ Users.updateUser = (userid, users, result) => {
   connection.query(
     "UPDATE users SET first_name= ?, last_name= ?, " +
       "email= ? , company= ?, " +
-      "phone= ? , modified_date = ? " +
+      "phone= ?, profile_pic= ? , modified_date = ? " +
       "WHERE id = ?",
     [
       users.first_name,
@@ -130,6 +130,7 @@ Users.updateUser = (userid, users, result) => {
       users.email,
       users.company,
       users.phone,
+      users.profile_pic,
       modified_date,
       userid,
     ],

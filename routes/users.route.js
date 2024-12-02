@@ -303,7 +303,7 @@ module.exports = app => {
  */
 
     // Retrieve a single users with id
-    router.get("/:userid",cacheMiddleware, users.findOne);
+    router.get("/:userid", users.findOne);
 
     /**
  * @swagger
@@ -499,7 +499,7 @@ module.exports = app => {
  */
 
     // Retrieve all users with id
-    router.get("/",cacheMiddleware, users.findAll);
+    router.get("/", users.findAll);
   
     /**
  * @swagger
