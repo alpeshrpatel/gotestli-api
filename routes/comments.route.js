@@ -1,14 +1,14 @@
 const { cacheMiddleware } = require("../middleware/cacheMiddleware");
 
 module.exports = app => {
-    const CommentsForQuestions = require("../controller/commentsforquestions.controller");
+    const Comments = require("../controller/comments.controller");
   
     var router = require("express").Router();
   
   
 
-    // Create a new CommentsForQuestions
-    router.post("/", CommentsForQuestions.create);
+    // Create a new Comments
+    router.post("/", Comments.create);
   
 
 

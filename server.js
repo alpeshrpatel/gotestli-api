@@ -98,7 +98,7 @@ require("./routes/badge.route.js")(app);
 require("./routes/reviews.route.js")(app);
 require("./routes/wishlist.route.js")(app);
 require("./routes/appfeedback.route.js")(app);
-require("./routes/commentsforquestions.route.js")(app);
+require("./routes/Comments.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
