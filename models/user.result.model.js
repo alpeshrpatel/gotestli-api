@@ -434,7 +434,7 @@ UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
 
 UserResult.getStudentsList = (questionSetId, result) => {
   connection.query(
-    `SELECT * from user_test_result where question_set_id = ${questionSetId} and order by created_date desc`,
+    `SELECT * from user_test_result where question_set_id = ${questionSetId} order by created_date desc`,
     (err, res) => {
       if (err) {
         result(err, null);
