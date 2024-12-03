@@ -372,7 +372,7 @@ UserResult.findByUserId = (user_id, result) => {
   WHERE 
     utr.user_id = ?
   ORDER BY 
-    utr.created_date DESC;
+    utr.start_date DESC;
 `;
   connection.query(query, user_id, (err, res) => {
     if (err) {
