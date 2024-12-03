@@ -38,11 +38,10 @@ WishList.findById = async (id, result) => {
     `SELECT qs.*
 FROM wishlist w
 JOIN question_set qs ON w.questionset_id = qs.id
-WHERE w.user_id = ${id};
+WHERE w.user_id = ${id} and order by created_date desc;
 `,
     (err, res) => {
       if (err) {
-         
         result(err, null);
         return;
       }

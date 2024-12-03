@@ -82,7 +82,7 @@ QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
 
 QuestionSet.getQuestionSet = async (question_set_id, result) => {
   connection.execute(
-    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id`,
+    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ${question_set_id} and qsq.question_set_id = qs.id  and qm.id = qsq.question_id and order by created_date desc`,
     (err, res) => {
       if (err) {
          
@@ -104,7 +104,7 @@ QuestionSet.getQuestionSet = async (question_set_id, result) => {
 
 QuestionSet.getQuestionSetsOfInstructor = (userId, result) => {
   connection.execute(
-    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}'`,
+    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}' AND ORDER BY created_date DESC`,
     (err, res) => {
       if (err) {
          
