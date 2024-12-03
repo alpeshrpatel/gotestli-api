@@ -70,8 +70,8 @@ QuestionMaster.findParagraph = (id, result) => {
   });
 };
 
-QuestionMaster.findAll = (result) => {
-  let query = "SELECT * FROM question_master";
+QuestionMaster.findAll = (userid,result) => {
+  let query = `SELECT * FROM question_master where created_by = ${userid}`;
   //  // console.log("tags : " + tags);
   // tags = req.params.id;
   // if (tags) {

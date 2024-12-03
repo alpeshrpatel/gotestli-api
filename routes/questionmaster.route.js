@@ -224,7 +224,7 @@ module.exports = app => {
  */
 
     // Retrieve a single QuestionSet with id
-    router.get("/",cacheMiddleware, questionmaster.findAll);
+    router.get("/user/:userId",cacheMiddleware, questionmaster.findAll);
 
     /**
  * @swagger

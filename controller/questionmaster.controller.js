@@ -48,8 +48,8 @@ exports.create = (req, res) => {
 // Retrieve all QuestionMaster from the database (with condition).
 exports.findAll = (req, res) => {
   // const title = req.query.title;
-
-  QuestionMaster.findAll( (err, data) => {
+  const userid = req.params.userId
+  QuestionMaster.findAll(userid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
