@@ -128,6 +128,31 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
   );
 };
 
+QuestionMaster.updateStatusById = (id, statusId, result) => {
+  connection.execute(
+    "UPDATE question_master SET status_id= ? WHERE id = ?",
+    [ 
+      statusId, id
+    ],
+    (err, res) => {
+      if (err) {
+         
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found QuestionMaster with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+       // console.log("updated questionmaster: ", { id: id, ...questionmaster });
+      result(null, { id: id });
+    }
+  );
+};
+
 QuestionMaster.remove = (id, result) => {
   connection.query("DELETE FROM question_master WHERE id = ?", id, (err, res) => {
     if (err) {

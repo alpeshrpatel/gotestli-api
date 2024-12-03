@@ -374,6 +374,8 @@ module.exports = app => {
     // Update a QuestionSet with id
     router.put("/:id", questionmaster.update);
   
+    // update status of question
+    router.put("/status/question/:id", questionmaster.updateStatus);
     /**
  * @swagger
  * /api/questionmaster/{id}:
