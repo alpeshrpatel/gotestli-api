@@ -219,7 +219,7 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
 
 QuestionFiles.findById = async (user_id, result) => {
   connection.query(
-    `select * from question_files where user_id = ${user_id}`,
+    `select * from question_files where user_id = ${user_id} AND ORDER BY created_date DESC`,
     (err, res) => {
       if (err) {
          
