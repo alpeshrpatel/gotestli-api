@@ -850,7 +850,7 @@ module.exports = app => {
     // Update a QuestionSet with id
     router.put("/:id", questionset.update);
   
-    router.put("/status", questionset.updateStatus);
+    router.put("/update/status", questionset.updateStatus);
     /**
  * @swagger
  * /api/questionset/{id}:
