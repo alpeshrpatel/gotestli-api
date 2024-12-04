@@ -104,7 +104,7 @@ QuestionSet.getQuestionSet = async (question_set_id, result) => {
 
 QuestionSet.getQuestionSetsOfInstructor = (userId, result) => {
   connection.execute(
-    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}' AND ORDER BY created_date DESC`,
+    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo from question_set where created_by = '${userId}' ORDER BY created_date DESC`,
     (err, res) => {
       if (err) {
          
