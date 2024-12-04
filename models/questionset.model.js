@@ -3,28 +3,28 @@ const { logger } = require("../logger");
 
 // constructor
 const QuestionSet = function (questionset) {
-  this.org_id = questionset.org_id;
-  this.title = questionset.title;
-  this.question_set_url = questionset.question_set_url;
-  this.image = questionset.image;
-  this.author = questionset.author;
-  this.short_desc = questionset.short_desc;
-  this.description = questionset.description;
-  this.start_time = questionset.start_time;
-  this.end_time = questionset.end_time;
-  this.start_date = questionset.start_date;
-  this.end_date = questionset.end_date;
-  this.time_duration = questionset.time_duration;
-  this.no_of_question = questionset.no_of_question;
-  this.status_id = questionset.status_id;
-  this.is_demo = questionset.is_demo;
-   this.created_by=questionset.created_by;
-  // this.created_date=created_date;
-   this.modified_by=questionset.modified_by;
-  // this.modified_date=modified_date;
-  this.totalmarks = questionset.totalmarks;
-  this.pass_percentage = questionset.pass_percentage;
-  this.tags = questionset.tags;
+  // this.org_id = questionset.org_id;
+  // this.title = questionset.title;
+  // this.question_set_url = questionset.question_set_url;
+  // this.image = questionset.image;
+  // this.author = questionset.author;
+  // this.short_desc = questionset.short_desc;
+  // this.description = questionset.description;
+  // this.start_time = questionset.start_time;
+  // this.end_time = questionset.end_time;
+  // this.start_date = questionset.start_date;
+  // this.end_date = questionset.end_date;
+  // this.time_duration = questionset.time_duration;
+  // this.no_of_question = questionset.no_of_question;
+  // this.status_id = questionset.status_id;
+  // this.is_demo = questionset.is_demo;
+  //  this.created_by=questionset.created_by;
+  // // this.created_date=created_date;
+  //  this.modified_by=questionset.modified_by;
+  // // this.modified_date=modified_date;
+  // this.totalmarks = questionset.totalmarks;
+  // this.pass_percentage = questionset.pass_percentage;
+  // this.tags = questionset.tags;
 };
 
 QuestionSet.create = (newQuestionSet, result) => {
