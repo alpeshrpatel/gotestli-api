@@ -215,6 +215,32 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
   );
 };
 
+QuestionSet.updateStatusById = (questionset, result) => {
+  connection.execute(
+    "UPDATE question_set SET status_id = ? WHERE id = ?",
+    [
+      questionset.status_id,
+      questionset.id,
+    ],
+    (err, res) => {
+      if (err) {
+         
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found QuestionSet with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+       // console.log("updated questionset: ", { id: id, ...questionset });
+      result(null, { id: id, ...questionset });
+    }
+  );
+};
+
 QuestionSet.remove = (id, result) => {
   connection.query("DELETE FROM question_set WHERE id = ?", id, (err, res) => {
     if (err) {
