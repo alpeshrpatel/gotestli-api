@@ -23,3 +23,25 @@ exports.create = (req, res) => {
         else res.send(data);
       });
 };
+
+//getCommentsOfQuestion
+
+exports.getCommentsOfQuestion =  (req, res) => {
+  console.log(req.params)
+  Comments.getCommentsById(req.params.type,req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found comments for question with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving comments for question with id "+ err + req.params.id
+        });
+      }
+    } else{
+      // cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+};

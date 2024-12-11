@@ -9,6 +9,8 @@ module.exports = app => {
 
     // Create a new Comments
     router.post("/", Comments.create);
+
+    router.get('/type/:type/question/:id',Comments.getCommentsOfQuestion);
   
 
 

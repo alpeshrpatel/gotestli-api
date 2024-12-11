@@ -188,7 +188,7 @@ UserResultDetails.findUserResultDetailsByUserResultId = (
   result
 ) => {
   connection.query(
-    `SELECT * FROM user_test_result_dtl WHERE user_test_result_id = ${userresultid}`,
+    `SELECT * FROM user_test_result_dtl WHERE user_test_result_id = ${userresultid} order by question_set_question_id asc`,
     (err, res) => {
       if (err) {
          

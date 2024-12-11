@@ -457,6 +457,7 @@ UserResult.getDshbDataAnalysis = (userId, result) => {
   const query =
     `SELECT COUNT(*) AS completed_quiz_count, ` +
     `AVG(percentage) AS average_percentage, ` +
+    // `(SELECT COUNT(*) FROM user_test_result WHERE  )`
     `(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ${userId})) AS quiz_completion_percentage  FROM ` +
     `user_test_result WHERE status = 1 and user_id = ${userId};`;
   connection.query(query, (err, res) => {
