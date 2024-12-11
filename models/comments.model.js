@@ -30,5 +30,27 @@ Comments.create = (newComments, result) => {
   );
 };
 
+Comments.getCommentsById = async (type,id, result) => {
+  connection.query(
+    `SELECT * FROM comments WHERE entity_type = ? AND entity_id = ? ORDER BY created_date DESC`,
+    [type, id],
+    (err, res) => {
+      if (err) {
+         
+        result(err, null);
+        return;
+      }
+
+      if (res.length) {
+         // console.log("found user: ", res);
+        result(null, res);
+        return;
+      }
+
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
+
 
 module.exports = Comments;
