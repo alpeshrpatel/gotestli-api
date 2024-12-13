@@ -72,6 +72,23 @@ exports.getUserReview = (req, res) => {
   });
 };
 
+//getAverageratingForDshb
+exports.getAverageratingForDshb = (req, res) => {
+  Reviews.getAverageratingForDshb (req.params.insId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found review.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving review. ",
+        });
+      }
+    } else res.send(data);
+  });
+};
+
 exports.updateReview = (req, res) => {
   const data = {
     satisfaction: req.body.satisfaction,

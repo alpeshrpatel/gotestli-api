@@ -240,6 +240,8 @@ module.exports = app => {
      // get rating of user using userId,questionset_id
      router.get('/qset/:qsetid/user/:userid',Reviews.getUserReview)
 
+     router.get('/average/rating/:insId',Reviews.getAverageratingForDshb)
+
      /**
  * @swagger
  * /api/reviews/update/qset/{qsetid}/user/{userid}:

@@ -123,6 +123,24 @@ Reviews.getUserReview = (qsetid,userid,result) => {
   });
 };
 
+//getAverageratingForDshb
+Reviews.getAverageratingForDshb = (insId,result) => {
+  connection.query(`SELECT AVG(content_quality) AS content_quality, AVG(satisfaction) AS satisfaction, AVG(difficulty) AS difficulty FROM reviews r JOIN question_set qs ON r.questionset_id = qs.id where qs.created_by=${insId}`, (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+    if (res.length) {
+       // console.log("found review: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found QuestionSet with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
 Reviews.updateReview = (qsetid,userid, data, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",

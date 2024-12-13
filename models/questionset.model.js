@@ -104,7 +104,7 @@ QuestionSet.getQuestionSet = async (question_set_id, result) => {
 
 QuestionSet.getQuestionSetsOfInstructor = (userId, result) => {
   connection.execute(
-    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id from question_set where created_by = '${userId}' ORDER BY created_date DESC`,
+    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date from question_set where created_by = '${userId}' ORDER BY created_date DESC`,
     (err, res) => {
       if (err) {
          
@@ -167,7 +167,7 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
 };
 
 QuestionSet.getAll = (result) => {
-  let query = "SELECT * FROM question_set where is_demo = 1";
+  let query = "SELECT * FROM question_set where is_demo = 1 and status_id = 1";
   connection.query(query, (err, res) => {
     if (err) {
        
@@ -179,6 +179,21 @@ QuestionSet.getAll = (result) => {
     result(null, res);
   });
 };
+
+QuestionSet.findAllQSet = (result) => {
+  let query = "SELECT *  FROM question_set where status_id = 1";
+  connection.query(query, (err, res) => {
+    if (err) {
+       
+      result(null, err);
+      return;
+    }
+
+    // logger.info("users: ", res);
+    result(null, res);
+  });
+};
+
 
 QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) => {
   connection.query(

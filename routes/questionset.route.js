@@ -377,6 +377,8 @@ module.exports = app => {
     //Retrieve all question sets
     router.get("/", questionset.findAll)
 
+    router.get('/active/allqset',questionset.findAllQSet)
+
     /**
  * @swagger
  * /api/questionset/category/{id}:

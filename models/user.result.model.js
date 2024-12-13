@@ -476,6 +476,24 @@ UserResult.getDshbDataAnalysis = (userId, result) => {
   });
 };
 
+UserResult.getTotalAttemptCount = (userId, result) => {
+  const query =
+    `SELECT COUNT(*) AS attempt_count from user_test_result u join question_set qs on u.question_set_id = qs.id where qs.created_by = ${userId};`
+  connection.query(query, (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      result(null, res[0]);
+      return;
+    }
+
+    result({ kind: "not_found" }, null);
+  });
+};
+
 UserResult.getAll = (result) => {
   let query = "SELECT * FROM user_test_result";
 
