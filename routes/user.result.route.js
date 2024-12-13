@@ -1,3 +1,4 @@
+const { Router } = require("express");
 const { cacheMiddleware } = require("../middleware/cacheMiddleware");
 
 module.exports = (app) => {
@@ -41,8 +42,11 @@ module.exports = (app) => {
     userresult.getDshbDataAnalysis
   );
 
+  router.get("/instructor/total/attempt/:userId",userresult.getTotalAttemptCount)
+
   // Update a QuestionSet with id
   //  router.put("/calculate/finalresult", userresult.calculate);
+  router.get('/all/attempts',userresult.getAll)
 
   // Update a QuestionSet with id
   router.put("/:id", userresult.update);

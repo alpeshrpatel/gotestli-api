@@ -90,6 +90,38 @@ exports.getDshbDataAnalysis = (req, res) => {
   });
 };
 
+//getTotalAttemptCount
+exports.getTotalAttemptCount = (req, res) => {
+
+  UserResult.getTotalAttemptCount(req.params.userId, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving data.",
+      });
+      else{
+        // cache.set(req.originalUrl, data);
+        res.send(data);
+      }
+  });
+};
+
+
+exports.getAll = (req, res) => {
+
+  UserResult.getAll( (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving data.",
+      });
+      else{
+        // cache.set(req.originalUrl, data);
+        res.send(data);
+      }
+  });
+};
+
 exports.calculate = (req, res) => {
   // Validate request
  

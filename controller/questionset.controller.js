@@ -173,6 +173,24 @@ exports.findAll = (req, res) => {
   });
 };
 
+//findAllQSet
+exports.findAllQSet = (req, res) => {
+  // const title = req.query.title;
+
+  QuestionSet.findAllQSet(async (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving questionsets.",
+      });
+    else {
+      
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    }
+  });
+};
+
 // Find a single QuestionSet by Id
 exports.findOne = (req, res) => {
   QuestionSet.findById(req.params.id, (err, data) => {
