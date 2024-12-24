@@ -274,6 +274,9 @@ module.exports = app => {
 
     // Retrieve a paragraph of question
     router.get("/paragraph/:id",cacheMiddleware, questionmaster.findParagraph)
+
+    //get question,option,paragraph of question_id
+    router.get("/detailded/question/:userId",questionmaster.findDetailedQuestion)
     
    /**
  * @swagger

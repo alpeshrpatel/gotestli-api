@@ -11,31 +11,35 @@ exports.create = (req, res) => {
   }
 
   // Create a QuestionMaster
+  // const questionmaster = new QuestionMaster({
+  //   org_id: req.body.org_id,
+  //   question: req.body.question,
+  //   description: req.body.description,
+  //   explanation: req.body.explanation, 
+  //   paragraph_id:req.body.paragraph_id,
+  //   question_type_id: req.body.question_type_id,
+  //   status_id: req.body.status_id,
+  //   complexity: req.body.complexity,
+  //   marks: req.body.marks,
+  //   is_negative: req.body.is_negative,
+  //   negative_marks: req.body.negative_marks,
+  // });
   const questionmaster = new QuestionMaster({
-    id:req.body.id,
-    org_id:req.body.org_id,
-    title:req.body.title,
-    question_set_url:req.body.question_set_url,
-    image:req.body.image,
-    author:req.body.author,
-    short_desc:req.body.short_desc,
-    description:req.body.description,
-    start_time:req.body.start_time,
-    end_time:req.body.end_time,
-    start_date:req.body.start_date,
-    end_date:req.body.end_date,
-    time_duration:req.body.time_duration,
-    no_of_question:req.body.no_of_question,
-    status_id:req.body.status_id,
-    is_demo:req.body.is_demo,
-    // created_by:req.body.created_by,
-    // created_date:req.body.created_date,
-    // modified_by:req.body.modified_by,
-    // modified_date:req.body.modified_date
+    org_id: req.body.org_id || 0,
+    question: req.body.question || null,
+    description: req.body.description || null,
+    explanation: req.body.explanation || null,
+    paragraph_id: req.body.paragraph_id || null,
+    question_type_id: req.body.question_type_id || null,
+    status_id: req.body.status_id || 1,
+    complexity: req.body.complexity || null,
+    marks: req.body.marks || 0,
+    is_negative: req.body.is_negative || 0,
+    negative_marks: req.body.negative_marks || 0,
   });
-
+  
   // Save QuestionMaster in the database
-  QuestionMaster.create(questionmaster, (err, data) => {
+  QuestionMaster.create(questionmaster,req.body.userId, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -99,6 +103,27 @@ exports.findParagraph = (req, res) => {
       }
     } else{
       cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+};
+
+//findDetailedQuestion
+exports.findDetailedQuestion = (req, res) => {
+  
+  QuestionMaster.findDetailedQuestion(req.params.userId, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found question with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving question with id " + req.params.id
+        });
+      }
+    } else{
+      // cache.set(req.originalUrl, data);
       res.send(data);
     };
   });

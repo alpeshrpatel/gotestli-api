@@ -99,6 +99,8 @@ require("./routes/reviews.route.js")(app);
 require("./routes/wishlist.route.js")(app);
 require("./routes/appfeedback.route.js")(app);
 require("./routes/comments.route.js")(app);
+require("./routes/whitelistedquestionset.route.js")(app);
+require("./routes/questionparagraph.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 

@@ -1,5 +1,6 @@
 const connection = require("../config/mysql.db.config");
 const logger = require("../logger");
+const generateDateTime = require("../utils/util");
 
 //constructor
 
@@ -16,7 +17,7 @@ function Options(options) {
 
 Options.findById = (id, result) => {
   connection.query(
-    `SELECT question_option AS options FROM question_options WHERE question_id = ${id}`,
+    `SELECT question_id,question_option AS options,is_correct_answer AS correctAnswer FROM question_options WHERE question_id = ${id}`,
     (err, res) => {
       if (err) {
          
@@ -53,7 +54,7 @@ Options.getAll = (result) => {
 
 Options.remove = (id, result) => {
   connection.execute(
-    "DELETE FROM question_options WHERE id = ?",
+    "DELETE FROM question_options WHERE question_id = ?",
     id,
     (err, res) => {
       if (err) {
@@ -85,6 +86,57 @@ Options.removeAll = (result) => {
      // console.log(`deleted ${res.affectedRows} options`);
     result(null, res);
   });
+};
+const date = generateDateTime()
+Options.create = (qid,options,correct_option,userId, result) => {
+  const query = `INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
+    VALUES ?`;
+    const question_options = options.split(":")
+    let correct_answer
+    correct_option?.includes(':') ? ( correct_answer = correct_option?.split(":")) : correct_answer = null
+    const optionsArr = question_options.map((item) => {
+      if(correct_answer){
+        return(
+          [
+            qid,
+            item,
+            (correct_answer.some((answer) => answer == item)) ? 1 : 0,
+            userId,
+            date,
+            userId,  
+            date
+          ]
+        )
+        
+      }else{
+      return ( [
+          qid,
+          item,
+          correct_option == item ? 1 : 0,
+          userId,
+          date,
+          userId,  
+          date 
+        ])
+      }
+    })
+  connection.query(
+    query,
+    [optionsArr],
+    (err, res) => {
+      if (err) {
+         
+        result(err, null);
+        return;
+      }
+
+       // console.log("created questionset: ", {
+      //   id: res.insertId,
+      //   ...newQuestionSet,
+      // });
+      result(null, { id: res.insertId});
+    }
+  );
 };
 
 module.exports = Options;
