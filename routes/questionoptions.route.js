@@ -40,7 +40,7 @@ module.exports = app => {
  */
 
     // Retrieve a single options with id
-    router.get("/:id",cacheMiddleware, options.findOne);
+    router.get("/:id", options.findOne);
 
     /**
  * @swagger
@@ -178,6 +178,8 @@ module.exports = app => {
 
     // Delete all optionss
     router.delete("/", options.deleteAll);
+
+    router.post("/",options.create)
  
     app.use('/api/options', router);
   };

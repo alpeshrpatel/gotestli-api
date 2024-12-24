@@ -67,3 +67,14 @@ exports.deleteAll = (req, res) => {
     else res.send({ message: `All Options were deleted successfully!` });
   });
 };
+
+exports.create = async (req, res) => {
+  Options.create(req.body.qid,req.body.options,req.body.correct_option,req.body.userId, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while inserting the options.",
+      });
+    else res.send(data);
+  });
+};
