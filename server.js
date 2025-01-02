@@ -54,7 +54,9 @@ app.use((req, res, next) => {
     req.url.startsWith("/api/reviews/rating/qset") ||
     req.url.startsWith("/api/questionset/search/result") || 
     req.url.startsWith("/api/question/files/insert/questions") || 
-    req.url.startsWith("/api/app/feedback")
+    req.url.startsWith("/api/app/feedback") || 
+    req.url.startsWith("/api/sendemail/send/otp")  ||
+    req.url.startsWith("/api/forgetpwd/verify/otp") 
   ) {
     return next();
   }
@@ -101,6 +103,7 @@ require("./routes/appfeedback.route.js")(app);
 require("./routes/comments.route.js")(app);
 require("./routes/whitelistedquestionset.route.js")(app);
 require("./routes/questionparagraph.route.js")(app);
+require("./routes/forgetpasswordotp.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
