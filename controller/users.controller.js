@@ -94,7 +94,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findUser = async (req, res) => {
-  Users.findUser(req.params.uid, (err, data) => {
+  Users.findUser(req.params.uid, (err, data) => {  
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

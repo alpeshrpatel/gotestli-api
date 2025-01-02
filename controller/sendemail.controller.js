@@ -1,6 +1,9 @@
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const sendMail = require("../models/sendemail.model");
+const connection = require("../config/mysql.db.config");
+const ForgotPasswordOtp = require("../models/forgotpasswordotp.model");
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -86,7 +89,7 @@ exports.sendReminder = async (req, res) => {
 
 exports.updateReminderStatus = async (req, res) => {
   const id = req.body.studentId;
-  
+
   sendMail.updateReminderStatus(id, (err, data) => {
     if (err) {
       res.status(500).send({
@@ -185,9 +188,9 @@ Team Gotestli</p>
   );
 };
 
-exports.getInTouchSubscribedMail = async (req,res) => {
-  const {email} = req.body;
-  
+exports.getInTouchSubscribedMail = async (req, res) => {
+  const { email } = req.body;
+
   const mailOptionsForGetInTouch = {
     from: {
       name: "Gotestli",
@@ -248,12 +251,10 @@ exports.getInTouchSubscribedMail = async (req,res) => {
       }
     }
   );
+};
 
-}
-
-exports.sendUpdateToFollowers = async (req,res) => {
-  const {username,email,instructor,title} = req.body;
-  
+exports.sendUpdateToFollowers = async (req, res) => {
+  const { username, email, instructor, title } = req.body;
 
   const mailOptionsForSendUpdate = {
     from: {
@@ -262,7 +263,7 @@ exports.sendUpdateToFollowers = async (req,res) => {
     }, // sender address
     to: email, // recipient email
     subject: `📢 New Quiz Alert from ${instructor}! 🚀 Check it Out Now!`,
-  text: `
+    text: `
 Hi ${username},
 
 Great news! ${instructor} just released a brand new quiz: "${title}" on Gotestli, and you're invited to be one of the first to check it out. 🎉
@@ -277,7 +278,7 @@ Don't miss out on the fun and the learning. Dive into the latest quiz now and se
 Happy learning,
 Team Gotestli
   `,
-  html: `
+    html: `
 <p>Hi <b>${username}</b>,</p>
 
 <p>Great news! <b>${instructor}</b> just released a brand new quiz: "<b>${title}</b>" on Gotestli, and you're invited to be one of the first to check it out. 🎉</p>
@@ -313,4 +314,67 @@ Team Gotestli</p>
       }
     }
   );
-}
+};
+
+exports.sendOtpMail = async (req, res) => {
+  const { email } = req.body;
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  const mailOptionsForSendOtp = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: "🔐 Your Verification Code",
+    text: `
+        Hi User,
+
+        Thank you for signing up! To complete your verification, please use the One-Time Password (OTP) below:
+
+        🔑 Your OTP: ${otp}
+
+        Please enter this code on the verification page. The OTP is valid for the next 10 minutes, so make sure to complete your verification promptly.
+
+        If you did not request this, please ignore this email. For any assistance, feel free to contact our support team.
+
+        Best regards,
+        Team Gotestli
+      `,
+    html: `
+        <p>Hi <b>User</b>,</p>
+        <p>Thank you for signing up! To complete your verification, please use the One-Time Password (OTP) below:</p>
+        <h3>🔑 Your OTP: <b>${otp}</b></h3>
+        <p>Please enter this code on the verification page. The OTP is valid for the next <b>10 minutes</b>, so make sure to complete your verification promptly.</p>
+        <p>If you did not request this, please ignore this email. For any assistance, feel free to contact our support team.</p>
+        <p>Best regards,<br/><b>Team Gotestli</b></p>
+      `,
+  };
+  const saltRounds = 10;
+  const hashedOtp = await bcrypt.hash(otp.toString(), saltRounds);
+  ForgotPasswordOtp.insertGeneratedOtp(email,hashedOtp, (err, data) => {
+    console.log(err);
+    if (!err) {
+      sendMail.sendNotifyMail(
+        transporter,
+        mailOptionsForSendOtp,
+        (err, data) => {
+          if (err) {
+            res.status(500).send({
+              message:
+                err.message || "Some error occurred while sending the email.",
+            });
+          } else {
+            res.send({
+              message: "Email sent successfully!",
+              info: data,
+            });
+          }
+        }
+      );
+    } else {
+      res.status(500).send({
+        message: "OTP Save Fail!",
+      });
+    }
+  });
+};

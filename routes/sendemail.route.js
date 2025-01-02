@@ -17,6 +17,9 @@ module.exports = app => {
      //send mail whenever new question set published by instructor
      router.post('/followers/update', sendMail.sendUpdateToFollowers);
 
+     //send otp verification mail
+     router.post('/send/otp',sendMail.sendOtpMail)
+
     app.use('/api/sendemail',router)
 
 };
