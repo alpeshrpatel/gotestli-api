@@ -120,7 +120,7 @@ exports.updateUser = (req, res) => {
     });
   }
 
-  
+   
 
   Users.updateUser(req.params.userid, req.body, (err, data) => {
     if (err) {
@@ -133,7 +133,7 @@ exports.updateUser = (req, res) => {
           message: "Error updating users with id " + req.params.userid,
         });
       }
-    } else res.send(data);
+    } else res.send(data); 
   });
 };
 
