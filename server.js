@@ -23,7 +23,7 @@ dotenv.config({ path: `.env.${env}` });
 // Define the CORS options
 const corsOptions = {
   credentials: true,
-  origin: [process.env.BACKEND_URL], // Whitelist the domains you want to allow
+  origin: [process.env.BACKEND_URL], 
 };
 
 const app = express();

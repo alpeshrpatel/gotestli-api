@@ -13,7 +13,7 @@ function Options(options) {
   this.created_date = options.created_date;
   this.modified_by = options.modified_by;
   this.modified_date = options.modified_date;
-}
+} 
 
 Options.findById = (id, result) => {
   connection.query(
