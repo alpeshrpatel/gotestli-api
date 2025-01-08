@@ -40,11 +40,15 @@ exports.create = (req, res) => {
   
   // Save QuestionMaster in the database
   QuestionMaster.create(questionmaster,req.body.userId, (err, data) => {
-    if (err)
+    if (err){
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.status(409).json({ error: 'Duplicate question detected' });
+      }
       res.status(500).send({
         message:
           err.message || "Some error occurred while creating the QuestionMaster."
       });
+    }
     else res.send(data);
   });
 };
