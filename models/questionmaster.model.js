@@ -22,7 +22,25 @@ const QuestionMaster = function (questionmaster) {
 };
 
 QuestionMaster.create = (newQuestionMaster, userId, result) => {
-  const query = `INSERT INTO question_master (org_id, question, description,explanation,paragraph_id,question_type_id,status_id,complexity,marks,is_negative,negative_marks, created_by, modified_by) VALUES (0, ?,?, ?, ?, ?,?,?,?,?,?,?,?)`;
+  const query = `
+  INSERT INTO question_master (
+    org_id, question, description, explanation, paragraph_id, question_type_id, 
+    status_id, complexity, marks, is_negative, negative_marks, created_by, modified_by
+  )
+  VALUES (0, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON DUPLICATE KEY UPDATE
+    explanation = VALUES(explanation),
+    paragraph_id = VALUES(paragraph_id),
+    question_type_id = VALUES(question_type_id),
+    status_id = VALUES(status_id),
+    complexity = VALUES(complexity),
+    marks = VALUES(marks),
+    is_negative = VALUES(is_negative),
+    negative_marks = VALUES(negative_marks),
+    modified_by = VALUES(modified_by);
+`;
+
+  // const query = `INSERT INTO question_master (org_id, question, description,explanation,paragraph_id,question_type_id,status_id,complexity,marks,is_negative,negative_marks, created_by, modified_by) VALUES (0, ?,?, ?, ?, ?,?,?,?,?,?,?,?)`;
   connection.execute(
     query,
     [
