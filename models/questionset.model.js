@@ -28,9 +28,40 @@ const QuestionSet = function (questionset) {
 };
 
 QuestionSet.create = (newQuestionSet, result) => {
+  const sqlQuery = `
+    INSERT INTO question_set (
+      org_id, title, question_set_url, image, author, short_desc, description,
+      start_time, end_time, start_date, end_date, time_duration, no_of_question,
+      status_id, is_demo, created_by, modified_by, totalmarks, pass_percentage, tags
+    ) VALUES (
+       ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+    )
+  `;
+
+  const values = [
+    newQuestionSet.org_id,
+    newQuestionSet.title,
+    newQuestionSet.question_set_url,
+    newQuestionSet.image,
+    newQuestionSet.author,
+    newQuestionSet.short_desc,
+    newQuestionSet.description,
+    newQuestionSet.start_time,
+    newQuestionSet.end_time,
+    newQuestionSet.start_date,
+    newQuestionSet.end_date,
+    newQuestionSet.time_duration,
+    newQuestionSet.no_of_question,
+    newQuestionSet.status_id,
+    newQuestionSet.is_demo,
+    newQuestionSet.created_by,
+    newQuestionSet.modified_by,
+    newQuestionSet.totalmarks,
+    newQuestionSet.pass_percentage,
+    newQuestionSet.tags,
+  ];
   connection.query(
-    "INSERT INTO question_set SET ?",
-    newQuestionSet,
+    sqlQuery, values,
     (err, res) => {
       if (err) {
          
