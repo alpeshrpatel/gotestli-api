@@ -15,11 +15,36 @@ exports.create = (req, res) => {
   }
 
   // Create a QuestionSet
-  const questionset = new QuestionSet({
-    id: req.body.id,
-    org_id: req.body.org_id,
+  // const questionset = new QuestionSet({
+  //   id: req.body.id,
+  //   org_id: req.body.org_id,
+  //   title: req.body.title,
+  //   question_set_url: req.body.question_set_url,
+  //   image: req.body.image,
+  //   author: req.body.author,
+  //   short_desc: req.body.short_desc,
+  //   description: req.body.description,
+  //   start_time: req.body.start_time,
+  //   end_time: req.body.end_time,
+  //   start_date: req.body.start_date,
+  //   end_date: req.body.end_date,
+  //   time_duration: req.body.time_duration,
+  //   no_of_question: req.body.no_of_question,
+  //   status_id: req.body.status_id,
+  //   is_demo: req.body.is_demo,
+  //   created_by: req.body.created_by,
+  //   // created_date:req.body.created_date,
+  //   modified_by: req.body.modified_by,
+  //   // modified_date:req.body.modified_date
+  //   totalmarks: req.body.totalmarks,
+  //   pass_percentage: req.body.pass_percentage,
+  //   tags: req.body.tags,
+  // });
+  console.log(req.body)
+  const questionset = {
+    org_id: 10,
     title: req.body.title,
-    question_set_url: req.body.question_set_url,
+    question_set_url: null,
     image: req.body.image,
     author: req.body.author,
     short_desc: req.body.short_desc,
@@ -33,13 +58,11 @@ exports.create = (req, res) => {
     status_id: req.body.status_id,
     is_demo: req.body.is_demo,
     created_by: req.body.created_by,
-    // created_date:req.body.created_date,
     modified_by: req.body.modified_by,
-    // modified_date:req.body.modified_date
     totalmarks: req.body.totalmarks,
     pass_percentage: req.body.pass_percentage,
     tags: req.body.tags,
-  });
+  };
 
   // Save QuestionSet in the database
   QuestionSet.create(questionset, (err, data) => {

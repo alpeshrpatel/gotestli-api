@@ -69,7 +69,7 @@ exports.deleteAll = (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  Options.create(req.body.qid,req.body.options,req.body.correct_option,req.body.userId, (err, data) => {
+  Options.create(req.body.qid,req.body.options,req.body.correctAnswer,req.body.userId, (err, data) => {
     if (err)
       res.status(500).send({
         message:
