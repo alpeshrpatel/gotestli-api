@@ -157,6 +157,8 @@ module.exports = app => {
      //rating calculation of one questionset
      router.get('/rating/qset/:id',cacheMiddleware,Reviews.getRating);
 
+     router.get('/get/rating/ratingmeter/:id',Reviews.getRatingMeterData)
+
      /**
  * @swagger
  * /api/reviews/qset/{qsetid}/user/{userid}:

@@ -103,7 +103,25 @@ FROM (
     }
   );
 };
+//getRatingMeterData
+Reviews.getRatingMeterData = (qsetid,result) => {
+  connection.query(`SELECT (difficulty + content_quality + satisfaction) / 3 AS avgRating FROM reviews  where questionset_id= ${qsetid} `, (err, res) => {
+    if (err) {
+       
+      result(err, null);
+      return;
+    }
 
+    if (res.length) {
+       // console.log("found review: ", res[0]);
+      result(null, res);
+      return;
+    }
+
+    // not found QuestionSet with the id
+    result({ kind: "not_found" }, null);
+  });
+};
 Reviews.getUserReview = (qsetid,userid,result) => {
   connection.query(`SELECT * FROM reviews where questionset_id=${qsetid} and created_by=${userid}`, (err, res) => {
     if (err) {

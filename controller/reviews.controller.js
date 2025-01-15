@@ -56,6 +56,28 @@ exports.getRating = (req, res) => {
   });
 };
 
+exports.getRatingMeterData = (req, res) => {
+  Reviews.getRatingMeterData(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found rating with id ${req.params.id}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving rating with id " + req.params.id,
+        });
+      }
+    } else {
+      const key = req.originalUrl;
+     
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    } 
+  });
+};
+
+
 exports.getUserReview = (req, res) => {
   Reviews.getUserReview(req.params.qsetid, req.params.userid, (err, data) => {
     if (err) {
