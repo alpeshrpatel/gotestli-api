@@ -56,7 +56,8 @@ app.use((req, res, next) => {
     req.url.startsWith("/api/question/files/insert/questions") || 
     req.url.startsWith("/api/app/feedback") || 
     req.url.startsWith("/api/sendemail/send/otp")  ||
-    req.url.startsWith("/api/forgetpwd/verify/otp") 
+    req.url.startsWith("/api/forgetpwd/verify/otp") ||
+    req.url.startsWith("/api/reviews/get/rating/ratingmeter")
   ) {
     return next();
   }
