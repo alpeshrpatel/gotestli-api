@@ -52,7 +52,7 @@ exports.delete = (req, res) => {
           message: "Could not delete option with id " + req.params.id
         });
       }
-    } else res.send({ message: `option was deleted successfully!` });
+    } else res.send({data:data, message: `option was deleted successfully!` });
   });
 };
 
