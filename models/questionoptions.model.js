@@ -53,10 +53,12 @@ Options.getAll = (result) => {
 };
 
 Options.remove = (id, result) => {
-  connection.execute(
-    "DELETE FROM question_options WHERE question_id = ?",
+  const query = `DELETE FROM question_options WHERE question_id = ?`
+  connection.query(
+   query,
     id,
     (err, res) => {
+      
       if (err) {
          
         result(null, err);
@@ -70,6 +72,7 @@ Options.remove = (id, result) => {
       }
 
        // console.log("deleted Options with id: ", id);
+      //  console.log('delete res:', res)
       result(null, res);
     }
   );
