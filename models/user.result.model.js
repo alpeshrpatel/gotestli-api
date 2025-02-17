@@ -391,6 +391,58 @@ UserResult.findByUserId = (user_id, result) => {
   });
 };
 
+UserResult.findByUserIdForTable = (user_id,startPoint,endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
+  connection.query(
+    `SELECT 
+   utr.id AS user_test_result_id,
+    utr.*, 
+    qs.*, 
+    u.first_name, 
+    u.last_name 
+  FROM 
+    user_test_result utr
+  JOIN 
+    question_set qs 
+    ON utr.question_set_id = qs.id
+  JOIN 
+    users u 
+    ON utr.user_id = u.id
+  WHERE 
+    utr.user_id = ?
+  ORDER BY 
+    utr.created_date DESC LIMIT ? OFFSET ?;`,[user_id,limit,offset],
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      connection.query(
+        "SELECT COUNT(*) as total FROM user_test_result WHERE user_id = ?",
+        [user_id],
+        (countErr, countRes) => {
+            if (countErr) {
+                result(countErr, null);
+                return;
+            }
+
+            const totalRecords = countRes[0]?.total || 0;
+            result(null, {  res, totalRecords });
+        }
+    );
+
+      // not found UserResultDetails with the id
+      // result({ kind: "not_found" }, null);
+    }
+  );
+};
+
 UserResult.findQuestionSetByUserId = (userid, questionsetid, result) => {
   connection.query(
     `SELECT id FROM user_test_result WHERE user_id = ${userid} and question_set_id = ${questionsetid} order by created_date desc`,
@@ -432,22 +484,37 @@ UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
   );
 };
 
-UserResult.getStudentsList = (questionSetId, result) => {
+UserResult.getStudentsList = (questionSetId,startPoint,endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
   connection.query(
-    `SELECT * from user_test_result where question_set_id = ${questionSetId} order by created_date desc`,
+    `SELECT * from user_test_result where question_set_id = ? order by created_date desc LIMIT ? OFFSET ?;`,[questionSetId,limit,offset],
     (err, res) => {
       if (err) {
         result(err, null);
         return;
       }
 
-      if (res.length) {
-        result(null, res);
-        return;
-      }
+      connection.query(
+        "SELECT COUNT(*) as total FROM user_test_result WHERE question_set_id = ?",
+        [questionSetId],
+        (countErr, countRes) => {
+            if (countErr) {
+                result(countErr, null);
+                return;
+            }
+
+            const totalRecords = countRes[0]?.total || 0;
+            result(null, {  res, totalRecords });
+        }
+    );
 
       // not found UserResultDetails with the id
-      result({ kind: "not_found" }, null);
+      // result({ kind: "not_found" }, null);
     }
   );
 };

@@ -15,6 +15,7 @@ const path = require("path");
 const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const dotenv = require('dotenv');
+const Stripe = require("stripe");
 
 const env = process.env.NODE_ENV || 'development';
 dotenv.config({ path: `.env.${env}` });
@@ -57,7 +58,12 @@ app.use((req, res, next) => {
     req.url.startsWith("/api/app/feedback") || 
     req.url.startsWith("/api/sendemail/send/otp")  ||
     req.url.startsWith("/api/forgetpwd/verify/otp") ||
-    req.url.startsWith("/api/reviews/get/rating/ratingmeter")
+    req.url.startsWith("/api/reviews/get/rating/ratingmeter") || 
+    req.url.startsWith("/api/create-paypal-order") || 
+    req.url.startsWith("/api/capture-paypal-order") ||
+    req.url.startsWith("/api/sendemail/getintouch/heerrealtor") ||
+    req.url.startsWith("/create-payment-intent")
+
   ) {
     return next();
   }
@@ -220,6 +226,66 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
   } catch (error) {
     
     res.status(500).send({ message: "File upload failed!", error });
+  }
+});
+const paypal = require('@paypal/checkout-server-sdk');
+const environment = new paypal.core.SandboxEnvironment(
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_CLIENT_SECRET
+);
+const client = new paypal.core.PayPalHttpClient(environment);
+
+// Create PayPal order
+app.post('/api/create-paypal-order', async (req, res) => {
+  try {
+    const request = new paypal.orders.OrdersCreateRequest();
+    request.prefer("return=representation");
+    request.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [{
+        amount: {
+          currency_code: 'USD',
+          value: req.body.amount
+        }
+      }]
+    });
+
+    const order = await client.execute(request);
+    res.json({ id: order.result.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Capture PayPal order (complete the transaction)
+app.post('/api/capture-paypal-order', async (req, res) => {
+  try {
+    const request = new paypal.orders.OrdersCaptureRequest(req.body.orderId);
+    request.prefer("return=representation");
+    
+    const capture = await client.execute(request);
+    
+    // Handle successful payment
+    const captureData = capture.result;
+    res.json(captureData);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+const stripe = new Stripe("sk_test_51QoP1kCc5nEXg12i23DtMBNpLgHEHT4tTIGt6At1JA1KmdnNVdidYLL7SqSfZfwsvFUMPjPbUk4Q3B2TV7oqt2ZH00mLQDT77K");
+app.post("/create-payment-intent", async (req, res) => {
+  try {
+      const { amount, currency } = req.body;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+          amount,
+          currency,
+          payment_method_types: ["card"],
+      });
+
+      res.send({ clientSecret: paymentIntent.client_secret });
+  } catch (error) {
+      res.status(500).send({ error: error.message });
   }
 });
 

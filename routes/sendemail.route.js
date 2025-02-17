@@ -20,6 +20,9 @@ module.exports = app => {
      //send otp verification mail
      router.post('/send/otp',sendMail.sendOtpMail)
 
+     //send mail for get in touch subscription
+     router.post("/getintouch/heerrealtor", sendMail.getInTouchForHeerRealtor);
+
     app.use('/api/sendemail',router)
 
 };

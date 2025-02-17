@@ -112,62 +112,162 @@ QuestionMaster.findParagraph = (id, result) => {
 };
 
 //findDetailedQuestion
-QuestionMaster.findDetailedQuestion = (id, result) => {
-  connection.execute(
+// QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
+//     const start = parseInt(startPoint) || 1;
+//     const end = parseInt(endPoint) || 10;
+//     const limit = end - start + 1;
+
+//   connection.execute(
+//     `SELECT
+//     qm.id AS id,
+//     qm.question AS question,
+//     qm.description AS description,
+//     qm.explanation AS explanation,
+//     qm.paragraph_id AS paragraph_id,
+//     qm.question_type_id AS question_type_id,
+//     qm.status_id AS status_id,
+//     qm.complexity AS complexity,
+//     qm.marks AS marks,
+//     qm.negative_marks AS negative_marks,
+//     qm.is_negative AS is_negative,
+//     qp.paragraph AS paragraph
+// FROM
+//     question_master qm
+// JOIN
+//     question_paragraph qp
+// ON
+//     qm.paragraph_id = qp.id
+// WHERE
+//     qm.created_by = ${id} LIMIT ${limit} OFFSET ${start-1};
+// `,
+//   async (err, res) => {
+//       if (err) {
+//         result(err, null);
+//         return;
+//       }
+//       const [countResult] = await connection.execute("SELECT COUNT(*) as total FROM your_table_name");
+//       const totalRecords = countResult[0].total;
+//       if (res.length) {
+//         result(null,  res.json({
+//           data: res,
+//           totalRecords
+//       }));
+//         return;
+//       }
+
+//       result({ kind: "not_found" }, null);
+//     }
+//   );
+// };
+QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
+  
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  
+  connection.query(
     `SELECT 
-    qm.id AS id,
-    qm.question AS question,
-    qm.description AS description,
-    qm.explanation AS explanation,
-    qm.paragraph_id AS paragraph_id,
-    qm.question_type_id AS question_type_id,
-    qm.status_id AS status_id,
-    qm.complexity AS complexity,
-    qm.marks AS marks,
-    qm.negative_marks AS negative_marks,
-    qm.is_negative AS is_negative,
-    qp.paragraph AS paragraph
-FROM 
-    question_master qm
-JOIN 
-    question_paragraph qp 
-ON 
-    qm.paragraph_id = qp.id
-WHERE 
-    qm.created_by = ${id};
-`,
-    (err, res) => {
+          qm.id AS id,
+          qm.question AS question,
+          qm.description AS description,
+          qm.explanation AS explanation,
+          qm.paragraph_id AS paragraph_id,
+          qm.question_type_id AS question_type_id,
+          qm.status_id AS status_id,
+          qm.complexity AS complexity,
+          qm.marks AS marks,
+          qm.negative_marks AS negative_marks,
+          qm.is_negative AS is_negative,
+          qp.paragraph AS paragraph
+      FROM 
+          question_master qm
+      JOIN 
+          question_paragraph qp 
+      ON 
+          qm.paragraph_id = qp.id
+      WHERE 
+          qm.created_by = ? 
+      LIMIT ? OFFSET ?;`,
+    [id, limit, offset],
+    async (err, res) => {
       if (err) {
         result(err, null);
         return;
       }
 
-      if (res.length) {
-        result(null, res);
-        return;
-      }
+      try {
+        
+        // const [countResult] = await connection.execute(
+        //   "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
+        //   [id]
+        // );
+        // const totalRecords = countResult[0].total;
+        connection.query(
+          "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
+          [id],
+          (countErr, countRes) => {
+              if (countErr) {
+                  result(countErr, null);
+                  return;
+              }
 
-      result({ kind: "not_found" }, null);
+              const totalRecords = countRes[0]?.total || 0;
+              result(null, {  res, totalRecords });
+          }
+      );
+
+       
+        // result(null, {
+        //   data: res,
+        //   totalRecords,
+        // });
+      } catch (error) {
+        result(error, null);
+      }
     }
   );
 };
 
-QuestionMaster.findAll = (userid, result) => {
-  let query = `SELECT * FROM question_master where created_by = ${userid}`;
+QuestionMaster.findAll = (userid,startPoint,endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  // let query = `SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`;
   //  // console.log("tags : " + tags);
   // tags = req.params.id;
   // if (tags) {
   //   query += ` WHERE tags LIKE '%${tags}%'`;
   // }
   // console.log("findAll : " + query)
-  connection.execute(query, (err, res) => {
+  connection.query(`SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`,[userid,limit,offset], (err, res) => {
     if (err) {
       result(null, err);
       return;
     }
 
     //  // console.log("question_master: ", res);
-    result(null, res);
+    // result(null, res);
+    connection.query(
+      "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
+      [userid],
+      (countErr, countRes) => {
+          if (countErr) {
+              result(countErr, null);
+              return;
+          }
+
+          const totalRecords = countRes[0]?.total || 0;
+          result(null, {  res, totalRecords });
+      }
+  );
   });
 };
 
@@ -190,7 +290,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
       questionmaster.marks,
       questionmaster.is_negative,
       questionmaster.negative_marks,
-      id, 
+      id,
     ],
     (err, res) => {
       if (err) {

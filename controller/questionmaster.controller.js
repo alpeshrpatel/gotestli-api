@@ -57,7 +57,8 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   // const title = req.query.title;
   const userid = req.params.userId
-  QuestionMaster.findAll(userid, (err, data) => {
+  const {start,end} = req.query
+  QuestionMaster.findAll(userid,start,end, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -114,16 +115,17 @@ exports.findParagraph = (req, res) => {
 
 //findDetailedQuestion
 exports.findDetailedQuestion = (req, res) => {
-  
-  QuestionMaster.findDetailedQuestion(req.params.userId, (err, data) => {
+  const { userId } = req.params; 
+    const { start, end } = req.query; 
+  QuestionMaster.findDetailedQuestion(userId,start,end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
-          message: `Not found question with id ${req.params.id}.`
+          message: `Not found question with id ${userId}.`
         });
       } else {
         res.status(500).send({
-          message: "Error retrieving question with id " + req.params.id
+          message: "Error retrieving question with id " + err + userId
         });
       }
     } else{

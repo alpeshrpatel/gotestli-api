@@ -5,8 +5,7 @@ const WishList = function (wishList) {
   this.questionset_id = wishList.questionset_id;
   this.user_id = wishList.user_id;
   this.created_by = wishList.created_by;
-  this.modified_by = wishList.modified_by
-
+  this.modified_by = wishList.modified_by;
 };
 
 WishList.create = (newWishList, result) => {
@@ -14,15 +13,19 @@ WishList.create = (newWishList, result) => {
     "INSERT INTO wishlist (questionset_id,user_id,created_by,modified_by) values (?,?,?,?); ";
   connection.query(
     query,
-    [newWishList.questionset_id,newWishList.user_id,newWishList.user_id,newWishList.user_id],
+    [
+      newWishList.questionset_id,
+      newWishList.user_id,
+      newWishList.user_id,
+      newWishList.user_id,
+    ],
     (err, res) => {
       if (err) {
-         
         result(err, null);
         return;
       }
 
-       // console.log("created WishList: ", {
+      // console.log("created WishList: ", {
       //   id: res.insertId,
       //   ...newWishList,
       // });
@@ -31,29 +34,41 @@ WishList.create = (newWishList, result) => {
   );
 };
 
+WishList.findById = async (id, startPoint, endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
 
-WishList.findById = async (id, result) => {
   connection.query(
     `SELECT qs.*
 FROM wishlist w
 JOIN question_set qs ON w.questionset_id = qs.id
-WHERE w.user_id = ${id} order by w.created_date desc;
+WHERE w.user_id = ? order by w.created_date desc LIMIT ? OFFSET ?;
 `,
+    [id, limit, offset],
     (err, res) => {
       if (err) {
         result(err, null);
         return;
       }
 
-      if (res.length) {
-         // console.log("found user: ", res);
-        result(null, res);
-        return;
-      }
+      connection.query(
+        "SELECT COUNT(*) as total FROM wishlist WHERE user_id = ?",
+        [id],
+        (countErr, countRes) => {
+          if (countErr) {
+            result(countErr, null);
+            return;
+          }
+          const totalRecords = countRes[0]?.total || 0;
+          result(null, { res, totalRecords });
+        }
+      );
 
       // not found user with the id
-      result({ kind: "not_found" }, null);
+      // result({ kind: "not_found" }, null);
     }
   );
 };
@@ -64,13 +79,11 @@ WishList.getQsetId = async (id, result) => {
 `,
     (err, res) => {
       if (err) {
-         
         result(err, null);
         return;
       }
 
       if (res.length) {
-       
         result(null, res);
         return;
       }
@@ -82,21 +95,20 @@ WishList.getQsetId = async (id, result) => {
 };
 
 WishList.remove = (qsetid, id, result) => {
-     // console.log("Attempting to delete with:", { questionset_id: qsetid, user_id: id });
-    connection.query(
-      `DELETE FROM wishlist WHERE questionset_id = ? AND user_id = ?`,
-      [qsetid, id],
-      (err, res) => {
-        if (err) {
-           
-          result(null, err);
-          return;
-        }
-  
-         // console.log(`deleted ${res.affectedRows} wishlist items`);
-        result(null, res);
+  // console.log("Attempting to delete with:", { questionset_id: qsetid, user_id: id });
+  connection.query(
+    `DELETE FROM wishlist WHERE questionset_id = ? AND user_id = ?`,
+    [qsetid, id],
+    (err, res) => {
+      if (err) {
+        result(null, err);
+        return;
       }
-    );
-  };
+
+      // console.log(`deleted ${res.affectedRows} wishlist items`);
+      result(null, res);
+    }
+  );
+};
 
 module.exports = WishList;

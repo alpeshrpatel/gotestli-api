@@ -30,10 +30,16 @@ Comments.create = (newComments, result) => {
   );
 };
 
-Comments.getCommentsById = async (type,id, result) => {
+Comments.getCommentsById = async (type,id,startPoint,endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
   connection.query(
-    `SELECT * FROM comments WHERE entity_type = ? AND entity_id = ? ORDER BY created_date DESC`,
-    [type, id],
+    `SELECT * FROM comments WHERE entity_type = ? AND entity_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?`,
+    [type, id, limit, offset],
     (err, res) => {
       if (err) {
          
@@ -41,13 +47,20 @@ Comments.getCommentsById = async (type,id, result) => {
         return;
       }
 
-      if (res.length) {
-         // console.log("found user: ", res);
-        result(null, res);
-        return;
-      }
+      connection.query(
+        "SELECT COUNT(*) as total FROM comments WHERE entity_id = ?",
+        [id],
+        (countErr, countRes) => {
+          if (countErr) {
+            return result(countErr, null);
+          }
 
-      result({ kind: "not_found" }, null);
+          const totalRecords = countRes[0]?.total || 0;
+          return result(null, { res, totalRecords });
+        }
+      );
+
+      // result({ kind: "not_found" }, null);
     }
   );
 };
