@@ -351,7 +351,7 @@ exports.sendOtpMail = async (req, res) => {
   };
   const saltRounds = 10;
   const hashedOtp = await bcrypt.hash(otp.toString(), saltRounds);
-  ForgotPasswordOtp.insertGeneratedOtp(email,hashedOtp, (err, data) => {
+  ForgotPasswordOtp.insertGeneratedOtp(email, hashedOtp, (err, data) => {
     console.log(err);
     if (!err) {
       sendMail.sendNotifyMail(
@@ -377,4 +377,70 @@ exports.sendOtpMail = async (req, res) => {
       });
     }
   });
+};
+
+exports.getInTouchForHeerRealtor = async (req, res) => {
+  const { email } = req.body;
+
+  const mailOptionsForGetInTouchHeerRealtor = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: "Welcome to HeerRealtor! 🏡 Your Dream Home Awaits!",
+    text: `
+  Hi there,  
+
+Thank you for connecting with HeerRealtor! 🌟  
+
+We’re thrilled to have you on board and are here to help you find the perfect property. Whether you're buying, selling, or investing, we've got exclusive listings, expert insights, and personalized guidance just for you.  
+
+Here's what you can expect:  
+- 🏡 Access to premium property listings  
+- 📈 Market updates and real estate trends  
+- 🤝 Personalized assistance from our expert team  
+
+Stay tuned for the latest listings and updates. If you have any questions, feel free to reach out—we’re happy to help!  
+
+Best regards,  
+Team HeerRealtor`,
+    html: `
+  <p>Hi <b>there</b>,</p>  
+
+<p>Thank you for connecting with <b>HeerRealtor</b>! 🌟</p>  
+
+<p>We’re thrilled to have you on board and are here to help you find the perfect property. Whether you're buying, selling, or investing, we’ve got exclusive listings, expert insights, and personalized guidance just for you.</p>  
+
+<p>Here's what you can expect:</p>  
+<ul>  
+  <li>🏡 Access to premium property listings</li>  
+  <li>📈 Market updates and real estate trends</li>  
+  <li>🤝 Personalized assistance from our expert team</li>  
+</ul>  
+
+<p>Stay tuned for the latest listings and updates. If you have any questions, feel free to reach out—we’re happy to help!</p>  
+
+<p>Best regards,<br/>  
+<b>Team HeerRealtor</b></p>  
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForGetInTouchHeerRealtor,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
 };

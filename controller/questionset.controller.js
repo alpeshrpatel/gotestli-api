@@ -97,7 +97,8 @@ exports.getQuestionSetIdByCategoryId = (req, res) => {
 
 // Get a Questions of QuestionSet by Id
 exports.getQuestionSet = (req, res) => {
-  QuestionSet.getQuestionSet(req.params.id, (err, data) => {
+  const {start,end} = req.query
+  QuestionSet.getQuestionSet(req.params.id,start,end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -159,7 +160,8 @@ exports.getQuetionSetBySearchedKeyword = (req, res) => {
 
 // Get a Questionset of author by Id
 exports.getQuestionSetsOfInstructor = (req, res) => {
-  QuestionSet.getQuestionSetsOfInstructor(req.params.userId, (err, data) => {
+  const {start,end} = req.query
+  QuestionSet.getQuestionSetsOfInstructor(req.params.userId,start,end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

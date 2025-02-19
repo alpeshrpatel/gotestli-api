@@ -28,7 +28,8 @@ exports.create = (req, res) => {
 
 exports.getCommentsOfQuestion =  (req, res) => {
   console.log(req.params)
-  Comments.getCommentsById(req.params.type,req.params.id, (err, data) => {
+  const {start,end} = req.query
+  Comments.getCommentsById(req.params.type,req.params.id,start,end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({

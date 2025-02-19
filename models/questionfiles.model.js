@@ -217,24 +217,70 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
   }
 };
 
-QuestionFiles.findById = async (user_id, result) => {
+QuestionFiles.findById = async (user_id,startPoint,endPoint, result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const offset = Math.max(parseInt(start - 1, 10), 0);
+  // connection.query(
+  //   `select * from question_files where user_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?`,[user_id,limit,offset],
+  //   (err, res) => {
+  //     if (err) {
+         
+  //       result(err, null);
+  //       return;
+  //     }
+
+  //     if (res.length) {
+  //        // console.log("found user: ", res);
+  //        connection.query(
+  //         "SELECT COUNT(*) as total FROM question_files WHERE user_id = ?",
+  //         [user_id],
+  //         (countErr, countRes) => {
+  //             if (countErr) {
+  //                 result(countErr, null);
+  //                 return;
+  //             }
+
+  //             const totalRecords = countRes[0]?.total || 0;
+  //             result(null, {  res, totalRecords });
+              
+  //         }
+  //     );
+  //     }
+
+  //     // not found user with the id
+  //     result({ kind: "not_found" }, null);
+  //   }
+  // );
   connection.query(
-    `select * from question_files where user_id = ${user_id} ORDER BY created_date DESC`,
+    `SELECT * FROM question_files WHERE user_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?`,
+    [user_id, limit, offset],
     (err, res) => {
       if (err) {
-         
-        result(err, null);
-        return;
+        return result(err, null);
       }
 
-      if (res.length) {
-         // console.log("found user: ", res);
-        result(null, res);
-        return;
+      if (!res.length) {
+        // If no records are found, return early to prevent further execution
+        return result({ kind: "not_found" }, null);
       }
 
-      // not found user with the id
-      result({ kind: "not_found" }, null);
+      // If records are found, fetch the total count
+      connection.query(
+        "SELECT COUNT(*) as total FROM question_files WHERE user_id = ?",
+        [user_id],
+        (countErr, countRes) => {
+          if (countErr) {
+            return result(countErr, null);
+          }
+
+          const totalRecords = countRes[0]?.total || 0;
+          return result(null, { res, totalRecords });
+        }
+      );
     }
   );
 };

@@ -18,6 +18,22 @@ exports.findByUserId = (req, res) => {
   });
 };
 
+exports.findByUserIdForTable = (req, res) => {
+  const {start,end} = req.query
+  const userId = req.params.userid;
+  UserResult.findByUserIdForTable(userId,start,end, (err, data) => {
+    if (err)
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving userresults.",
+      });
+      else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
+  });
+};
+
 // Retrieve all UserResult by UserId (with condition).
 exports.findQuestionSetByUserId = (req, res) => {
  
@@ -60,8 +76,9 @@ exports.getStudentsList = (req, res) => {
   
 
   const questionSetId = req.params.questionSetId;
+  const {start,end} = req.query;
 
-  UserResult.getStudentsList(questionSetId, (err, data) => {
+  UserResult.getStudentsList(questionSetId,start,end, (err, data) => {
     if (err)
       res.status(500).send({
         message:

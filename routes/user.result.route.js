@@ -17,6 +17,9 @@ module.exports = (app) => {
   // Retrieve a single QuestionSet with id
   router.get("/user/:userid",  userresult.findByUserId);
 
+  // for table data page limit api
+  router.get("/pagelimit/user/:userid",  userresult.findByUserIdForTable);
+
   // Retrieve a single QuestionSet with id
   router.get(
     "/user/:userid/questionset/:questionsetid",

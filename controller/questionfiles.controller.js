@@ -360,7 +360,8 @@ exports.getUploadedFile = (req, res) => {
 };
 
 exports.findById = (req, res) => {
-  QuestionFiles.findById(req.params.id, (err, data) => {
+  const {start,end} = req.query
+  QuestionFiles.findById(req.params.id,start,end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({
