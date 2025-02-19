@@ -29,6 +29,26 @@ const corsOptions = {
 
 const app = express();
 // app.use(cors());
+//
+app.use((req, res, next) => {
+  const host = req.hostname; 
+  const subdomain = host.split(".")[0]; 
+
+  if (subdomain !== "www" && subdomain !== "gotestli") {
+      req.tenant = subdomain; 
+  }
+
+  next();
+});
+
+app.get("/", (req, res) => {
+  if (req.tenant) {
+      res.send(`Welcome to the tenant: ${req.tenant}`);
+  } else {
+      res.send("Welcome to GoTestli!");
+  }
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
