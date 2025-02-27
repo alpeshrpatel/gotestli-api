@@ -81,9 +81,11 @@ app.use((req, res, next) => {
     req.url.startsWith("/api/reviews/get/rating/ratingmeter") || 
     req.url.startsWith("/api/create-paypal-order") || 
     req.url.startsWith("/api/capture-paypal-order") ||
-    req.url.startsWith("/api/sendemail/getintouch/heerrealtor") ||
-    req.url.startsWith("/create-payment-intent")
-
+    req.url.includes("sendemail/getintouch/heerrealtor") ||
+    req.url.startsWith("/create-payment-intent") || 
+    req.url.includes("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor") ||
+    req.url.startsWith("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor")
+    
   ) {
     return next();
   }
