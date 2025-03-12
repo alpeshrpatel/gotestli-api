@@ -444,3 +444,191 @@ Team HeerRealtor`,
     }
   );
 };
+
+//getOrganizationOnboarding
+exports.getOrganizationOnboarding = async (req, res) => {
+  const { orgName, email, password, subdomain } = req.body;
+
+  const mailOptionsForOrgOnboarding = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: `🎉 Welcome Aboard GoTestli! Your Organization is Now Approved ✅`,
+    text: `
+Dear Partner,
+Fantastic news! 🚀 Your organization ${orgName} has been officially approved for onboarding to the GoTestli platform. We're thrilled to welcome you to our community of innovative educators and learners!
+Your dedicated admin portal is now active and ready for you to explore. Here are your credentials to get started:
+🔐 ADMIN LOGIN DETAILS:
+URL: https://${subdomain}.gotestli.com
+Username: ${email}
+Temporary Password: ${password} (Please change upon first login)
+With GoTestli, you now have access to:
+
+📊 Comprehensive assessment creation tools
+📈 Real-time analytics and performance tracking
+🔄 Seamless content integration capabilities
+👥 User management and permission controls
+🎓 Extensive quiz and learning resources library
+
+We've scheduled a personalized onboarding session for your team on Wednesday, March 12th at 10:00 AM EST. Our implementation specialist will guide you through platform setup and answer any questions you may have.
+In the meantime, feel free to explore our Getting Started Guide (https://help.gotestli.com/getting-started) and Resource Center (https://help.gotestli.com/resources).
+We're excited to see the engaging learning experiences you'll create with GoTestli!
+Welcome aboard,
+The GoTestli Team
+Need assistance? Contact our support team at support@gotestli.com or call (800) 555-TEST.
+  `,
+    html: `
+<p>Dear Partner,</p>
+<p>Fantastic news! 🚀 Your organization <b>${orgName}</b> has been <b>officially approved</b> for onboarding to the GoTestli platform. We're thrilled to welcome you to our community of innovative educators and learners!</p>
+<p>Your dedicated admin portal is now <b>active and ready</b> for you to explore. Here are your credentials to get started:</p>
+<div style="background-color: #f8f9fa; border-left: 4px solid #4CAF50; padding: 15px; margin: 20px 0;">
+  <p><b>🔐 Admin Login Details:</b></p>
+  <p>URL: <a href="https://${subdomain}.gotestli.com">https://${subdomain}.gotestli.com</a><br>
+  Username: <b>${email}</b><br>
+  Temporary Password: <b>${password}</b> (Please change upon first login)</p>
+</div>
+<p>With GoTestli, you now have access to:</p>
+<ul>
+  <li>📊 Comprehensive assessment creation tools</li>
+  <li>📈 Real-time analytics and performance tracking</li>
+  <li>🔄 Seamless content integration capabilities</li>
+  <li>👥 User management and permission controls</li>
+  <li>🎓 Extensive quiz and learning resources library</li>
+</ul>
+
+<p>We're excited to see the engaging learning experiences you'll create with GoTestli!</p>
+<p>Welcome aboard,<br>
+<b>The GoTestli Team</b></p>
+<p style="font-size: 12px; color: #666;">
+Need assistance? Contact our support team at <a href="mailto:gotestli07@gmail.com">gotestli07@gmail.com</a> or call (800) 555-TEST.
+</p>
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForOrgOnboarding,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};
+
+//getUserInvitation
+exports.getUserInvitation = async (req, res) => {
+  const { orgName, email, password, subdomain, role } = req.body;
+
+  const mailOptionsForUserInvitation = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: `🎊 Welcome to GoTestli! Your Organization Access is Ready 🚀`,
+    text: 
+`Dear ${role === 'instructor' ? 'Instructor' : 'Student'},
+
+We’re excited to welcome you to GoTestli! Your organization, ${orgName}, is now onboarded, and your access has been set up. You’re just a step away from unlocking powerful tools designed to enhance learning and assessments.
+
+Here are your login details:
+
+🔑 Login Credentials  
+🔗 Platform URL: https://${subdomain}.gotestli.com  
+📧 Username: ${email}  
+🔒 Temporary Password: ${password} (Please change upon first login)  
+
+As a ${role}, you will have access to:
+
+${role === 'instructor'  
+  ? `- 📚 Create and manage interactive assessments  
+  - 📊 Track student progress with real-time analytics  
+  - 🔄 Integrate learning content effortlessly  
+  - 🏫 Oversee student participation and performance`  
+  : `- 📝 Access engaging quizzes and assessments  
+  - 📈 Monitor your progress and performance  
+  - 🎯 Enhance learning with personalized content  
+  - 🎓 Stay on top of your academic journey`}  
+
+💡 **Next Steps:**  
+📅 Join us for a live onboarding session on **Wednesday, March 12th at 10:00 AM EST**, where our specialists will guide you through the platform.  
+
+In the meantime, check out our **Getting Started Guide** (https://help.gotestli.com/getting-started) and **Resource Center** (https://help.gotestli.com/resources) to familiarize yourself with GoTestli.  
+
+We’re thrilled to have you on board and can’t wait to see you excel!  
+
+**Best Regards,**  
+🚀 The GoTestli Team  
+
+📩 Need help? Reach out to us at **gotestli07@gmail.com** or call **(800) 555-TEST**.  
+  `,
+    html: `
+<p>Dear <strong>${role === 'instructor' ? 'Instructor' : 'Student'}</strong>,</p>
+
+<p>We’re excited to welcome you to <strong>GoTestli</strong>! Your organization, <strong>${orgName}</strong>, is now onboarded, and your access has been set up. You’re just a step away from unlocking powerful tools designed to enhance learning and assessments.</p>
+
+<div style="background-color: #f8f9fa; border-left: 5px solid #4CAF50; padding: 15px; margin: 20px 0;">
+  <p><strong>🔑 Login Credentials</strong></p>
+  <p>🔗 <strong>Platform URL:</strong> <a href="https://${subdomain}.gotestli.com" style="color: #007BFF;">https://${subdomain}.gotestli.com</a></p>
+  <p>📧 <strong>Username:</strong> ${email}</p>
+  <p>🔒 <strong>Temporary Password:</strong> <strong>${password}</strong> (Please change upon first login)</p>
+</div>
+
+<p>As a <strong>${role}</strong>, you will have access to:</p>
+
+${role === 'instructor'  
+  ? `<ul>
+       <li>📚 Create and manage interactive assessments</li>
+       <li>📊 Track student progress with real-time analytics</li>
+       <li>🔄 Integrate learning content effortlessly</li>
+       <li>🏫 Oversee student participation and performance</li>
+     </ul>`  
+  : `<ul>
+       <li>📝 Access engaging quizzes and assessments</li>
+       <li>📈 Monitor your progress and performance</li>
+       <li>🎯 Enhance learning with personalized content</li>
+       <li>🎓 Stay on top of your academic journey</li>
+     </ul>`}
+
+
+<p>We’re thrilled to have you on board and can’t wait to see you excel!</p>
+
+<p><strong>Best Regards,</strong><br>
+🚀 <strong>The GoTestli Team</strong></p>
+
+<p style="font-size: 12px; color: #666;">
+📩 Need help? Reach out to us at <a href="mailto:gotestli07@gmail.com" style="color: #007BFF;">gotestli07@gmail.com</a> or call (800) 555-TEST.
+</p>
+
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForUserInvitation,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};

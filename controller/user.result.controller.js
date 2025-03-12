@@ -126,7 +126,7 @@ exports.getTotalAttemptCount = (req, res) => {
 
 exports.getAll = (req, res) => {
 
-  UserResult.getAll( (err, data) => {
+  UserResult.getAll(req.params.orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:

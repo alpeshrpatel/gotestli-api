@@ -49,7 +49,7 @@ module.exports = (app) => {
 
   // Update a QuestionSet with id
   //  router.put("/calculate/finalresult", userresult.calculate);
-  router.get('/all/attempts',userresult.getAll)
+  router.get('/all/attempts/orgid/:orgid',userresult.getAll)
 
   // Update a QuestionSet with id
   router.put("/:id", userresult.update);

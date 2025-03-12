@@ -40,6 +40,7 @@ exports.create = (req, res) => {
     uid: req.body.uid,
     role: req.body.role,
     provider: req.body.provider,
+    org_id:req.body.org_id
   });
 
   // Save users in the database
@@ -61,7 +62,7 @@ exports.generateToken = async (req,res) => {
 
 // Retrieve all Users from the database (with condition).
 exports.findAll = async (req, res) => {
-  Users.getAll((err, data) => {
+  Users.getAll(req.params.orgid,(err, data) => {
     if (err)
       res.status(500).send({
         message: err.message || "Some error occurred while retrieving users.",

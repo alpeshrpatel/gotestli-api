@@ -561,8 +561,8 @@ UserResult.getTotalAttemptCount = (userId, result) => {
   });
 };
 
-UserResult.getAll = (result) => {
-  let query = "SELECT * FROM user_test_result";
+UserResult.getAll = (orgid,result) => {
+  let query = `SELECT * FROM user_test_result where org_id = ${orgid}`;
 
   connection.query(query, (err, res) => {
     if (err) {

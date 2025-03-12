@@ -84,8 +84,10 @@ app.use((req, res, next) => {
     req.url.includes("sendemail/getintouch/heerrealtor") ||
     req.url.startsWith("/create-payment-intent") || 
     req.url.includes("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor") ||
-    req.url.startsWith("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor")
-    
+    req.url.startsWith("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor") ||
+    req.url.startsWith('/api/org') ||
+    req.url.startsWith('/api/sendemail/org/onboarding/approval') ||
+    req.url.startsWith('/api/sendemail/org/user/invitation/from-admin')
   ) {
     return next();
   }
@@ -133,6 +135,7 @@ require("./routes/comments.route.js")(app);
 require("./routes/whitelistedquestionset.route.js")(app);
 require("./routes/questionparagraph.route.js")(app);
 require("./routes/forgetpasswordotp.route.js")(app);
+require("./routes/organization.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
@@ -214,7 +217,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
     const actualHeaders = [];
 
     worksheet.getRow(6).eachCell((cell, colNumber) => {
-      actualHeaders.push(cell.value ? cell.value.trim().toLowerCase() : "");
+      actualHeaders.push(cell.value ? String(cell.value).trim().toLowerCase() : "");
     });
 
     const normalizedExpectedHeaders = expectedHeaders.map((header) =>
@@ -246,8 +249,8 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
       data: { fileName: fileName, filePath: filePath },
     });
   } catch (error) {
-    
-    res.status(500).send({ message: "File upload failed!", error });
+    console.error("File upload error:", error);
+    res.status(500).send({ message: "File upload failed!", error: error.message });
   }
 });
 const paypal = require('@paypal/checkout-server-sdk');

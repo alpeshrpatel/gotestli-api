@@ -259,7 +259,7 @@ module.exports = app => {
  *                   example: "Question File not found."
  */
 
-    router.get("/:id",cacheMiddleware,QuestionFiles.findById);
+    router.get("/:id",QuestionFiles.findById);
 
     /**
  * @swagger

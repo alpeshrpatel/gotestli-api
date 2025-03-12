@@ -36,7 +36,7 @@ exports.insertQuestions = async (req, res) => {
 
   let dataSet = {};
   let errorRows = [];
-  
+
   const readExcelFile = async (filePath) => {
     const workbook = new ExcelJS.Workbook();
 
@@ -159,14 +159,12 @@ exports.insertQuestions = async (req, res) => {
         if (rowNumber >= 7) {
           const rowData = [];
           let rowHasError = false;
-        
 
           // Loop through all columns (even those without values)
           for (let colNumber = 2; colNumber <= 9; colNumber++) {
             const cell = row.getCell(colNumber);
             const cellValue = cell.value ? cell.value : ""; // Handle empty cells
 
-            
             rowData.push(cellValue);
 
             // switch case for validation of cell values
@@ -174,13 +172,11 @@ exports.insertQuestions = async (req, res) => {
               case 2: // Validation for the first element (e.g., 'amazon')
                 if (typeof cellValue !== "string" || cellValue.trim() === "") {
                   rowHasError = true; // String is required, non-empty
-                 
                 }
                 break;
               case 3: // Validation for the question (e.g., 'Amazon S3...')
                 if (typeof cellValue !== "string" || cellValue?.trim() === "") {
                   rowHasError = true;
-                  
                 }
                 break;
               case 4: // Validation for answer choices (e.g., '1:2:3:4')
@@ -190,13 +186,12 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true;
-                 
                 }
                 break;
               case 5: // Validation for the selected answer (it must match a choice from Column 4)
                 const answerChoices = rowData[2]; // Get choices from Column 4
                 function validateAnswers(answerChoices, answer) {
-                  if (answer.includes(":")) {
+                  if (answer?.includes(":")) {
                     const validation = /^.+(:.+)+$/.test(cellValue);
                     if (validation) {
                       const answerChoicesArray = answerChoices.includes(":")
@@ -219,9 +214,11 @@ exports.insertQuestions = async (req, res) => {
                     .split(":")
                     .some((value) => value == answer);
                 }
+                console.log("answer choices:", answerChoices);
+                console.log("cellValue", cellValue);
                 if (
                   typeof answerChoices === "string" &&
-                  validateAnswers(answerChoices, cellValue) 
+                  validateAnswers(answerChoices, String(cellValue))
                   // answerChoices.split(":").some((value) => value == cellValue)
                 ) {
                   if (
@@ -229,11 +226,9 @@ exports.insertQuestions = async (req, res) => {
                     cellValue?.trim() === ""
                   ) {
                     rowHasError = true;
-                    
                   }
                 } else {
                   rowHasError = true;
-                  
                 }
                 break;
               case 6: // Validation for difficulty level (e.g., 'easy')
@@ -249,7 +244,6 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true; // Must be one of 'easy', 'medium', 'hard'
-                 
                 }
                 break;
               case 7: // Validation for category or tag ID (e.g., 13)
@@ -259,7 +253,6 @@ exports.insertQuestions = async (req, res) => {
                   cellValue > 500
                 ) {
                   rowHasError = true; // Must be a non-negative integer
-                  
                 }
                 break;
               case 8: // Validation for status or flag (e.g., 1)
@@ -268,13 +261,11 @@ exports.insertQuestions = async (req, res) => {
                   ![0, 1].includes(cellValue)
                 ) {
                   rowHasError = true; // Must be 0 or 1
-                 
                 }
                 break;
               case 9: // Validation for duration or reference (e.g., 23)
-                if (typeof cellValue !== "number" || cellValue <= 0) {
+                if (typeof cellValue !== "number" ) {
                   rowHasError = true; // Must be a positive integer
-                  
                 }
                 break;
               default:
@@ -293,7 +284,6 @@ exports.insertQuestions = async (req, res) => {
     } catch (error) {
       console.error("Error reading the Excel file:", error);
     }
-    
   };
   try {
     await readExcelFile(filePath);
@@ -306,10 +296,10 @@ exports.insertQuestions = async (req, res) => {
       date,
       (err, data) => {
         if (err) {
-          if (err.kind === "not_found") {
-            res.status(404).send({ message: "Data not found" });
-          } else {
-            res.status(500).send({ message: "Error inserting questions data" });
+          if (err.kind === "not_found" ) {
+            return res.status(404).send({ message: "Data not found" });
+          } else if(!res.headersSent) {
+            return res.status(500).send({ message: "Error inserting questions data" });
           }
         } else {
           res.send(data); // Send the inserted data response (including IDs)
@@ -317,7 +307,9 @@ exports.insertQuestions = async (req, res) => {
       }
     );
   } catch (error) {
-    res.status(500).send({ message: "Failed to process the Excel file." });
+    return res
+      .status(500)
+      .send({ message: "Failed to process the Excel file." });
   }
 };
 
@@ -348,7 +340,7 @@ exports.getUploadedFile = (req, res) => {
   } else {
     filePath = path.join(__dirname, `../../gotestli-web/uploads/${fileName}`);
   }
- 
+
   res.download(filePath, fileName, (err) => {
     if (err) {
       console.error("Error downloading file:", err);
@@ -360,8 +352,8 @@ exports.getUploadedFile = (req, res) => {
 };
 
 exports.findById = (req, res) => {
-  const {start,end} = req.query
-  QuestionFiles.findById(req.params.id,start,end, (err, data) => {
+  const { start, end } = req.query;
+  QuestionFiles.findById(req.params.id, start, end, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({
@@ -372,15 +364,14 @@ exports.findById = (req, res) => {
           message: "Error retrieving user with id " + req.params.id,
         });
       }
-    } else{
+    } else {
       cache.set(req.originalUrl, data);
       res.send(data);
-    };
+    }
   });
 };
 
 exports.findByFileName = (req, res) => {
-  
   QuestionFiles.findByFileName(req.query.filename, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
@@ -392,10 +383,10 @@ exports.findByFileName = (req, res) => {
           message: "Error retrieving file with filenam " + req.query.filename,
         });
       }
-    } else{
+    } else {
       cache.set(req.originalUrl, data);
       res.send(data);
-    };
+    }
   });
 };
 // updateById

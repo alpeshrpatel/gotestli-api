@@ -30,6 +30,7 @@ const Users = function (users) {
   this.uid = users.uid;
   this.role = users.role;
   this.provider = users.provider;
+  this.org_id = users.org_id;
 };
 
 Users.create = (newuser, result) => {
@@ -97,8 +98,8 @@ Users.findUser = (uid, result) => {
   });
 };
 
-Users.getAll = (result) => {
-  let query = "SELECT * FROM users";
+Users.getAll = (orgid,result) => {
+  let query = `SELECT * FROM users where org_id = ${orgid}`;
   connection.query(query, (err, res) => {
     if (err) {
        
