@@ -202,7 +202,7 @@ exports.findAll = (req, res) => {
 exports.findAllQSet = (req, res) => {
   // const title = req.query.title;
 
-  QuestionSet.findAllQSet(async (err, data) => {
+  QuestionSet.findAllQSet(req.params.orgid, async (err, data) => {
     if (err)
       res.status(500).send({
         message:

@@ -73,7 +73,7 @@ QuestionFiles.insertQuestions = async (
     if (!errorRows.includes(i)) {
        // console.log("dataset: ", dataSet[i]);
       const data = dataSet[i];
-      const question_type = data[3].includes(':') ? 7 : 2
+      const question_type = String(data[3]).includes(':') ? 7 : 2
       const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       const values = [
         0,
@@ -94,8 +94,8 @@ QuestionFiles.insertQuestions = async (
         connection.query(query, values, async (err, res) => {
           if (err) {
              
-            result(err, null);
-            return;
+           return result(err, null);
+            
           }
            // console.log("insert id:", res.insertId);
           const optionInsertResult = await insertQuestionOptions(
@@ -111,8 +111,8 @@ QuestionFiles.insertQuestions = async (
         });
       } catch (error) {
          // console.log("Error inserting question:", error);
-        result(error, null);
-        return;
+       return result(error, null);
+        
       }
     }
   }
@@ -139,8 +139,8 @@ QuestionFiles.insertQuestions = async (
 };
 
 const updateFilesData = async (fileId,correct,errored,date) => {
-  const query = `UPDATE question_files SET status = 1, modified_date = ?, correct_rows = ?, error_rows = ? WHERE id = ?`;
-    connection.query(query, [date, correct, errored, fileId], (err, res) => {
+  const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ? WHERE id = ?`;
+    connection.query(query, [ correct, errored, fileId], (err, res) => {
       if (err) {
         console.error("Error updating files:", err);
         return false;

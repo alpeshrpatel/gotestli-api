@@ -23,6 +23,12 @@ module.exports = app => {
      //send mail for get in touch subscription
      router.post("/getintouch/heerrealtor", sendMail.getInTouchForHeerRealtor);
 
+     //send onboarding mail
+     router.post("/org/onboarding/approval", sendMail.getOrganizationOnboarding);
+
+     //send invitation mail for user(student/instructor) /api/sendemail/org/user/invitation/from-admin
+     router.post("/org/user/invitation/from-admin", sendMail.getUserInvitation);
+
     app.use('/api/sendemail',router)
 
 };

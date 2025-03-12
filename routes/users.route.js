@@ -499,7 +499,9 @@ module.exports = app => {
  */
 
     // Retrieve all users with id
-    router.get("/", users.findAll);
+   //  router.get("/", users.findAll);
+
+    router.get("/orgid/:orgid", users.findAll);
   
     /**
  * @swagger

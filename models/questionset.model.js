@@ -248,10 +248,10 @@ QuestionSet.getAll = (result) => {
   });
 };
 
-QuestionSet.findAllQSet = (result) => {
-  let query = "SELECT *  FROM question_set where status_id = 1";
+QuestionSet.findAllQSet = (orgid,result) => {
+  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ${orgid}`;
   connection.query(query, (err, res) => {
-    if (err) {
+    if (err) { 
        
       result(null, err);
       return;

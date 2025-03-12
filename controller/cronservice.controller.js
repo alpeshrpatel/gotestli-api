@@ -6,7 +6,7 @@ const {
 } = require("../models/cronservice.model");
 
 module.exports = (app) => {
-  cron.schedule("0 0 * * *", async () => {
+  cron.schedule("* * * * *", async () => {
     try {
       //  // console.log("Running Cron Job to insert questions...");
 

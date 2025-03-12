@@ -36,7 +36,7 @@ async function insertQuestionsFromFile(file,result) {
 
         // Update the status of the file to 1 (processed)
         const date = generateDateTime()
-        connection.query(`UPDATE question_files SET status = 1, modified_date = ${date} where id = ${file.id}`, (err,res) => {
+        connection.query(`UPDATE question_files SET status = 1 where id = ${file.id}`, (err,res) => {
             if (err) {
                 console.error("Error updating status:", err);
                 result(err); 
