@@ -160,15 +160,12 @@ QuestionMaster.findParagraph = (id, result) => {
 //   );
 // };
 QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
-  
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-  
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
-const offset = Math.max(parseInt(start - 1, 10), 0);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
 
-  
   connection.query(
     `SELECT 
           qm.id AS id,
@@ -200,7 +197,6 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
       }
 
       try {
-        
         // const [countResult] = await connection.execute(
         //   "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
         //   [id]
@@ -210,17 +206,16 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
           "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
           [id],
           (countErr, countRes) => {
-              if (countErr) {
-                  result(countErr, null);
-                  return;
-              }
+            if (countErr) {
+              result(countErr, null);
+              return;
+            }
 
-              const totalRecords = countRes[0]?.total || 0;
-              result(null, {  res, totalRecords });
+            const totalRecords = countRes[0]?.total || 0;
+            result(null, { res, totalRecords });
           }
-      );
+        );
 
-       
         // result(null, {
         //   data: res,
         //   totalRecords,
@@ -232,45 +227,163 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
   );
 };
 
-QuestionMaster.findAll = (userid,startPoint,endPoint, result) => {
+// QuestionMaster.findAll = (userid,startPoint,endPoint, result) => {
+//   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+//   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+//   const limit = Math.max(parseInt(end - start + 1, 10), 1);
+// const offset = Math.max(parseInt(start - 1, 10), 0);
+
+//   // let query = `SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`;
+//   //  // console.log("tags : " + tags);
+//   // tags = req.params.id;
+//   // if (tags) {
+//   //   query += ` WHERE tags LIKE '%${tags}%'`;
+//   // }
+//   // console.log("findAll : " + query)
+//   connection.query(`SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`,[userid,limit,offset], (err, res) => {
+//     if (err) {
+//       result(null, err);
+//       return;
+//     }
+
+//     //  // console.log("question_master: ", res);
+//     // result(null, res);
+//     connection.query(
+//       "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
+//       [userid],
+//       (countErr, countRes) => {
+//           if (countErr) {
+//               result(countErr, null);
+//               return;
+//           }
+
+//           const totalRecords = countRes[0]?.total || 0;
+//           result(null, {  res, totalRecords });
+//       }
+//   );
+//   });
+// };
+QuestionMaster.findAll = (
+  userid,
+  startPoint,
+  endPoint,
+  search,
+  complexity,
+  status,
+  categoryId,
+  result
+) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-  
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
-const offset = Math.max(parseInt(start - 1, 10), 0);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
 
-  // let query = `SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`;
-  //  // console.log("tags : " + tags);
-  // tags = req.params.id;
-  // if (tags) {
-  //   query += ` WHERE tags LIKE '%${tags}%'`;
-  // }
-  // console.log("findAll : " + query)
-  connection.query(`SELECT * FROM question_master where created_by = ? LIMIT ? OFFSET ?`,[userid,limit,offset], (err, res) => {
+  
+  let query = "SELECT * FROM question_master WHERE created_by = ?";
+  const queryParams = [userid];
+
+ 
+  if (status !== undefined) {
+    query += " AND status_id = ?";
+    queryParams.push(status);
+  }
+
+  
+  if (complexity) {
+    
+    const complexityLevels = complexity.split(":").filter(level => level);
+    
+    if (complexityLevels.length > 0) {
+      query += " AND (";
+      const complexityConditions = [];
+      
+      complexityLevels.forEach((level, index) => {
+        complexityConditions.push("complexity = ?");
+        queryParams.push(level);
+      });
+      
+      query += complexityConditions.join(" OR ");
+      query += ")";
+    }
+  }
+
+  
+  if (categoryId) {
+    query += " AND category_id = ?";
+    queryParams.push(categoryId);
+  }
+
+  
+  if (search) {
+    query += " AND (question LIKE ? OR description LIKE ?)";
+    const searchTerm = `%${search}%`;
+    queryParams.push(searchTerm, searchTerm);
+  }
+
+  
+  query += " ORDER BY created_date DESC LIMIT ? OFFSET ?";
+  queryParams.push(limit, offset);
+
+  
+  connection.query(query, queryParams, (err, res) => {
     if (err) {
-      result(null, err);
+      result(err, null);
       return;
     }
 
-    //  // console.log("question_master: ", res);
-    // result(null, res);
-    connection.query(
-      "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
-      [userid],
-      (countErr, countRes) => {
-          if (countErr) {
-              result(countErr, null);
-              return;
-          }
+    
+    let countQuery =
+      "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?";
+    const countParams = [userid];
 
-          const totalRecords = countRes[0]?.total || 0;
-          result(null, {  res, totalRecords });
+    
+    if (status !== undefined) {
+      countQuery += " AND status_id = ?";
+      countParams.push(parseInt(status));
+    }
+
+    if (complexity) {
+      const complexityLevels = complexity.split(":").filter(level => level);
+      
+      if (complexityLevels.length > 0) {
+        countQuery += " AND (";
+        const complexityConditions = [];
+        
+        complexityLevels.forEach((level, index) => {
+          complexityConditions.push("complexity = ?");
+          countParams.push(level);
+        });
+        
+        countQuery += complexityConditions.join(" OR ");
+        countQuery += ")";
       }
-  );
+    }
+
+    if (categoryId) {
+      countQuery += " AND category_id = ?";
+      countParams.push(categoryId);
+    }
+
+    if (search) {
+      countQuery += " AND (question LIKE ? OR description LIKE ?)";
+      const searchTerm = `%${search}%`;
+      countParams.push(searchTerm, searchTerm);
+    }
+
+    
+    connection.query(countQuery, countParams, (countErr, countRes) => {
+      if (countErr) {
+        result(countErr, null);
+        return;
+      }
+
+      const totalRecords = countRes[0]?.total || 0;
+      result(null, { res, totalRecords });
+    });
   });
 };
-
 QuestionMaster.updateById = (id, questionmaster, result) => {
   connection.execute(
     "UPDATE question_master SET " +

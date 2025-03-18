@@ -19,9 +19,9 @@ exports.findByUserId = (req, res) => {
 };
 
 exports.findByUserIdForTable = (req, res) => {
-  const {start,end} = req.query
+  const {start,end, search} = req.query
   const userId = req.params.userid;
-  UserResult.findByUserIdForTable(userId,start,end, (err, data) => {
+  UserResult.findByUserIdForTable(userId,start,end,search, (err, data) => {
     if (err)
       res.status(500).send({
         message:
