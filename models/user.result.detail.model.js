@@ -161,9 +161,9 @@ UserResultDetails.addQuestionsOnStartQuiz = (
   );
 };
 
-UserResultDetails.findById = (id, result) => {
+UserResultDetails.findById = (id,orgid, result) => {
   connection.query(
-    `SELECT * FROM user_test_result_dtl WHERE id = ${id}`,
+    `SELECT * FROM user_test_result_dtl WHERE id = ${id} AND org_id = ${orgid}`,
     (err, res) => {
       if (err) {
          
@@ -184,11 +184,11 @@ UserResultDetails.findById = (id, result) => {
 };
 
 UserResultDetails.findUserResultDetailsByUserResultId = (
-  userresultid,
+  userresultid,orgid,
   result
 ) => {
   connection.query(
-    `SELECT * FROM user_test_result_dtl WHERE user_test_result_id = ${userresultid} order by question_set_question_id asc`,
+    `SELECT * FROM user_test_result_dtl WHERE user_test_result_id = ${userresultid} AND org_id = ${orgid} order by question_set_question_id asc`,
     (err, res) => {
       if (err) {
          
@@ -210,11 +210,11 @@ UserResultDetails.findUserResultDetailsByUserResultId = (
 
 UserResultDetails.getUserResultAnswers = (
   userResultId,
-  questionSetLength,
+  questionSetLength,orgid,
   result
 ) => {
   connection.query(
-    ` SELECT question_set_question_id, answer, status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  ORDER BY id DESC LIMIT ${questionSetLength}`,
+    ` SELECT question_set_question_id, answer, status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId} AND org_id = ${orgid}  ORDER BY id DESC LIMIT ${questionSetLength}`,
     (err, res) => {
       if (err) {
          
@@ -234,9 +234,9 @@ UserResultDetails.getUserResultAnswers = (
   );
 };
 
-UserResultDetails.getStatus = (userResultId, questionId, result) => {
+UserResultDetails.getStatus = (userResultId, questionId,orgid, result) => {
   connection.query(
-    ` SELECT status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  AND question_set_question_id = ${questionId} ORDER BY id DESC LIMIT 1`,
+    ` SELECT status FROM user_test_result_dtl WHERE user_test_result_id = ${userResultId}  AND question_set_question_id = ${questionId} AND org_id = ${orgid} ORDER BY id DESC LIMIT 1`,
     (err, res) => {
       if (err) {
          

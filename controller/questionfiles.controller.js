@@ -352,8 +352,9 @@ exports.getUploadedFile = (req, res) => {
 };
 
 exports.findById = (req, res) => {
-  const { start, end } = req.query;
-  QuestionFiles.findById(req.params.id, start, end, (err, data) => {
+  const { start, end,search } = req.query;
+  const {orgid} = req.query;
+  QuestionFiles.findById(req.params.id, start, end,search,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({
@@ -372,7 +373,8 @@ exports.findById = (req, res) => {
 };
 
 exports.findByFileName = (req, res) => {
-  QuestionFiles.findByFileName(req.query.filename, (err, data) => {
+  const {orgid} = req.query;
+  QuestionFiles.findByFileName(req.query.filename,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({

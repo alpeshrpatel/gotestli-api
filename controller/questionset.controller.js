@@ -77,7 +77,8 @@ exports.create = (req, res) => {
 
 // Find a single QuestionSet by Id
 exports.getQuestionSetIdByCategoryId = (req, res) => {
-  QuestionSet.getQuestionSetIdByCategoryId(req.params.id, (err, data) => {
+  const {orgid} = req.query
+  QuestionSet.getQuestionSetIdByCategoryId(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -98,7 +99,8 @@ exports.getQuestionSetIdByCategoryId = (req, res) => {
 // Get a Questions of QuestionSet by Id
 exports.getQuestionSet = (req, res) => {
   const {start,end} = req.query
-  QuestionSet.getQuestionSet(req.params.id,start,end, (err, data) => {
+  const {orgid} = req.query
+  QuestionSet.getQuestionSet(req.params.id,start,end,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -117,7 +119,8 @@ exports.getQuestionSet = (req, res) => {
 };
 
 exports.getQuetionSetUsedByCount = (req, res) => {
-  QuestionSet.getQuetionSetUsedByCount((err, data) => {
+  const {orgid} = req.query
+  QuestionSet.getQuetionSetUsedByCount(orgid,(err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -137,8 +140,9 @@ exports.getQuetionSetUsedByCount = (req, res) => {
 
 // getQuetionSetBySearchedKeyword
 exports.getQuetionSetBySearchedKeyword = (req, res) => {
+  const {orgid} = req.query
   QuestionSet.getQuetionSetBySearchedKeyword(
-    req.params.keyword,
+    req.params.keyword,orgid,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
@@ -160,8 +164,8 @@ exports.getQuetionSetBySearchedKeyword = (req, res) => {
 
 // Get a Questionset of author by Id
 exports.getQuestionSetsOfInstructor = (req, res) => {
-  const {start,end} = req.query
-  QuestionSet.getQuestionSetsOfInstructor(req.params.userId,start,end, (err, data) => {
+  const {start,end,search,orgid} = req.query
+  QuestionSet.getQuestionSetsOfInstructor(req.params.userId,start,end,search,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -183,8 +187,8 @@ exports.getQuestionSetsOfInstructor = (req, res) => {
 // Retrieve all QuestionSets from the database (with condition).
 exports.findAll = (req, res) => {
   // const title = req.query.title;
-
-  QuestionSet.getAll(async (err, data) => {
+  const {orgid} = req.query
+  QuestionSet.getAll(orgid, async (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -201,7 +205,7 @@ exports.findAll = (req, res) => {
 //findAllQSet
 exports.findAllQSet = (req, res) => {
   // const title = req.query.title;
-
+  
   QuestionSet.findAllQSet(req.params.orgid, async (err, data) => {
     if (err)
       res.status(500).send({
@@ -218,7 +222,8 @@ exports.findAllQSet = (req, res) => {
 
 // Find a single QuestionSet by Id
 exports.findOne = (req, res) => {
-  QuestionSet.findById(req.params.id, (err, data) => {
+  const {orgid} = req.query
+  QuestionSet.findById(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -238,6 +243,7 @@ exports.findOne = (req, res) => {
 
 // Update a QuestionSet identified by the id in the request
 exports.update = (req, res) => {
+  const {orgid} = req.query
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -250,7 +256,7 @@ exports.update = (req, res) => {
     req.params.id,
     new QuestionSet(req.body.changedQSet),
     req.body.userId,
-    modified_date,
+    modified_date,orgid,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
@@ -268,6 +274,7 @@ exports.update = (req, res) => {
 };
 
 exports.updateStatus = (req, res) => {
+  const {orgid} = req.query
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -277,7 +284,7 @@ exports.updateStatus = (req, res) => {
   const modified_date = generateDateTime();
 
   QuestionSet.updateStatusById(
-    req.body,
+    req.body,orgid,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

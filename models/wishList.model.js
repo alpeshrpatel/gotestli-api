@@ -34,43 +34,63 @@ WishList.create = (newWishList, result) => {
   );
 };
 
-WishList.findById = async (id, startPoint, endPoint, result) => {
+WishList.findById = async (id, startPoint, endPoint, search, result) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
 
-  connection.query(
-    `SELECT qs.*
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT qs.*
 FROM wishlist w
 JOIN question_set qs ON w.questionset_id = qs.id
-WHERE w.user_id = ? order by w.created_date desc LIMIT ? OFFSET ?;
-`,
-    [id, limit, offset],
-    (err, res) => {
-      if (err) {
-        result(err, null);
+WHERE w.user_id = ? AND (qs.title LIKE ? OR qs.short_desc LIKE ?) order by w.created_date desc LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT qs.*
+FROM wishlist w
+JOIN question_set qs ON w.questionset_id = qs.id
+WHERE w.user_id = ? order by w.created_date desc LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [id, searchTerm, searchTerm, limit, offset];
+  } else {
+    queryParams = [id, limit, offset];
+  }
+  connection.query(queryString, queryParams, (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+
+    let countQuery = ``;
+    if (search) {
+      countQuery = `SELECT COUNT(*) as total FROM wishlist w JOIN question_set qs ON w.questionset_id = qs.id WHERE w.user_id = ? AND (qs.title LIKE ? OR qs.short_desc LIKE ?)`;
+    } else {
+      countQuery = `SELECT COUNT(*) as total FROM wishlist WHERE user_id = ?`;
+    }
+    let countParams = [];
+    if (search) {
+      const searchTerm = `%${search}%`;
+      countParams = [id, searchTerm, searchTerm];
+    } else {
+      countParams = [id];
+    }
+    connection.query(countQuery, countParams, (countErr, countRes) => {
+      if (countErr) {
+        result(countErr, null);
         return;
       }
+      const totalRecords = countRes[0]?.total || 0;
+      result(null, { res, totalRecords });
+    });
 
-      connection.query(
-        "SELECT COUNT(*) as total FROM wishlist WHERE user_id = ?",
-        [id],
-        (countErr, countRes) => {
-          if (countErr) {
-            result(countErr, null);
-            return;
-          }
-          const totalRecords = countRes[0]?.total || 0;
-          result(null, { res, totalRecords });
-        }
-      );
-
-      // not found user with the id
-      // result({ kind: "not_found" }, null);
-    }
-  );
+    // not found user with the id
+    // result({ kind: "not_found" }, null);
+  });
 };
 
 WishList.getQsetId = async (id, result) => {

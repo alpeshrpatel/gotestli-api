@@ -78,9 +78,9 @@ QuestionSet.create = (newQuestionSet, result) => {
   );
 };
 
-QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
+QuestionSet.getQuestionSetIdByCategoryId = async (category_id,orgid, result) => {
   connection.execute(
-    `select question_set_id from question_set_categories where category_id = ${category_id}`,
+    `select question_set_id from question_set_categories where category_id = ${category_id} and org_id = ${orgid}`,
     (err, res) => {
       if (err) {
          
@@ -111,7 +111,7 @@ QuestionSet.getQuestionSetIdByCategoryId = async (category_id, result) => {
   // }
 };
 
-QuestionSet.getQuestionSet = async (question_set_id,startPoint,endPoint, result) => {
+QuestionSet.getQuestionSet = async (question_set_id,startPoint,endPoint,orgid, result) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
@@ -120,7 +120,7 @@ QuestionSet.getQuestionSet = async (question_set_id,startPoint,endPoint, result)
 const offset = Math.max(parseInt(start - 1, 10), 0);
 
   connection.query(
-    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc LIMIT ? OFFSET ?;`,[question_set_id,limit,offset],
+    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qsq.question_set_id = qs.id  and qm.id = qsq.question_id where qs.org_id = ? order by qm.created_date desc LIMIT ? OFFSET ?;`,[question_set_id,orgid,limit,offset],
     (err, res) => {
       if (err) {
          
@@ -129,8 +129,8 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
       }
 
       connection.query(
-        "SELECT COUNT(*) as total FROM question_set_questions WHERE question_set_id = ?",
-        [question_set_id],
+        "SELECT COUNT(*) as total FROM question_set_questions WHERE question_set_id = ? and org_id = ?",
+        [question_set_id,orgid],
         (countErr, countRes) => {
             if (countErr) {
                 result(countErr, null);
@@ -148,7 +148,7 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
   );
 };
 
-QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint, result) => {
+QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint,search,orgid, result) => {
 
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
@@ -156,13 +156,29 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint, result) =
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
 
-  connection.query(
-    `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+  
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
      FROM question_set 
      WHERE created_by = ? 
+     AND (title LIKE ? OR short_desc LIKE ?) AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+     FROM question_set 
+     WHERE created_by = ? AND org_id = ?
      ORDER BY created_date DESC 
-     LIMIT ? OFFSET ?;`, 
-    [userId, limit, offset], 
+     LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [userId, searchTerm, searchTerm,orgid, limit, offset];
+  } else {
+    queryParams = [userId,orgid, limit, offset];
+  }
+  connection.query(
+    queryString, queryParams,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -174,10 +190,22 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint, result) =
         return;
       }
 
+      let countQuery = ``;
+      if (search) {
+        countQuery = `SELECT COUNT(*) as total FROM question_set WHERE created_by = ? AND (title LIKE ? OR short_desc LIKE ?) AND org_id = ?`;
+      } else {
+        countQuery = `SELECT COUNT(*) as total FROM question_set WHERE created_by = ? AND org_id = ?`;
+      }
+      let countParams = [];
+      if (search) {
+        const searchTerm = `%${search}%`;
+        countParams = [userId, searchTerm, searchTerm,orgid];
+      } else {
+        countParams = [userId,orgid];
+      }
       // Fetch total count only when there are results
       connection.query(
-        "SELECT COUNT(*) as total FROM question_set WHERE created_by = ?",
-        [userId],
+        countQuery, countParams,
         (countErr, countRes) => {
           if (countErr) {
             result(countErr, null);
@@ -192,9 +220,9 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint, result) =
   );
 };
 
-QuestionSet.findById = (id, result) => {
+QuestionSet.findById = (id,orgid, result) => {
   connection.query(
-    `SELECT * FROM question_set WHERE id = ${id}`,
+    `SELECT * FROM question_set WHERE id = ${id} and org_id = ${orgid}`,
     (err, res) => {
       if (err) {
          
@@ -214,8 +242,8 @@ QuestionSet.findById = (id, result) => {
   );
 };
 
-QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
-  const query = `select * from question_set qs where title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`;
+QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
+  const query = `select * from question_set qs where org_id = ${orgid} and title like "%${keyword}%" or title = "${keyword}" or short_desc = "${keyword}" or short_desc like "%${keyword}%" or tags ="${keyword}" or tags like "%${keyword}%";`;
   connection.query(query, (err, res) => {
     if (err) {
        
@@ -234,8 +262,8 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword, result) => {
   });
 };
 
-QuestionSet.getAll = (result) => {
-  let query = "SELECT * FROM question_set where status_id = 1";
+QuestionSet.getAll = (orgid,result) => {
+  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ${orgid}`;
   connection.query(query, (err, res) => {
     if (err) {
        
@@ -263,13 +291,13 @@ QuestionSet.findAllQSet = (orgid,result) => {
 };
 
 
-QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) => {
+QuestionSet.updateById = (id, questionset, modified_by, modified_date,orgid, result) => {
   connection.query(
     "UPDATE question_set SET title= ?, " +
       "short_desc= ? , " +
       "time_duration= ? , " +
       "is_demo= ?, modified_by= ? , modified_date= ? " +
-      "WHERE id = ?",
+      "WHERE id = ? and org_id = ?",
     [
       questionset.title,
       questionset.short_desc,
@@ -277,7 +305,7 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
       questionset.is_demo,
       modified_by,
       modified_date,
-      id,
+      id,orgid
     ],
     (err, res) => {
       if (err) {
@@ -298,12 +326,13 @@ QuestionSet.updateById = (id, questionset, modified_by, modified_date, result) =
   );
 };
 
-QuestionSet.updateStatusById = (questionset, result) => {
+QuestionSet.updateStatusById = (questionset,orgid, result) => {
   connection.execute(
-    "UPDATE question_set SET status_id = ? WHERE id = ?",
+    "UPDATE question_set SET status_id = ? WHERE id = ? and org_id = ?",
     [
       questionset.status_id,
       questionset.id,
+      orgid
     ],
     (err, res) => {
       if (err) {
@@ -356,7 +385,7 @@ QuestionSet.removeAll = (result) => {
   });
 };
 
-QuestionSet.getQuetionSetUsedByCount = (result) => {
+QuestionSet.getQuetionSetUsedByCount = (orgid,result) => {
   connection.query(
     "SELECT q1.title, q1.id, q2.count AS count " +
       "FROM  " +
@@ -368,7 +397,7 @@ QuestionSet.getQuetionSetUsedByCount = (result) => {
       "( " +
       "select question_set_id, count(question_set_id) as count from user_test_result utr group by question_set_id  " +
       ") AS q2 " +
-      "ON q1.id = q2.question_set_id order by count desc",
+      "ON q1.id = q2.question_set_id where q1.org_id = ? order by count desc",orgid,
     (err, res) => {
       if (err) {
          

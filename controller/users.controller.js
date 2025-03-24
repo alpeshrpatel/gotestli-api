@@ -76,7 +76,8 @@ exports.findAll = async (req, res) => {
 
 // Find a single users by Id
 exports.findOne = async (req, res) => {
-  Users.findById(req.params.userid, (err, data) => {
+  const {orgid} = req.query;
+  Users.findById(req.params.userid,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -95,7 +96,8 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findUser = async (req, res) => {
-  Users.findUser(req.params.uid, (err, data) => {  
+  const {orgid} = req.query;
+  Users.findUser(req.params.uid,orgid, (err, data) => {  
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -114,6 +116,7 @@ exports.findUser = async (req, res) => {
 };
 // // Update a users identified by the id in the request
 exports.updateUser = (req, res) => {
+  const {orgid} = req.query;
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -123,7 +126,7 @@ exports.updateUser = (req, res) => {
 
    
 
-  Users.updateUser(req.params.userid, req.body, (err, data) => {
+  Users.updateUser(req.params.userid, req.body,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

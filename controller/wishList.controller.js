@@ -25,8 +25,8 @@ exports.create = (req, res) => {
 };
 
 exports.findById =  (req, res) => {
-  const {start,end} = req.query
-    WishList.findById(req.params.id,start,end, (err, data) => {
+  const {start,end,search} = req.query
+    WishList.findById(req.params.id,start,end,search, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.send({

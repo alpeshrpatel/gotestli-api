@@ -154,8 +154,8 @@ exports.findAll = (req, res) => {
 
 // Find a single UserResultDetail by Id
 exports.findOne = (req, res) => {
-  
-  UserResultDetail.findById(req.params.id, (err, data) => {
+  const {orgid} = req.query;
+  UserResultDetail.findById(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -175,8 +175,9 @@ exports.findOne = (req, res) => {
 
 // Find a single UserResultDetail by Id
 exports.findUserResultDetailsByUserResultId = (req, res) => {
+  const {orgid} = req.query;
   UserResultDetail.findUserResultDetailsByUserResultId(
-    req.params.userresultid,
+    req.params.userresultid, orgid,
     (err, data) => {
      
       if (err) {
@@ -201,9 +202,11 @@ exports.findUserResultDetailsByUserResultId = (req, res) => {
 };
 
 exports.getUserResultAnswers = (req, res) => {
+  const {orgid} = req.query;
   UserResultDetail.getUserResultAnswers(
     req.params.userResultId,
     req.params.questionSetLength,
+    orgid,
     (err, data) => {
     
       if (err) {
@@ -227,9 +230,10 @@ exports.getUserResultAnswers = (req, res) => {
 };
 
 exports.getStatus = (req, res) => {
+  const {orgid} = req.query;
   UserResultDetail.getStatus(
     req.params.userResultId,
-    req.params.questionId,
+    req.params.questionId,orgid,
     (err, data) => {
      
       if (err) {
