@@ -66,7 +66,7 @@ app.use((req, res, next) => {
   if (
     req.url.startsWith("/api/category/selected") ||
     req.url.startsWith("/api/users") ||
-    req.url == "/api/questionset" ||
+    req.url.startsWith("/api/questionset") ||
     req.url.startsWith("/api/category/parent/categories") ||
     req.url == "/api/sendemail/instructor/uploadfile/result" ||
     req.url.startsWith("/api/contact/messages") ||
