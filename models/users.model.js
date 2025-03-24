@@ -46,13 +46,13 @@ Users.create = (newuser, result) => {
   });
 };
 
-Users.findById = (userid, result) => {
+Users.findById = (userid,orgid, result) => {
   const query =
     `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
     `FROM users u ` +
     `LEFT JOIN users_preferences up ON u.id = up.user_id ` +
     `LEFT JOIN categories c ON up.category_id = c.id ` +
-    `WHERE u.id = "${userid}" GROUP BY u.id;`;
+    `WHERE u.id = "${userid}" AND u.org_id = ${orgid} GROUP BY u.id;`;
 
   connection.query(query, (err, res) => {
     if (err) {
@@ -72,13 +72,13 @@ Users.findById = (userid, result) => {
   });
 };
 
-Users.findUser = (uid, result) => {
+Users.findUser = (uid,orgid, result) => {
   const query =
     `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
     `FROM users u ` +
     `LEFT JOIN users_preferences up ON u.id = up.user_id ` +
     `LEFT JOIN categories c ON up.category_id = c.id ` +
-    `WHERE u.uid = "${uid}" GROUP BY u.id;`;
+    `WHERE u.uid = "${uid}" AND u.org_id = ${orgid} GROUP BY u.id;`;
 
   connection.query(query, (err, res) => {
     if (err) {
@@ -112,7 +112,7 @@ Users.getAll = (orgid,result) => {
   });
 };
 
-Users.updateUser = (userid, users, result) => {
+Users.updateUser = (userid, users,orgid, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",
   // role: data.role || "",
@@ -124,7 +124,7 @@ Users.updateUser = (userid, users, result) => {
     "UPDATE users SET first_name= ?, last_name= ?, " +
       "email= ? , company= ?, " +
       "phone= ?, profile_pic= ? , modified_date = ? " +
-      "WHERE id = ?",
+      "WHERE id = ? AND org_id = ?",
     [
       users.first_name,
       users.last_name,
@@ -134,6 +134,7 @@ Users.updateUser = (userid, users, result) => {
       users.profile_pic,
       modified_date,
       userid,
+      orgid
     ],
     (err, res) => {
       if (err) {

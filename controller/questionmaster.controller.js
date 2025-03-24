@@ -57,8 +57,8 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
   // const title = req.query.title;
   const userid = req.params.userId
-  const { start, end, search, complexity, status, categoryId } = req.query;
-  QuestionMaster.findAll(userid,start, end, search, complexity, status, categoryId, (err, data) => {
+  const { start, end, search, complexity, status, categoryId,orgid } = req.query;
+  QuestionMaster.findAll(userid,start, end, search, complexity, status, categoryId,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -73,8 +73,8 @@ exports.findAll = (req, res) => {
 
 // Find a single QuestionMaster by Id
 exports.findOne = (req, res) => {
-  
-  QuestionMaster.findById(req.params.id, (err, data) => {
+  const {orgid} = req.query;
+  QuestionMaster.findById(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -94,8 +94,8 @@ exports.findOne = (req, res) => {
 
 //find a paragraph
 exports.findParagraph = (req, res) => {
-  
-  QuestionMaster.findParagraph(req.params.id, (err, data) => {
+  const {orgid} = req.query;
+  QuestionMaster.findParagraph(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -116,8 +116,8 @@ exports.findParagraph = (req, res) => {
 //findDetailedQuestion
 exports.findDetailedQuestion = (req, res) => {
   const { userId } = req.params; 
-    const { start, end } = req.query; 
-  QuestionMaster.findDetailedQuestion(userId,start,end, (err, data) => {
+    const { start, end, orgid } = req.query; 
+  QuestionMaster.findDetailedQuestion(userId,start,end,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({
@@ -144,11 +144,11 @@ exports.update = (req, res) => {
     });
   }
 
-  
+  const {orgid} = req.query;
 
   QuestionMaster.updateById(
     req.params.id,
-    new QuestionMaster(req.body),
+    new QuestionMaster(req.body), orgid,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
@@ -166,6 +166,7 @@ exports.update = (req, res) => {
 };
 
 exports.updateStatus = (req, res) => {
+  const {orgid} = req.query;
   // Validate Request
   if (!req.body) {
     res.status(400).send({
@@ -175,7 +176,7 @@ exports.updateStatus = (req, res) => {
 
   QuestionMaster.updateStatusById(
     req.params.id,
-    req.body.statusId,
+    req.body.statusId, orgid,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

@@ -11,8 +11,8 @@ const QuestionSetQuestion = function(questionSetQuestion){
     // this.modified_date = QuestionSetQuestion.modified_date;
     }
 
-    QuestionSetQuestion.findById = (result) => {
-      connection.query(`SELECT id FROM question_set ORDER BY id DESC LIMIT 1`, (err, res) => {
+    QuestionSetQuestion.findById = (orgid,result) => {
+      connection.query(`SELECT id FROM question_set where org_id = ${orgid} ORDER BY id DESC LIMIT 1`, (err, res) => {
         if (err) {
            
           result(err, null);

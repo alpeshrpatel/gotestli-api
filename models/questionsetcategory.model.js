@@ -25,8 +25,8 @@ QuestionSetCategory.create = (newQuestionSetCategory, result) => {
   });
 };
 
-QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id, result) => {
-    connection.query(`select category_id from question_set_categories where question_set_id = ${question_set_id}`, (err, res) => {
+QuestionSetCategory.getCategoriesByQuestionSetId = async (question_set_id,orgid, result) => {
+    connection.query(`select category_id from question_set_categories where question_set_id = ${question_set_id} AND org_id = ${orgid}`, (err, res) => {
       if (err) {
          
         result(err, null);

@@ -332,9 +332,9 @@ UserResult.create = (newUserResult, result) => {
   );
 };
 
-UserResult.findById = (id, result) => {
+UserResult.findById = (id,orgid, result) => {
   connection.query(
-    `SELECT * FROM user_test_result WHERE id = ${id}`,
+    `SELECT * FROM user_test_result WHERE id = ${id} AND org_id = ${orgid}`,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -353,7 +353,7 @@ UserResult.findById = (id, result) => {
   );
 };
 
-UserResult.findByUserId = (user_id, result) => {
+UserResult.findByUserId = (user_id,orgid, result) => {
   const query = `
   SELECT 
    utr.id AS user_test_result_id,
@@ -370,11 +370,11 @@ UserResult.findByUserId = (user_id, result) => {
     users u 
     ON utr.user_id = u.id
   WHERE 
-    utr.user_id = ?
+    utr.user_id = ? AND utr.org_id = ?
   ORDER BY 
     utr.created_date DESC;
 `;
-  connection.query(query, user_id, (err, res) => {
+  connection.query(query, user_id, orgid, (err, res) => {
     if (err) {
       result(err, null);
       return;
@@ -395,7 +395,7 @@ UserResult.findByUserIdForTable = (
   user_id,
   startPoint,
   endPoint,
-  search,
+  search,orgid,
   result
 ) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
@@ -422,7 +422,7 @@ UserResult.findByUserIdForTable = (
     ON utr.user_id = u.id
   WHERE 
     utr.user_id = ? 
-  AND (qs.title LIKE ? OR qs.short_desc LIKE ?)
+  AND (qs.title LIKE ? OR qs.short_desc LIKE ?) AND utr.org_id = ?
   ORDER BY 
     utr.created_date DESC LIMIT ? OFFSET ?;`;
   } else {
@@ -441,15 +441,15 @@ UserResult.findByUserIdForTable = (
     users u 
     ON utr.user_id = u.id
   WHERE 
-    utr.user_id = ?
+    utr.user_id = ? AND utr.org_id = ?
   ORDER BY 
     utr.created_date DESC LIMIT ? OFFSET ?;`;
   }
   if (search) {
     const searchTerm = `%${search}%`;
-    queryParams = [user_id, searchTerm, searchTerm, limit, offset];
+    queryParams = [user_id, searchTerm, searchTerm,orgid, limit, offset];
   } else {
-    queryParams = [user_id, limit, offset];
+    queryParams = [user_id,orgid, limit, offset];
   }
   connection.query(queryString, queryParams, (err, res) => {
     if (err) {
@@ -465,16 +465,16 @@ UserResult.findByUserIdForTable = (
     ON utr.question_set_id = qs.id
   JOIN 
     users u   
-    ON utr.user_id = u.id  WHERE utr.user_id = ? AND (qs.title LIKE ? OR qs.short_desc LIKE ?)`;
+    ON utr.user_id = u.id  WHERE utr.user_id = ? AND (qs.title LIKE ? OR qs.short_desc LIKE ?) AND utr.org_id = ?`;
     } else {
-      countQuery = `SELECT COUNT(*) as total FROM user_test_result WHERE user_id = ?`;
+      countQuery = `SELECT COUNT(*) as total FROM user_test_result WHERE user_id = ? AND org_id = ?`;
     }
     let countParams = [];
     if (search) {
       const searchTerm = `%${search}%`;
-      countParams = [user_id, searchTerm, searchTerm];
+      countParams = [user_id, searchTerm, searchTerm,orgid];
     } else {
-      countParams = [user_id];
+      countParams = [user_id,orgid];
     }
 
     connection.query(
@@ -496,9 +496,9 @@ UserResult.findByUserIdForTable = (
   });
 };
 
-UserResult.findQuestionSetByUserId = (userid, questionsetid, result) => {
+UserResult.findQuestionSetByUserId = (userid, questionsetid,orgid, result) => {
   connection.query(
-    `SELECT id FROM user_test_result WHERE user_id = ${userid} and question_set_id = ${questionsetid} order by created_date desc`,
+    `SELECT id FROM user_test_result WHERE user_id = ${userid} and question_set_id = ${questionsetid} and org_id = ${orgid} order by created_date desc`,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -517,9 +517,9 @@ UserResult.findQuestionSetByUserId = (userid, questionsetid, result) => {
   );
 };
 
-UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
+UserResult.getHistoryOfUser = (userId, questionsetid,orgid, result) => {
   connection.query(
-    `SELECT * FROM user_test_result WHERE user_id = ${userId} and question_set_id = ${questionsetid} order by created_date desc`,
+    `SELECT * FROM user_test_result WHERE user_id = ${userId} and question_set_id = ${questionsetid} and org_id = ${orgid} order by created_date desc`,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -537,24 +537,49 @@ UserResult.getHistoryOfUser = (userId, questionsetid, result) => {
   );
 };
 
-UserResult.getStudentsList = (questionSetId, startPoint, endPoint, result) => {
+UserResult.getStudentsList = (questionSetId, startPoint, endPoint,search,orgid, result) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT * from user_test_result where question_set_id = ? AND (user_id LIKE ? OR created_date LIKE ?) AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT * from user_test_result where question_set_id = ? AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [questionSetId, searchTerm, searchTerm,orgid, limit, offset];
+  } else {
+    queryParams = [questionSetId,orgid, limit, offset];
+  }
+
   connection.query(
-    `SELECT * from user_test_result where question_set_id = ? order by created_date desc LIMIT ? OFFSET ?;`,
-    [questionSetId, limit, offset],
+    queryString,queryParams,
     (err, res) => {
       if (err) {
         result(err, null);
         return;
       }
-
+      let countQuery = ``;
+      if (search) {
+        countQuery = `SELECT COUNT(*) as total FROM user_test_result WHERE question_set_id = ? AND (user_id LIKE ? OR created_date LIKE ?) AND org_id = ?`;
+      } else {
+        countQuery = `SELECT COUNT(*) as total FROM user_test_result WHERE question_set_id = ? AND org_id = ?`;
+      }
+      let countParams = [];
+      if (search) {
+        const searchTerm = `%${search}%`;
+        countParams = [questionSetId, searchTerm, searchTerm,orgid];
+      } else {
+        countParams = [questionSetId,orgid];
+      }
       connection.query(
-        "SELECT COUNT(*) as total FROM user_test_result WHERE question_set_id = ?",
-        [questionSetId],
+        countQuery,countParams,
         (countErr, countRes) => {
           if (countErr) {
             result(countErr, null);
@@ -573,13 +598,13 @@ UserResult.getStudentsList = (questionSetId, startPoint, endPoint, result) => {
 };
 
 //getDshbDataAnalysis
-UserResult.getDshbDataAnalysis = (userId, result) => {
+UserResult.getDshbDataAnalysis = (userId,orgid, result) => {
   const query =
     `SELECT COUNT(*) AS completed_quiz_count, ` +
     `AVG(percentage) AS average_percentage, ` +
     // `(SELECT COUNT(*) FROM user_test_result WHERE  )`
     `(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ${userId})) AS quiz_completion_percentage  FROM ` +
-    `user_test_result WHERE status = 1 and user_id = ${userId};`;
+    `user_test_result WHERE status = 1 and user_id = ${userId} and org_id=${orgid};`;
   connection.query(query, (err, res) => {
     if (err) {
       result(err, null);
@@ -597,7 +622,7 @@ UserResult.getDshbDataAnalysis = (userId, result) => {
 };
 
 UserResult.getTotalAttemptCount = (userId, result) => {
-  const query = `SELECT COUNT(*) AS attempt_count from user_test_result u join question_set qs on u.question_set_id = qs.id where qs.created_by = ${userId};`;
+  const query = `SELECT COUNT(*) AS attempt_count from user_test_result u join question_set qs on u.question_set_id = qs.id where qs.created_by = ${userId} AND u.org_id = ${orgid};`;
   connection.query(query, (err, res) => {
     if (err) {
       result(err, null);

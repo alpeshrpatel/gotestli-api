@@ -53,7 +53,8 @@ exports.create = (req, res) => {
 
 
 exports.getCategoriesByQuestionSetId =  (req, res) => {
-    QuestionSetCategory.getCategoriesByQuestionSetId(req.params.id, (err, data) => {
+  const {orgid} = req.query
+    QuestionSetCategory.getCategoriesByQuestionSetId(req.params.id,orgid, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.status(404).send({

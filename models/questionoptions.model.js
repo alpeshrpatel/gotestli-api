@@ -15,9 +15,9 @@ function Options(options) {
   this.modified_date = options.modified_date;
 } 
 
-Options.findById = (id, result) => {
+Options.findById = (id,orgid, result) => {
   connection.query(
-    `SELECT question_id,question_option AS options,is_correct_answer AS correctAnswer FROM question_options WHERE question_id = ${id}`,
+    `SELECT question_id,question_option AS options,is_correct_answer AS correctAnswer FROM question_options WHERE question_id = ${id} and org_id = ${orgid}`,
     (err, res) => {
       if (err) {
          
@@ -37,10 +37,10 @@ Options.findById = (id, result) => {
   );
 };
 
-Options.getAll = (result) => {
-  let query = "SELECT * FROM question_options";
+Options.getAll = (orgid,result) => {
+  let query = "SELECT * FROM question_options where org_id = ?";
 
-  connection.query(query, (err, res) => {
+  connection.query(query,orgid, (err, res) => {
     if (err) {
        
       result(null, err);

@@ -3,7 +3,8 @@ const QuestionSetQuestion = require("../models/questionsetquestion.model");
 
 // Find a last questionsetid
 exports.findOne = (req, res) => {
-  QuestionSetQuestion.findById((err, data) => {
+  const {orgid} = req.query
+  QuestionSetQuestion.findById(orgid,(err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

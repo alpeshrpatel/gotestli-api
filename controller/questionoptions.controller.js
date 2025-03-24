@@ -5,7 +5,8 @@ const Options = require("../models/questionoptions.model.js");
 
 // Retrieve all Options from the database (with condition).
 exports.findAll = async(req, res) => {
-  Options.getAll((err, data) => {
+  const {orgid} = req.query;
+  Options.getAll(orgid,(err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -20,7 +21,8 @@ exports.findAll = async(req, res) => {
 
 // Find a single Options by Id
 exports.findOne = async (req, res) => {
-  Options.findById(req.params.id, (err, data) => {
+  const {orgid} = req.query;
+  Options.findById(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

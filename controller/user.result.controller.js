@@ -3,9 +3,9 @@ const UserResult = require("../models/user.result.model");
 
 // Retrieve all UserResult by UserId (with condition).
 exports.findByUserId = (req, res) => {
-  
+  const {orgid} = req.query;
   const userId = req.params.userid;
-  UserResult.findByUserId(userId, (err, data) => {
+  UserResult.findByUserId(userId,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -20,8 +20,9 @@ exports.findByUserId = (req, res) => {
 
 exports.findByUserIdForTable = (req, res) => {
   const {start,end, search} = req.query
+  const {orgid} = req.query;
   const userId = req.params.userid;
-  UserResult.findByUserIdForTable(userId,start,end,search, (err, data) => {
+  UserResult.findByUserIdForTable(userId,start,end,search,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -36,11 +37,11 @@ exports.findByUserIdForTable = (req, res) => {
 
 // Retrieve all UserResult by UserId (with condition).
 exports.findQuestionSetByUserId = (req, res) => {
- 
+  const {orgid} = req.query;
   const userid = req.params.userid;
   const questionsetid = req.params.questionsetid; // query = {questionset:1}
 
-  UserResult.findQuestionSetByUserId(userid, questionsetid, (err, data) => {
+  UserResult.findQuestionSetByUserId(userid, questionsetid,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -55,11 +56,11 @@ exports.findQuestionSetByUserId = (req, res) => {
 
 // Retrieve UserResult by UserId and questionId (with condition).
 exports.getHistoryOfUser = (req, res) => {
- 
+  const {orgid} = req.query;
   const userId = req.params.userid;
   const questionsetid = req.params.questionsetid;
 
-  UserResult.getHistoryOfUser(userId, questionsetid, (err, data) => {
+  UserResult.getHistoryOfUser(userId, questionsetid,orgid, (err, data) => {
     if (err)
       res.send({
         message:
@@ -74,11 +75,11 @@ exports.getHistoryOfUser = (req, res) => {
 
 exports.getStudentsList = (req, res) => {
   
-
+  const {orgid} = req.query;
   const questionSetId = req.params.questionSetId;
-  const {start,end} = req.query;
+  const {start,end,search} = req.query;
 
-  UserResult.getStudentsList(questionSetId,start,end, (err, data) => {
+  UserResult.getStudentsList(questionSetId,start,end,search,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -93,8 +94,8 @@ exports.getStudentsList = (req, res) => {
 
 //getDshbDataAnalysis
 exports.getDshbDataAnalysis = (req, res) => {
-
-  UserResult.getDshbDataAnalysis(req.params.userId, (err, data) => {
+  const {orgid} = req.query;
+  UserResult.getDshbDataAnalysis(req.params.userId,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -109,8 +110,8 @@ exports.getDshbDataAnalysis = (req, res) => {
 
 //getTotalAttemptCount
 exports.getTotalAttemptCount = (req, res) => {
-
-  UserResult.getTotalAttemptCount(req.params.userId, (err, data) => {
+  const {orgid} = req.query;
+  UserResult.getTotalAttemptCount(req.params.userId,orgid, (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -125,7 +126,6 @@ exports.getTotalAttemptCount = (req, res) => {
 
 
 exports.getAll = (req, res) => {
-
   UserResult.getAll(req.params.orgid, (err, data) => {
     if (err)
       res.status(500).send({
@@ -215,7 +215,7 @@ exports.create = (req, res) => {
 // Retrieve all UserResult from the database (with condition).
 exports.findAll = (req, res) => {
   const title = req.query.title;
-
+  const {orgid} = req.query;
   UserResult.findAll(title, (err, data) => {
     if (err)
       res.status(500).send({
@@ -231,8 +231,8 @@ exports.findAll = (req, res) => {
 
 // Find a single UserResult by Id
 exports.findOne = (req, res) => {
- 
-  UserResult.findById(req.params.id, (err, data) => {
+  const {orgid} = req.query;
+  UserResult.findById(req.params.id,orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.status(404).send({

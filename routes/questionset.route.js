@@ -579,7 +579,7 @@ module.exports = app => {
  *                   example: "An error occurred while retrieving question sets for the instructor."
  */
 
-    // Retrieve question sets of instructor
+    // Retrieve question sets of instructor 
     router.get("/instructor/:userId", questionset.getQuestionSetsOfInstructor)
 
     /**

@@ -69,9 +69,9 @@ QuestionMaster.create = (newQuestionMaster, userId, result) => {
   );
 };
 
-QuestionMaster.findById = (id, result) => {
+QuestionMaster.findById = (id, orgid, result) => {
   connection.execute(
-    `SELECT question, explanation FROM question_master WHERE id = ${id}`,
+    `SELECT question, explanation FROM question_master WHERE id = ${id} AND org_id = ${orgid}`,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -90,9 +90,9 @@ QuestionMaster.findById = (id, result) => {
   );
 };
 
-QuestionMaster.findParagraph = (id, result) => {
+QuestionMaster.findParagraph = (id, orgid, result) => {
   connection.execute(
-    `SELECT paragraph FROM question_paragraph WHERE id = ${id}`,
+    `SELECT paragraph FROM question_paragraph WHERE id = ${id} and org_id = ${orgid}`,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -159,7 +159,13 @@ QuestionMaster.findParagraph = (id, result) => {
 //     }
 //   );
 // };
-QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
+QuestionMaster.findDetailedQuestion = (
+  id,
+  startPoint,
+  endPoint,
+  orgid,
+  result
+) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
@@ -187,9 +193,9 @@ QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
       ON 
           qm.paragraph_id = qp.id
       WHERE 
-          qm.created_by = ? 
+          qm.created_by = ? AND qm.org_id = ?
       LIMIT ? OFFSET ?;`,
-    [id, limit, offset],
+    [id, orgid, limit, offset],
     async (err, res) => {
       if (err) {
         result(err, null);
@@ -203,8 +209,8 @@ QuestionMaster.findDetailedQuestion = (id, startPoint, endPoint, result) => {
         // );
         // const totalRecords = countResult[0].total;
         connection.query(
-          "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?",
-          [id],
+          "SELECT COUNT(*) as total FROM question_master WHERE created_by = ? and org_id = ?",
+          [id, orgid],
           (countErr, countRes) => {
             if (countErr) {
               result(countErr, null);
@@ -272,6 +278,7 @@ QuestionMaster.findAll = (
   complexity,
   status,
   categoryId,
+  orgid,
   result
 ) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
@@ -280,82 +287,73 @@ QuestionMaster.findAll = (
   const limit = Math.max(parseInt(end - start + 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
 
-  
-  let query = "SELECT * FROM question_master WHERE created_by = ?";
-  const queryParams = [userid];
+  let query =
+    "SELECT * FROM question_master WHERE created_by = ? AND org_id = ?";
+  const queryParams = [userid, orgid];
 
- 
   if (status !== undefined) {
     query += " AND status_id = ?";
     queryParams.push(status);
   }
 
-  
   if (complexity) {
-    
-    const complexityLevels = complexity.split(":").filter(level => level);
-    
+    const complexityLevels = complexity.split(":").filter((level) => level);
+
     if (complexityLevels.length > 0) {
       query += " AND (";
       const complexityConditions = [];
-      
+
       complexityLevels.forEach((level, index) => {
         complexityConditions.push("complexity = ?");
         queryParams.push(level);
       });
-      
+
       query += complexityConditions.join(" OR ");
       query += ")";
     }
   }
 
-  
   if (categoryId) {
     query += " AND category_id = ?";
     queryParams.push(categoryId);
   }
 
-  
   if (search) {
     query += " AND (question LIKE ? OR description LIKE ?)";
     const searchTerm = `%${search}%`;
     queryParams.push(searchTerm, searchTerm);
   }
 
-  
   query += " ORDER BY created_date DESC LIMIT ? OFFSET ?";
   queryParams.push(limit, offset);
 
-  
   connection.query(query, queryParams, (err, res) => {
     if (err) {
       result(err, null);
       return;
     }
 
-    
     let countQuery =
-      "SELECT COUNT(*) as total FROM question_master WHERE created_by = ?";
-    const countParams = [userid];
+      "SELECT COUNT(*) as total FROM question_master WHERE created_by = ? AND org_id = ?";
+    const countParams = [userid, orgid];
 
-    
     if (status !== undefined) {
       countQuery += " AND status_id = ?";
       countParams.push(parseInt(status));
     }
 
     if (complexity) {
-      const complexityLevels = complexity.split(":").filter(level => level);
-      
+      const complexityLevels = complexity.split(":").filter((level) => level);
+
       if (complexityLevels.length > 0) {
         countQuery += " AND (";
         const complexityConditions = [];
-        
+
         complexityLevels.forEach((level, index) => {
           complexityConditions.push("complexity = ?");
           countParams.push(level);
         });
-        
+
         countQuery += complexityConditions.join(" OR ");
         countQuery += ")";
       }
@@ -372,7 +370,6 @@ QuestionMaster.findAll = (
       countParams.push(searchTerm, searchTerm);
     }
 
-    
     connection.query(countQuery, countParams, (countErr, countRes) => {
       if (countErr) {
         result(countErr, null);
@@ -384,13 +381,13 @@ QuestionMaster.findAll = (
     });
   });
 };
-QuestionMaster.updateById = (id, questionmaster, result) => {
+QuestionMaster.updateById = (id, questionmaster,orgid, result) => {
   connection.execute(
     "UPDATE question_master SET " +
       "org_id = ?, question = ?, description = ?, explanation = ?, " +
       "paragraph_id = ?, question_type_id = ?, status_id = ?, complexity = ?, " +
       "marks = ?, is_negative = ?, negative_marks = ? " +
-      "WHERE id = ?",
+      "WHERE id = ? AND org_id = ?",
     [
       questionmaster.org_id,
       questionmaster.question,
@@ -403,7 +400,7 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
       questionmaster.marks,
       questionmaster.is_negative,
       questionmaster.negative_marks,
-      id,
+      id,orgid
     ],
     (err, res) => {
       if (err) {
@@ -423,10 +420,10 @@ QuestionMaster.updateById = (id, questionmaster, result) => {
   );
 };
 
-QuestionMaster.updateStatusById = (id, statusId, result) => {
+QuestionMaster.updateStatusById = (id, statusId,orgid, result) => {
   connection.execute(
-    "UPDATE question_master SET status_id= ? WHERE id = ?",
-    [statusId, id],
+    "UPDATE question_master SET status_id= ? WHERE id = ? and org_id = ?",
+    [statusId, id, orgid],
     (err, res) => {
       if (err) {
         result(null, err);
