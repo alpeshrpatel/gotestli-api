@@ -120,7 +120,7 @@ QuestionSet.getQuestionSet = async (question_set_id,startPoint,endPoint,orgid, r
 const offset = Math.max(parseInt(start - 1, 10), 0);
 
   connection.query(
-    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qsq.question_set_id = qs.id  and qm.id = qsq.question_id where qs.org_id = ? order by qm.created_date desc LIMIT ? OFFSET ?;`,[question_set_id,orgid,limit,offset],
+    `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc LIMIT ? OFFSET ?;`,[question_set_id,orgid,limit,offset],
     (err, res) => {
       if (err) {
          
