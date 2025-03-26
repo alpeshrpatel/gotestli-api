@@ -53,6 +53,7 @@ exports.addQuestionsOnStartQuiz= (req, res) => {
   .substring(0, 19);
 
   UserResultDetail.addQuestionsOnStartQuiz(
+    req.body.org_id,
     req.body.userId,
     req.body.questionSetId,
     req.body.userResultId, 

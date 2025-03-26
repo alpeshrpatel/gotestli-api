@@ -42,7 +42,7 @@ exports.create = (req, res) => {
   // });
   console.log(req.body)
   const questionset = {
-    org_id: 10,
+    org_id: req.body.org_id,
     title: req.body.title,
     question_set_url: null,
     image: req.body.image,

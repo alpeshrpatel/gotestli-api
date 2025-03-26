@@ -182,7 +182,7 @@ exports.create = (req, res) => {
   const date = new Date().toISOString().slice(0, 10);
   const userresult = new UserResult({
     // id : req.body.id,
-    org_id: 10,
+    org_id: req.body.org_id,
     user_id: req.body.user_id,
     question_set_id: req.body.question_set_id,
     total_question: req.body.total_question,

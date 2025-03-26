@@ -296,8 +296,9 @@ app.post('/api/capture-paypal-order', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-const stripe = new Stripe("sk_test_51QoP1kCc5nEXg12i23DtMBNpLgHEHT4tTIGt6At1JA1KmdnNVdidYLL7SqSfZfwsvFUMPjPbUk4Q3B2TV7oqt2ZH00mLQDT77K");
+}); 
+  // "sk_test_51QoP1kCc5nEXg12i23DtMBNpLgHEHT4tTIGt6At1JA1KmdnNVdidYLL7SqSfZfwsvFUMPjPbUk4Q3B2TV7oqt2ZH00mLQDT77K"
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 app.post("/create-payment-intent", async (req, res) => {
   try {
       const { amount, currency } = req.body;
