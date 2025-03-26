@@ -26,7 +26,18 @@ const corsOptions = {
   credentials: true,
   origin: [process.env.BACKEND_URL], 
 };
-
+app.use(cors({
+  origin: 'https://gotestli.com', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Access-Control-Allow-Methods', 
+    'Access-Control-Allow-Origin', 
+    'Access-Control-Allow-Headers'
+  ],
+  credentials: true
+}));
 const app = express();
 // app.use(cors());
 //
