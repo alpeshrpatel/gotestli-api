@@ -106,6 +106,7 @@ UserResultDetails.addAllQuestionForQuestionSet = (
 };
 
 UserResultDetails.addQuestionsOnStartQuiz = (
+  orgid,
   userId,
   questionSetId,
   userResultId,
@@ -118,6 +119,7 @@ UserResultDetails.addQuestionsOnStartQuiz = (
   connection.query(
     `
         INSERT INTO user_test_result_dtl (
+        org_id,
         user_test_result_id,
         question_set_question_id,
         question_type,
@@ -128,7 +130,8 @@ UserResultDetails.addQuestionsOnStartQuiz = (
         modified_date,
         status
     ) 
-    SELECT  
+    SELECT
+        qs.org_id as org_id,  
         utr.id as user_test_result_id,   
         qm.id as question_set_question_id,
         qm.question_type_id as question_type, 

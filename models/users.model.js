@@ -36,33 +36,32 @@ const Users = function (users) {
 Users.create = (newuser, result) => {
   connection.query("INSERT INTO users SET ?", newuser, (err, res) => {
     if (err) {
-       // console.log("error= ", err);
+      // console.log("error= ", err);
       result(err, null);
       return;
     }
 
-     // console.log("created users: ", { id: res.insertId, ...newuser });
+    // console.log("created users: ", { id: res.insertId, ...newuser });
     result(null, { id: res.insertId, ...newuser });
   });
 };
 
-Users.findById = (userid,orgid, result) => {
-  const query =
-    `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
-    `FROM users u ` +
-    `LEFT JOIN users_preferences up ON u.id = up.user_id ` +
-    `LEFT JOIN categories c ON up.category_id = c.id ` +
-    `WHERE u.id = "${userid}" AND u.org_id = ${orgid} GROUP BY u.id;`;
+Users.findById = (userid, orgid, result) => {
+  console.log('orgid',orgid)
+  const query = `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags 
+    FROM users u 
+    LEFT JOIN users_preferences up ON u.id = up.user_id
+    LEFT JOIN categories c ON up.category_id = c.id  
+    WHERE u.id = ?  AND (u.org_id = ? OR u.org_id IS NULL)  GROUP BY u.id;`;
 
-  connection.query(query, (err, res) => {
+  connection.query(query,[userid,orgid], (err, res) => {
     if (err) {
-       
       result(err, null);
       return;
     }
 
     if (res.length) {
-       // console.log("found users: ", res[0]);
+      // console.log("found users: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -72,7 +71,7 @@ Users.findById = (userid,orgid, result) => {
   });
 };
 
-Users.findUser = (uid,orgid, result) => {
+Users.findUser = (uid, orgid, result) => {
   const query =
     `SELECT u.*, GROUP_CONCAT(CONCAT(c.id, ':', c.title) SEPARATOR ', ') AS tags ` +
     `FROM users u ` +
@@ -82,13 +81,12 @@ Users.findUser = (uid,orgid, result) => {
 
   connection.query(query, (err, res) => {
     if (err) {
-       
       result(err, null);
       return;
     }
 
     if (res.length) {
-       // console.log("found users: ", res[0]);
+      // console.log("found users: ", res[0]);
       result(null, res[0]);
       return;
     }
@@ -98,11 +96,10 @@ Users.findUser = (uid,orgid, result) => {
   });
 };
 
-Users.getAll = (orgid,result) => {
+Users.getAll = (orgid, result) => {
   let query = `SELECT * FROM users where org_id = ${orgid}`;
   connection.query(query, (err, res) => {
     if (err) {
-       
       result(null, err);
       return;
     }
@@ -112,7 +109,7 @@ Users.getAll = (orgid,result) => {
   });
 };
 
-Users.updateUser = (userid, users,orgid, result) => {
+Users.updateUser = (userid, users, orgid, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",
   // role: data.role || "",
@@ -134,11 +131,10 @@ Users.updateUser = (userid, users,orgid, result) => {
       users.profile_pic,
       modified_date,
       userid,
-      orgid
+      orgid,
     ],
     (err, res) => {
       if (err) {
-         
         result(null, err);
         return;
       }
@@ -149,7 +145,7 @@ Users.updateUser = (userid, users,orgid, result) => {
         return;
       }
 
-       // console.log("updated users: ", { id: userid, ...users });
+      // console.log("updated users: ", { id: userid, ...users });
       result(null, { id: userid, ...users });
     }
   );
@@ -158,7 +154,6 @@ Users.updateUser = (userid, users,orgid, result) => {
 Users.remove = (id, result) => {
   connection.query("DELETE FROM users WHERE id = ?", id, (err, res) => {
     if (err) {
-       
       result(null, err);
       return;
     }
@@ -169,7 +164,7 @@ Users.remove = (id, result) => {
       return;
     }
 
-     // console.log("deleted users with id: ", id);
+    // console.log("deleted users with id: ", id);
     result(null, res);
   });
 };
@@ -177,12 +172,11 @@ Users.remove = (id, result) => {
 Users.removeAll = (result) => {
   connection.query("DELETE FROM users", (err, res) => {
     if (err) {
-       
       result(null, err);
       return;
     }
 
-     // console.log(`deleted ${res.affectedRows} users`);
+    // console.log(`deleted ${res.affectedRows} users`);
     result(null, res);
   });
 };
