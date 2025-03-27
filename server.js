@@ -22,43 +22,16 @@ dotenv.config({ path: `.env.${env}` });
 
 
 // Define the CORS options
-// const corsOptions = {
-//   credentials: true,
-//   origin: [process.env.BACKEND_URL], 
-// };
+const corsOptions = {
+  credentials: true,
+  origin: [process.env.BACKEND_URL], 
+};
 
 
 const app = express();
-// app.use(cors({
-//   origin: 'https://gotestli.com',
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization']
-// }));
-// app.use(cors({
-//   origin: 'https://gotestli.com', 
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-//   allowedHeaders: [
-//     'Content-Type', 
-//     'Authorization', 
-//     'Access-Control-Allow-Methods', 
-//     'Access-Control-Allow-Origin', 
-//     'Access-Control-Allow-Headers'
-//   ],
-//   credentials: true
-// }));
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  
-  next();
-});
+
+
 app.use(cors());
 
 app.use((req, res, next) => {
