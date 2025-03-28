@@ -29,6 +29,7 @@ const corsOptions = {
 
 
 const app = express();
+
 app.use(cors({
   origin: 'https://gotestli.com', 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
@@ -42,19 +43,8 @@ app.use(cors({
   credentials: true
 }));
 
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', 'https://gotestli.com');
-//   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-//   // Handle preflight requests
-//   if (req.method === 'OPTIONS') {
-//     return res.sendStatus(200);
-//   }
-  
-//   next();
-// });
-// app.use(cors());
+
+
 
 app.use((req, res, next) => {
   const host = req.hostname; 
