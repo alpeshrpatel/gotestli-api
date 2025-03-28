@@ -1,8 +1,8 @@
 const { cache } = require("../middleware/cacheMiddleware");
-const UserPurchases = require("../models/userpurchases.model");
+const WhiteListedQSet = require("../models/whitelistedquestionset.model");
 const generateDateTime = require("../utils/util");
 
-// Create and Save a new UserPurchases
+// Create and Save a new WhiteListedQSet
 exports.create = (req, res) => {
       // Validate request
       
@@ -13,19 +13,19 @@ exports.create = (req, res) => {
       }
       const data = {questionset_id:req.body.questionSetId,user_id:req.body.userId,ins_id:req.body.insId}
     //   const createdDate = generateDateTime();
-      // Save UserPurchases in the database
-      UserPurchases.create(data , (err, data) => {
+      // Save WhiteListedQSet in the database
+      WhiteListedQSet.create(data , (err, data) => {
         if (err)
           res.status(500).send({
             message:
-              err.message || "Some error occurred while creating the UserPurchases."
+              err.message || "Some error occurred while creating the WhiteListedQSet."
           });
         else res.send(data);
       });
 };
 
 exports.getMyPurchases =  (req, res) => {
-    UserPurchases.getMyPurchases(req.params.userId, (err, data) => {
+    WhiteListedQSet.getMyPurchases(req.params.userId, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {
           res.send({
