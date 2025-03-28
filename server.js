@@ -30,7 +30,21 @@ const corsOptions = {
 
 const app = express();
 
- app.use(cors());
+app.use(cors({
+  origin: 'https://gotestli.com', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'Access-Control-Allow-Methods', 
+    'Access-Control-Allow-Origin', 
+    'Access-Control-Allow-Headers'
+  ],
+  credentials: true
+}));
+
+
+
 
 app.use((req, res, next) => {
   const host = req.hostname; 
@@ -134,7 +148,7 @@ require("./routes/reviews.route.js")(app);
 require("./routes/wishlist.route.js")(app);
 require("./routes/appfeedback.route.js")(app);
 require("./routes/comments.route.js")(app);
-require("./routes/userpurchases.route.js")(app);
+require("./routes/whitelistedquestionset.route.js")(app);
 require("./routes/questionparagraph.route.js")(app);
 require("./routes/forgetpasswordotp.route.js")(app);
 require("./routes/organization.route.js")(app);
