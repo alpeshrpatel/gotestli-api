@@ -30,7 +30,13 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors());
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://gotestli.com");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  next();
+});
+
+// app.use(cors());
 
 app.use((req, res, next) => {
   const host = req.hostname; 
