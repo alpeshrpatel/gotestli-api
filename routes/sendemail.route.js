@@ -29,6 +29,10 @@ module.exports = app => {
      //send invitation mail for user(student/instructor) /api/sendemail/org/user/invitation/from-admin
      router.post("/org/user/invitation/from-admin", sendMail.getUserInvitation);
 
+    router.post("/refund/request/admin", sendMail.getRefundRequestToAdmin);
+
+    router.post("/refund/request/student", sendMail.getRefundRequestFromStudent);
+
     app.use('/api/sendemail',router)
 
 };

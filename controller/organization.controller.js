@@ -41,6 +41,7 @@ exports.create = (req, res) => {
 exports.getOrganizations = (req, res) => {
   Organization.getOrganizations( (err, data) => {
     if (err) {
+      console.log(err) 
       if (err.kind === "not_found") {
         res.send({
           message: `Not found organization.`,

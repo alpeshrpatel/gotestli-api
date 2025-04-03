@@ -30,20 +30,20 @@ const corsOptions = {
 
 const app = express();
 
-app.use(cors({
-  origin: 'https://gotestli.com', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'Access-Control-Allow-Methods', 
-    'Access-Control-Allow-Origin', 
-    'Access-Control-Allow-Headers'
-  ],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'https://gotestli.com', 
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS'],
+//   allowedHeaders: [
+//     'Content-Type', 
+//     'Authorization', 
+//     'Access-Control-Allow-Methods', 
+//     'Access-Control-Allow-Origin', 
+//     'Access-Control-Allow-Headers'
+//   ],
+//   credentials: true
+// }));
 
-
+app.use(cors());
 
 
 app.use((req, res, next) => {
@@ -152,6 +152,7 @@ require("./routes/userpurchases.route.js")(app);
 require("./routes/questionparagraph.route.js")(app);
 require("./routes/forgetpasswordotp.route.js")(app);
 require("./routes/organization.route.js")(app);
+require("./routes/transactions.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
@@ -325,7 +326,7 @@ app.post("/create-payment-intent", async (req, res) => {
           payment_method_types: ["card"],
       });
 
-      res.send({ clientSecret: paymentIntent.client_secret });
+      res.send({ clientSecret: paymentIntent.client_secret, paymentIntentId: paymentIntent.id });
   } catch (error) {
       res.status(500).send({ error: error.message });
   }
