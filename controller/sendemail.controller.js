@@ -632,3 +632,176 @@ ${role === 'instructor'
     }
   );
 };
+
+// getRefundRequestToAdmin
+exports.getRefundRequestToAdmin = async (req, res) => {
+  const { email,paymentId,title,amount } = req.body;
+
+  const mailOptionsForRefundRequestToAdmin = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: 'gotestli07@gmail.com', // recipient email
+    subject: `⚠️ New Refund Request Notification - Action Required`,
+    text: 
+`Dear Admin,
+
+This is to notify you that a new refund request has been submitted in the Gotestli platform.
+
+🔍 Request Details:
+- User Email: ${email}
+- Amount Requested: ${amount}
+- Payment ID: ${paymentId}
+- Question Set Title: ${title}
+
+
+
+Please review this request at your earliest convenience through the admin dashboard. The request can be accessed directly at:
+https://gotestli.com/refunds/requests
+
+As per our policy, refund requests need to be processed within 2 business days of submission.
+
+Best Regards,
+The Gotestli System
+
+Note: This is an automated notification. Please do not reply to this email.
+`,
+    html: `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <p>Dear <strong>Admin</strong>,</p>
+
+  <p>This is to notify you that a new refund request has been submitted in the Gotestli platform.</p>
+
+  <div style="background-color: #f8f9fa; border-left: 5px solid #ff9800; padding: 15px; margin: 20px 0;">
+    <p><strong>🔍 Request Details:</strong></p>
+    <p>👤 <strong>User Email:</strong> ${email}</p>
+    <p>💲 <strong>Amount Requested:</strong> ${amount}</p>
+    <p>📅 <strong>Request ID:</strong> ${paymentId}</p>
+    <p>🆔 <strong>QuestionSet Title:</strong> ${title}</p>
+  </div>
+
+  
+
+  <p>Please review this request at your earliest convenience through the admin dashboard. The request can be accessed directly at:</p>
+  <p><a href="https://gotestli.com/refunds/requests" style="color: #007BFF;">https://gotestli.com/refunds/requests</a></p>
+
+  <p>As per our policy, refund requests need to be processed within 2 business days of submission.</p>
+
+  <p><strong>Best Regards,</strong><br>
+  The Gotestli System</p>
+
+  <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+    Note: This is an automated notification. Please do not reply to this email.
+  </p>
+</div>
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForRefundRequestToAdmin,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};
+
+//getRefundRequestFromStudent
+exports.getRefundRequestFromStudent = async (req, res) => {
+  const { email,paymentId,title,amount } = req.body;
+
+  const mailOptionsForRefundRequestToStudent = {
+    from: {
+      name: "Gotestli",
+      address: process.env.USER,
+    }, // sender address
+    to: email, // recipient email
+    subject: `📝 Your Refund Request Has Been Received - GoTestli`,
+    text: 
+`Dear Student,
+
+Thank you for submitting your refund request with GoTestli. We have received your request and it is now being processed.
+
+🔍 Your Request Details:
+- User Email: ${email}
+- Amount Requested: ${amount}
+- Payment ID: ${paymentId}
+- Question Set Title: ${title}
+
+🕒 What happens next?
+Our administrative team will review your request within 2 business days. You will receive an email notification once your request has been processed.
+
+If you have any questions regarding your refund request, please contact our support team at gotestli07@gmail.com or call (800) 555-TEST with your Request ID ready for reference.
+
+
+We appreciate your patience during this process.
+
+Best Regards,
+The GoTestli Team
+
+Note: This is an automated confirmation. If you did not submit a refund request, please contact our support team immediately.
+`,
+    html: `
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+  <p>Dear <strong>Student</strong>,</p>
+
+  <p>Thank you for submitting your refund request with GoTestli. We have received your request and it is now being processed.</p>
+
+  <div style="background-color: #f8f9fa; border-left: 5px solid #3f51b5; padding: 15px; margin: 20px 0;">
+    <p><strong>🔍 Your Request Details:</strong></p>
+      <p>👤 <strong>User Email:</strong> ${email}</p>
+    <p>💲 <strong>Amount Requested:</strong> ${amount}</p>
+    <p>📅 <strong>Request ID:</strong> ${paymentId}</p>
+    <p>🆔 <strong>QuestionSet Title:</strong> ${title}</p>
+  </div>
+
+  <div style="background-color: #f8f9fa; border-left: 5px solid #4CAF50; padding: 15px; margin: 20px 0;">
+    <p><strong>🕒 What happens next?</strong></p>
+    <p>Our administrative team will review your request within 2 business days. You will receive an email notification once your request has been processed.</p>
+  </div>
+
+  <p>If you have any questions regarding your refund request, please contact our support team at <a href="mailto:gotestli07@gmail.com" style="color: #007BFF;">gotestli07@gmail.com</a> or call (800) 555-TEST with your Request ID ready for reference.</p>
+
+ 
+
+  <p>We appreciate your patience during this process.</p>
+
+  <p><strong>Best Regards,</strong><br>
+  The GoTestli Team</p>
+
+  <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
+    Note: This is an automated confirmation. If you did not submit a refund request, please contact our support team immediately.
+  </p>
+</div>
+  `,
+  };
+
+  sendMail.sendNotifyMail(
+    transporter,
+    mailOptionsForRefundRequestToStudent,
+    (err, data) => {
+      if (err) {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while sending the email.",
+        });
+      } else {
+        res.send({
+          message: "Email sent successfully!",
+          info: data,
+        });
+      }
+    }
+  );
+};
