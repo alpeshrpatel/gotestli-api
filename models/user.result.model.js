@@ -195,8 +195,8 @@ UserResult.calculateResult = (userResult, result) => {
 
         function areAnswersEqual(correctAnswer, userAnswer) {
           if (
-            correctAnswer.includes(separator) &&
-            userAnswer.includes(separator)
+            correctAnswer?.includes(separator) &&
+            userAnswer?.includes(separator)
           ) {
             const correctAnswerArray = correctAnswer.split(separator);
             const userAnswerArray = userAnswer.split(separator);
