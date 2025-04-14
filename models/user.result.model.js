@@ -353,7 +353,7 @@ UserResult.findById = (id,orgid, result) => {
   );
 };
 
-UserResult.findByUserId = (user_id,orgid, result) => {
+UserResult.findByUserId = (userId,orgid, result) => {
   const query = `
   SELECT 
    utr.id AS user_test_result_id,
@@ -374,7 +374,7 @@ UserResult.findByUserId = (user_id,orgid, result) => {
   ORDER BY 
     utr.created_date DESC;
 `;
-  connection.query(query, user_id, orgid, (err, res) => {
+  connection.query(query, [userId, orgid], (err, res) => {
     if (err) {
       result(err, null);
       return;
@@ -599,13 +599,21 @@ UserResult.getStudentsList = (questionSetId, startPoint, endPoint,search,orgid, 
 
 //getDshbDataAnalysis
 UserResult.getDshbDataAnalysis = (userId,orgid, result) => {
-  const query =
-    `SELECT COUNT(*) AS completed_quiz_count, ` +
-    `AVG(percentage) AS average_percentage, ` +
-    // `(SELECT COUNT(*) FROM user_test_result WHERE  )`
-    `(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ${userId})) AS quiz_completion_percentage  FROM ` +
-    `user_test_result WHERE status = 1 and user_id = ${userId} and org_id=${orgid};`;
-  connection.query(query, (err, res) => {
+  // const query =
+  //   `SELECT COUNT(*) AS completed_quiz_count, ` +
+  //   `AVG(percentage) AS average_percentage, ` +
+  //   // `(SELECT COUNT(*) FROM user_test_result WHERE  )`
+  //   `(COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ${userId})) AS quiz_completion_percentage  FROM ` +
+  //   `user_test_result WHERE status = 1 and user_id = ${userId} and org_id=${orgid};`;
+  const query = `
+  SELECT 
+    COUNT(*) AS completed_quiz_count, 
+    AVG(percentage) AS average_percentage,
+    (COUNT(*) * 100 / (SELECT COUNT(*) FROM user_test_result WHERE user_id = ?)) AS quiz_completion_percentage  
+  FROM user_test_result 
+  WHERE status = 1 AND user_id = ? AND org_id = ?;
+`;
+  connection.query(query,[userId, userId, orgid], (err, res) => {
     if (err) {
       result(err, null);
       return;
@@ -621,7 +629,7 @@ UserResult.getDshbDataAnalysis = (userId,orgid, result) => {
   });
 };
 
-UserResult.getTotalAttemptCount = (userId, result) => {
+UserResult.getTotalAttemptCount = (userId, orgid, result) => {
   const query = `SELECT COUNT(*) AS attempt_count from user_test_result u join question_set qs on u.question_set_id = qs.id where qs.created_by = ${userId} AND u.org_id = ${orgid};`;
   connection.query(query, (err, res) => {
     if (err) {

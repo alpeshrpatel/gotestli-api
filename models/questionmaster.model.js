@@ -173,29 +173,38 @@ QuestionMaster.findDetailedQuestion = (
   const offset = Math.max(parseInt(start - 1, 10), 0);
 
   connection.query(
-    `SELECT 
-          qm.id AS id,
-          qm.question AS question,
-          qm.description AS description,
-          qm.explanation AS explanation,
-          qm.paragraph_id AS paragraph_id,
-          qm.question_type_id AS question_type_id,
-          qm.status_id AS status_id,
-          qm.complexity AS complexity,
-          qm.marks AS marks,
-          qm.negative_marks AS negative_marks,
-          qm.is_negative AS is_negative,
-          qp.paragraph AS paragraph
-      FROM 
-          question_master qm
-      JOIN 
-          question_paragraph qp 
-      ON 
-          qm.paragraph_id = qp.id
-      WHERE 
-          qm.created_by = ? AND qm.org_id = ?
-      LIMIT ? OFFSET ?;`,
-    [id, orgid, limit, offset],
+    `SELECT
+    qm.id AS id,
+    qm.question AS question,
+    qm.description AS description,
+    qm.explanation AS explanation,
+    qm.paragraph_id AS paragraph_id,
+    qm.question_type_id AS question_type_id,
+    qm.status_id AS status_id,
+    qm.complexity AS complexity,
+    qm.marks AS marks,
+    qm.negative_marks AS negative_marks,
+    qm.is_negative AS is_negative,
+    qp.paragraph AS paragraph,
+    JSON_ARRAYAGG(
+        JSON_OBJECT(
+            'option_id', qo.id,
+            'options', qo.question_option,
+            'correctAnswer', qo.is_correct_answer
+        )
+    ) AS options
+FROM
+    question_master qm
+JOIN
+    question_paragraph qp ON qm.paragraph_id = qp.id
+LEFT JOIN
+    question_options qo ON qm.id = qo.question_id AND qo.org_id = ?
+WHERE
+    qm.created_by = ? AND qm.org_id = ?
+GROUP BY
+    qm.id
+LIMIT ? OFFSET ?;`,
+[orgid, id, orgid, limit, offset],
     async (err, res) => {
       if (err) {
         result(err, null);
