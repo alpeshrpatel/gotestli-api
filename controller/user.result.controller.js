@@ -94,8 +94,17 @@ exports.getStudentsList = (req, res) => {
 
 //getDshbDataAnalysis
 exports.getDshbDataAnalysis = (req, res) => {
-  const {orgid} = req.query;
-  UserResult.getDshbDataAnalysis(req.params.userId,orgid, (err, data) => {
+  const { orgid } = req.query;
+  const { userId } = req.params;
+
+  if (!orgid || !userId) {
+    return res.status(400).send({
+      message: "Missing required parameters: orgid or userId",
+    });
+  }
+  
+  UserResult.getDshbDataAnalysis(userId,orgid, (err, data) => {
+  
     if (err)
       res.status(500).send({
         message:
