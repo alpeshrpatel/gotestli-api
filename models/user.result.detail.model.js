@@ -202,6 +202,10 @@ UserResultDetails.findUserResultDetailsByUserResultId = (
       if (res.length) {
          // console.log("found UserResultDetails: ", res);
         result(null, res);
+        // const encryptedData = encrypt(JSON.stringify(res));
+
+        // // Return encrypted data
+        // result(null, { encryptedPayload: encryptedData });
         return;
       }
 

@@ -17,7 +17,8 @@ function Options(options) {
 
 Options.findById = (id,orgid, result) => {
   connection.query(
-    `SELECT question_id,question_option AS options,is_correct_answer AS correctAnswer FROM question_options WHERE question_id = ${id} and org_id = ${orgid}`,
+    //,is_correct_answer AS correctAnswer
+    `SELECT question_id,question_option AS options FROM question_options WHERE question_id = ${id} and org_id = ${orgid}`,
     (err, res) => {
       if (err) {
          
