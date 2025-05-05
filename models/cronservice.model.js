@@ -74,7 +74,7 @@ async function sendNotifyMailToIns(file, result) {
             // const response = await axios.post(apiUrl,{notificationDetails:res[0]});
             const notificationDetails = res[0];
             const res = await axios.post(
-                `https://communication.gotestli.com/api/send/email`,
+                `https://api.communication.gotestli.com/api/send/email`,
                 {
                     app_id: APP_ID,
                     sender: "gotestli07@gmail.com",
