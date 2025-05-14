@@ -262,9 +262,11 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
   });
 };
 
-QuestionSet.getAll = (orgid,result) => {
-  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ${orgid}`;
-  connection.query(query, (err, res) => {
+QuestionSet.getAll = (orgid,start,end,limit1,result) => {
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ? LIMIT ? OFFSET ?;` ;
+  connection.query(query,[orgid, limit, offset], (err, res) => {
     if (err) {
        
       result(null, err);

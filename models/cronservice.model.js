@@ -4,6 +4,10 @@ const generateDateTime = require("../utils/util");
 
 const APP_ID = 1;
 const API_TOKEN = '7b9e6c5f-8a1d-4d3e-b5f2-c9a8e7d6b5c4';
+const dev_URL = 'http://localhost:3000/api/question/files/insert/questions';
+const prod_URL = 'https://api.gotestli.com/api/question/files/insert/questions';
+const API_URL = process.env.NODE_ENV === 'production' ? prod_URL : dev_URL;
+
 
 const fastapi_headers = {
     "X-API-Token": API_TOKEN,
@@ -32,7 +36,7 @@ async function getPendingQuestionFiles(result) {
 }
 async function insertQuestionsFromFile(file, result) {
     try {
-        const apiUrl = 'http://localhost:3000/api/question/files/insert/questions';
+        const apiUrl = API_URL;
 
         const response = await axios.post(apiUrl, {
             fileId: file.id,
@@ -72,8 +76,9 @@ async function sendNotifyMailToIns(file, result) {
         if (res.length > 0) {
             // const apiUrl = "http://localhost:3000/api/sendemail/instructor/uploadfile/result";
             // const response = await axios.post(apiUrl,{notificationDetails:res[0]});
+            console.log('notify response', res);
             const notificationDetails = res[0];
-            const res = await axios.post(
+            const response = await axios.post(
                 `https://api.communication.gotestli.com/api/send/email`,
                 {
                     app_id: APP_ID,
@@ -165,7 +170,7 @@ https://gotestli.com
                 //   instructor: response?.data?.first_name,
                 // },
                 {
-                    fastapi_headers
+                    headers: fastapi_headers
                 }
             );
             // console.log(response)
