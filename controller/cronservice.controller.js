@@ -69,34 +69,34 @@ const {
 } = require("../models/cronservice.model");
 
 module.exports = (app) => {
-  cron.schedule("* * * * *", async () => {
-    console.log("=====================================================");
-    console.log("Cron Job started at", new Date().toISOString());
+  // cron.schedule("* * * * *", async () => {
+  //   console.log("=====================================================");
+  //   console.log("Cron Job started at", new Date().toISOString());
     
-    try {
-      // Fetch question files with status = 0
-      getPendingQuestionFiles(async (err, questionFiles) => {
-        if (err) {
-          console.error("Error fetching question files:", err);
-          return;
-        }
+  //   try {
+  //     // Fetch question files with status = 0
+  //     getPendingQuestionFiles(async (err, questionFiles) => {
+  //       if (err) {
+  //         console.error("Error fetching question files:", err);
+  //         return;
+  //       }
 
-        if (questionFiles.length === 0) {
-          console.log("No pending question files found");
-          return;
-        }
+  //       if (questionFiles.length === 0) {
+  //         console.log("No pending question files found");
+  //         return;
+  //       }
         
-        console.log(`Found ${questionFiles.length} pending question files to process`);
-        // Process files one by one
-        // await processQuestionFiles(0, questionFiles);
-        console.log("Cron job completed successfully");
-        console.log("=====================================================");
-      });
-    } catch (error) {
-      console.error("Error running Cron Job:", error);
-      console.log("=====================================================");
-    }
-  });
+  //       console.log(`Found ${questionFiles.length} pending question files to process`);
+  //       // Process files one by one
+  //       // await processQuestionFiles(0, questionFiles);
+  //       console.log("Cron job completed successfully");
+  //       console.log("=====================================================");
+  //     });
+  //   } catch (error) {
+  //     console.error("Error running Cron Job:", error);
+  //     console.log("=====================================================");
+  //   }
+  // });
 };
 
 // Process files sequentially with proper async/await handling
