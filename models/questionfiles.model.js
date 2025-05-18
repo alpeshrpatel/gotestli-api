@@ -138,16 +138,266 @@ QuestionFiles.insertQuestions = async (
   }
 };
 
-const updateFilesData = async (fileId,correct,errored,date) => {
-  const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ? WHERE id = ?`;
-    connection.query(query, [ correct, errored, fileId], (err, res) => {
-      if (err) {
-        console.error("Error updating files:", err);
-        return false;
-      }
-     return true;
-    });
-}
+
+
+// QuestionFiles.insertQuestions = async (
+//   fileId,
+//   errorRows,
+//   dataSet,
+//   userId,
+//   date,
+//   result
+// ) => {
+//   let size = Object.keys(dataSet).length;
+//   console.log(`Total rows in dataset: ${size}`);
+//   console.log(`Error rows: ${errorRows.length > 0 ? errorRows.join(', ') : 'None'}`);
+  
+//   // Track processed rows and successful inserts
+//   let processedCount = 0;
+//   let successCount = 0;
+//   let failCount = 0;
+//   let successRows = [];
+  
+//   // If no rows to process, return early
+//   if (size === 0) {
+//     await updateFilesData(fileId, "", "", date);
+//     return result(null, {
+//       message: "No questions to insert",
+//     });
+//   }
+  
+//   // Use a Promise to track when all inserts are done
+//   const insertPromises = [];
+  
+//   for (let i = 7; i < 7 + size; i++) {
+//     // Skip rows with validation errors
+//     if (errorRows.includes(i)) {
+//       failCount++;
+//       continue;
+//     }
+    
+//     const rowNum = i - 6; // Convert to 1-based indexing for display
+//     console.log(`Processing row ${rowNum}: ${JSON.stringify(dataSet[i])}`);
+    
+//     const data = dataSet[i];
+//     if (!data || data.length < 8) {
+//       console.error(`Invalid data in row ${rowNum}:`, data);
+//       failCount++;
+//       continue;
+//     }
+    
+//     const question_type = String(data[2]).includes(':') ? 7 : 2;
+//     const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+//     const values = [
+//       0,
+//       data[0],
+//       data[1],
+//       question_type, // Fixed: Use the calculated question_type
+//       1,
+//       data[4],
+//       data[5],
+//       data[6],
+//       data[7],
+//       userId,
+//       date,
+//       userId,
+//       date,
+//     ];
+    
+//     // Add this insert to our list of promises
+//     const insertPromise = new Promise((resolve, reject) => {
+//       connection.query(query, values, async (err, res) => {
+//         if (err) {
+//           console.error(`Error inserting question for row ${rowNum}:`, err);
+//           failCount++;
+//           resolve(false); // We resolve with false to indicate failure
+//         } else {
+//           const questionId = res.insertId;
+//           console.log(`Inserted question ID: ${questionId} for row ${rowNum}`);
+          
+//           try {
+//             const optionsInserted = await insertQuestionOptions(
+//               questionId,
+//               data,
+//               userId,
+//               date
+//             );
+            
+//             if (optionsInserted) {
+//               successCount++;
+//               successRows.push(rowNum);
+//               console.log(`Successfully inserted options for question ID: ${questionId}`);
+//               resolve(true); // Success!
+//             } else {
+//               failCount++;
+//               console.error(`Failed to insert options for question ID: ${questionId}`);
+//               resolve(false);
+//             }
+//           } catch (error) {
+//             failCount++;
+//             console.error(`Error inserting options for question ID: ${questionId}:`, error);
+//             resolve(false);
+//           }
+//         }
+        
+//         processedCount++;
+//       });
+//     });
+    
+//     insertPromises.push(insertPromise);
+//   }
+  
+//   // Wait for all inserts to complete
+//   try {
+//     await Promise.all(insertPromises);
+    
+//     console.log(`All rows processed. Success: ${successCount}, Failed: ${failCount}`);
+    
+//     // Convert arrays to comma-separated strings
+//     const correct = successRows.length > 0 ? successRows.join(',') : "";
+//     const errorIndexes = errorRows.map(row => row - 6); // Convert to 1-based indexing
+//     const errored = errorIndexes.length > 0 ? errorIndexes.join(",") : "";
+    
+//     // Update file data in question_files
+//     console.log(`Updating file record. File ID: ${fileId}, Correct rows: ${correct}, Error rows: ${errored}`);
+//     await updateFilesData(fileId, correct, errored, date);
+    
+//     // Return appropriate response
+//     if (successCount === 0) {
+//       result(null, { message: "No questions were inserted successfully" });
+//     } else if (failCount > 0) {
+//       result(null, { 
+//         message: `Inserted ${successCount} questions successfully. Failed to insert ${failCount} questions.`,
+//         successRows,
+//         errorRows: errorIndexes 
+//       });
+//     } else {
+//       result(null, {
+//         message: `All ${successCount} questions and options inserted successfully`,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error in question insertion process:", error);
+//     result(error, null);
+//   }
+// };
+
+// Update the updateFilesData function to properly handle the update
+// const updateFilesData = async (fileId, correct, errored, date) => {
+//   return new Promise((resolve, reject) => {
+//     const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ? WHERE id = ?`;
+//     connection.query(query, [correct, errored, fileId], (err, res) => {
+//       if (err) {
+//         console.error("Error updating files:", err);
+//         reject(err);
+//       } else {
+//         console.log(`Updated question_files record. File ID: ${fileId}, Status: 1, Affected rows: ${res.affectedRows}`);
+//         resolve(true);
+//       }
+//     });
+//   });
+// };
+
+// Update the insertQuestionOptions function to properly handle promises
+// const insertQuestionOptions = async (questionId, data, userId, date) => {
+//   return new Promise((resolve, reject) => {
+//     const query = `
+//       INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
+//       VALUES ?`;
+    
+//     try {
+//       const question_options = data[2].split(":");
+//       console.log(`Processing options for question ID ${questionId}: ${question_options.join(', ')}`);
+//       console.log(`Correct answer: ${data[3]}`);
+      
+//       const correct_answer = question_options.map((option) => {
+//         if (typeof data[3] === "string" && data[3].includes(':')) {
+//           return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
+//         } else {
+//           return typeof data[3] === "string"
+//             ? data[3].toLowerCase() === option.toLowerCase()
+//               ? 1
+//               : 0
+//             : data[3] === option
+//             ? 1
+//             : 0;
+//         }
+//       });
+      
+//       console.log(`Correct answers mapping: ${correct_answer.join(', ')}`);
+      
+//       // Make sure we have at least 4 options
+//       if (question_options.length < 4) {
+//         console.error(`Not enough options for question ID ${questionId}. Found: ${question_options.length}`);
+//         return resolve(false);
+//       }
+      
+//       const options = [
+//         [
+//           questionId,
+//           question_options[0],
+//           correct_answer[0],
+//           userId,
+//           date,
+//           userId,
+//           date,
+//         ], // Option 1
+//         [
+//           questionId,
+//           question_options[1],
+//           correct_answer[1],
+//           userId,
+//           date,
+//           userId,
+//           date,
+//         ], // Option 2
+//         [
+//           questionId,
+//           question_options[2],
+//           correct_answer[2],
+//           userId,
+//           date,
+//           userId,
+//           date,
+//         ], // Option 3
+//         [
+//           questionId,
+//           question_options[3],
+//           correct_answer[3],
+//           userId,
+//           date,
+//           userId,
+//           date,
+//         ], // Option 4
+//       ];
+      
+//       // Insert options for each question
+//       connection.query(query, [options], (err, result) => {
+//         if (err) {
+//           console.error(`Error inserting options for question ID ${questionId}:`, err);
+//           resolve(false);
+//         } else {
+//           console.log(`Successfully inserted ${result.affectedRows} options for question ID ${questionId}`);
+//           resolve(true);
+//         }
+//       });
+//     } catch (error) {
+//       console.error(`Error preparing options for question ID ${questionId}:`, error);
+//       resolve(false);
+//     }
+//   });
+// };
+
+// const updateFilesData = async (fileId,correct,errored,date) => {
+//   const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ? WHERE id = ?`;
+//     connection.query(query, [ correct, errored, fileId], (err, res) => {
+//       if (err) {
+//         console.error("Error updating files:", err);
+//         return false;
+//       }
+//      return true;
+//     });
+// }
 
 const insertQuestionOptions = async (questionId, data, userId, date) => {
   const query = `
@@ -222,7 +472,7 @@ QuestionFiles.findById = async (user_id,startPoint,endPoint,search,orgid, result
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
   
-  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+const limit = Math.max(parseInt(end - start + 1, 10), 1);
 const offset = Math.max(parseInt(start - 1, 10), 0);
 let queryString = "";
 let queryParams = "";

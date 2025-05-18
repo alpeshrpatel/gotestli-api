@@ -172,11 +172,17 @@ exports.insertQuestions = async (req, res) => {
               case 2: // Validation for the first element (e.g., 'amazon')
                 if (typeof cellValue !== "string" || cellValue.trim() === "") {
                   rowHasError = true; // String is required, non-empty
+                  console.log(
+                    `Error: Invalid value in question Column  (expected non-empty string)`
+                  );
                 }
                 break;
               case 3: // Validation for the question (e.g., 'Amazon S3...')
                 if (typeof cellValue !== "string" || cellValue?.trim() === "") {
                   rowHasError = true;
+                  console.log(
+                    `Error: Invalid value in description Column  (expected non-empty string)`
+                  );
                 }
                 break;
               case 4: // Validation for answer choices (e.g., '1:2:3:4')
@@ -186,6 +192,9 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true;
+                   console.log(
+                    `Error: Invalid value in options Column  (expected non-empty string)`
+                  );
                 }
                 break;
               case 5: // Validation for the selected answer (it must match a choice from Column 4)
@@ -226,6 +235,9 @@ exports.insertQuestions = async (req, res) => {
                     cellValue?.trim() === ""
                   ) {
                     rowHasError = true;
+                     console.log(
+                    `Error: Invalid value in options Column  (expected non-empty string)`
+                  );
                   }
                 } else {
                   rowHasError = true;
@@ -244,6 +256,9 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true; // Must be one of 'easy', 'medium', 'hard'
+                   console.log(
+                    `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard')`
+                  );
                 }
                 break;
               case 7: // Validation for category or tag ID (e.g., 13)
@@ -253,6 +268,9 @@ exports.insertQuestions = async (req, res) => {
                   cellValue > 500
                 ) {
                   rowHasError = true; // Must be a non-negative integer
+                   console.log(
+                    `Error: Invalid value in marks Column  (Must be a non-negative integer)`
+                  );
                 }
                 break;
               case 8: // Validation for status or flag (e.g., 1)
@@ -261,11 +279,17 @@ exports.insertQuestions = async (req, res) => {
                   ![0, 1].includes(cellValue)
                 ) {
                   rowHasError = true; // Must be 0 or 1
+                  console.log(
+                    `Error: Invalid value in is_negative column  (Must be 0 or 1)`
+                  );
                 }
                 break;
               case 9: // Validation for duration or reference (e.g., 23)
                 if (typeof cellValue !== "number" ) {
                   rowHasError = true; // Must be a positive integer
+                   console.log(
+                    `Error: Invalid value in negative marks column  (Must be non-negative integer)`
+                  );
                 }
                 break;
               default:
