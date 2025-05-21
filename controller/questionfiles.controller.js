@@ -4,6 +4,7 @@ const ExcelJS = require("exceljs");
 const path = require("path");
 const fs = require("fs");
 const { cache } = require("../middleware/cacheMiddleware");
+const { error } = require("console");
 
 // Create and Save a new QuestionFiles
 exports.create = (req, res) => {
@@ -36,6 +37,7 @@ exports.insertQuestions = async (req, res) => {
 
   let dataSet = {};
   let errorRows = [];
+  let errorLog = [];
 
   const readExcelFile = async (filePath) => {
     const workbook = new ExcelJS.Workbook();
@@ -159,6 +161,7 @@ exports.insertQuestions = async (req, res) => {
         if (rowNumber >= 7) {
           const rowData = [];
           let rowHasError = false;
+          let errorTextInRow = '';
 
           // Loop through all columns (even those without values)
           for (let colNumber = 2; colNumber <= 9; colNumber++) {
@@ -171,10 +174,12 @@ exports.insertQuestions = async (req, res) => {
             switch (colNumber) {
               case 2: // Validation for the first element (e.g., 'amazon')
                 if (typeof cellValue !== "string" || cellValue.trim() === "") {
+                  console.log(cellValue)
                   rowHasError = true; // String is required, non-empty
                   console.log(
                     `Error: Invalid value in question Column  (expected non-empty string)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in question Column  (expected non-empty string) `;
                 }
                 break;
               case 3: // Validation for the question (e.g., 'Amazon S3...')
@@ -183,6 +188,7 @@ exports.insertQuestions = async (req, res) => {
                   console.log(
                     `Error: Invalid value in description Column  (expected non-empty string)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in description Column  (expected non-empty string) `;
                 }
                 break;
               case 4: // Validation for answer choices (e.g., '1:2:3:4')
@@ -195,6 +201,7 @@ exports.insertQuestions = async (req, res) => {
                    console.log(
                     `Error: Invalid value in options Column  (expected non-empty string)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in options Column  (expected non-empty string) `;
                 }
                 break;
               case 5: // Validation for the selected answer (it must match a choice from Column 4)
@@ -238,6 +245,7 @@ exports.insertQuestions = async (req, res) => {
                      console.log(
                     `Error: Invalid value in options Column  (expected non-empty string)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in correct options Column  (expected non-empty string) and must match one of the options  `;
                   }
                 } else {
                   rowHasError = true;
@@ -259,6 +267,7 @@ exports.insertQuestions = async (req, res) => {
                    console.log(
                     `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard')`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard') `;
                 }
                 break;
               case 7: // Validation for category or tag ID (e.g., 13)
@@ -271,6 +280,7 @@ exports.insertQuestions = async (req, res) => {
                    console.log(
                     `Error: Invalid value in marks Column  (Must be a non-negative integer)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in marks Column  (Must be a non-negative integer) `;
                 }
                 break;
               case 8: // Validation for status or flag (e.g., 1)
@@ -282,6 +292,7 @@ exports.insertQuestions = async (req, res) => {
                   console.log(
                     `Error: Invalid value in is_negative column  (Must be 0 or 1)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in is_negative column  (Must be 0 or 1) `;
                 }
                 break;
               case 9: // Validation for duration or reference (e.g., 23)
@@ -290,6 +301,7 @@ exports.insertQuestions = async (req, res) => {
                    console.log(
                     `Error: Invalid value in negative marks column  (Must be non-negative integer)`
                   );
+                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in negative marks column  (Must be non-negative integer) `;
                 }
                 break;
               default:
@@ -302,8 +314,10 @@ exports.insertQuestions = async (req, res) => {
 
           if (rowHasError) {
             errorRows.push(rowNumber);
+            errorLog.push(errorTextInRow);
           }
         }
+        console.log('errorlog:', errorLog);
       });
     } catch (error) {
       console.error("Error reading the Excel file:", error);
@@ -315,6 +329,7 @@ exports.insertQuestions = async (req, res) => {
     QuestionFiles.insertQuestions(
       fileId,
       errorRows,
+      errorLog,
       dataSet,
       userId,
       date,

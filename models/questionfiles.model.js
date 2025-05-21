@@ -1,4 +1,6 @@
+const { error } = require("winston");
 const connection = require("../config/mysql.db.config");
+const { logger } = require("../logger");
 
 // constructor
 const QuestionFiles = function (questionFiles) {
@@ -63,6 +65,7 @@ QuestionFiles.create = (newQuestionFiles, createdDate, result) => {
 QuestionFiles.insertQuestions = async (
   fileId,
   errorRows,
+  errorLog,
   dataSet,
   userId,
   date,
@@ -71,7 +74,7 @@ QuestionFiles.insertQuestions = async (
   let size = Object.keys(dataSet).length;
   for (let i = 7; i < 7 + size; i++) {
     if (!errorRows.includes(i)) {
-       // console.log("dataset: ", dataSet[i]);
+      console.log("dataset: ", i , "th row" , dataSet[i]);
       const data = dataSet[i];
       const question_type = String(data[3]).includes(':') ? 7 : 2
       const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
@@ -79,7 +82,7 @@ QuestionFiles.insertQuestions = async (
         0,
         data[0],
         data[1],
-        2,
+        question_type,
         1,
         data[4],
         data[5],
@@ -93,11 +96,14 @@ QuestionFiles.insertQuestions = async (
       try {
         connection.query(query, values, async (err, res) => {
           if (err) {
-             
+           logger.error("Error inserting question:", err);
+           errorRows.push(i-6);
+           errorLog.push(`Error inserting question row:- ${i-7}:  ${err}`);
            return result(err, null);
             
           }
            // console.log("insert id:", res.insertId);
+            logger.info("this row inserted in qm: ",i, res);
           const optionInsertResult = await insertQuestionOptions(
             res.insertId,
             data,
@@ -123,7 +129,7 @@ QuestionFiles.insertQuestions = async (
   const correct = correctedArray.join(',');
   const errored = erroredArray.join(",");
   // update file data in question_files
-  const res =  await updateFilesData(fileId,correct,errored,date)
+  const res =  await updateFilesData(fileId,correct,errored,errorLog,date)
     if(res){
        // console.log('updated successfully!');
     }else{
@@ -388,16 +394,17 @@ QuestionFiles.insertQuestions = async (
 //   });
 // };
 
-// const updateFilesData = async (fileId,correct,errored,date) => {
-//   const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ? WHERE id = ?`;
-//     connection.query(query, [ correct, errored, fileId], (err, res) => {
-//       if (err) {
-//         console.error("Error updating files:", err);
-//         return false;
-//       }
-//      return true;
-//     });
-// }
+const updateFilesData = async (fileId,correct,errored,errorLog,date) => {
+  const errorLogJson = JSON.stringify(errorLog);
+  const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ?, error_log = ? WHERE id = ?`;
+    connection.query(query, [ correct, errored,errorLogJson, fileId], (err, res) => {
+      if (err) {
+        console.error("Error updating files:", err);
+        return false;
+      }
+     return true;
+    });
+}
 
 const insertQuestionOptions = async (questionId, data, userId, date) => {
   const query = `

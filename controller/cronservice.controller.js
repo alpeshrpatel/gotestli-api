@@ -5,8 +5,10 @@
 //   sendNotifyMailToIns,
 // } = require("../models/cronservice.model");
 
+const cronService = require("./cronservice");
+
 // module.exports = (app) => {
-  
+
 //   cron.schedule("*/2 * * * *", async () => {
 //     console.log("Cron Job started");
 //     try {
@@ -21,7 +23,7 @@
 //         }
 
 //         if (questionFiles.length === 0) {
-          
+
 //           return;
 //         }
 //         processQuestionFiles(0, questionFiles);
@@ -34,7 +36,7 @@
 
 // function processQuestionFiles(index, questionFiles) {
 //   if (index >= questionFiles.length) {
-   
+
 //     return;
 //   }
 
@@ -60,46 +62,76 @@
 // }
 
 
+
+
 // Improved cron.js implementation with proper async handling
-const cron = require("node-cron");
-const {
-  getPendingQuestionFiles,
-  insertQuestionsFromFile,
-  sendNotifyMailToIns,
-} = require("../models/cronservice.model");
+// const cron = require("node-cron");
+// const {
+//   getPendingQuestionFiles,
+//   insertQuestionsFromFile,
+//   sendNotifyMailToIns,
+// } = require("../models/cronservice.model");
 
-module.exports = (app) => {
-  // cron.schedule("* * * * *", async () => {
-  //   console.log("=====================================================");
-  //   console.log("Cron Job started at", new Date().toISOString());
-    
-  //   try {
-  //     // Fetch question files with status = 0
-  //     getPendingQuestionFiles(async (err, questionFiles) => {
-  //       if (err) {
-  //         console.error("Error fetching question files:", err);
-  //         return;
-  //       }
+// const cronService = {};
+// // module.exports = (app) => {
+//   exports.startCronJob = (req, res) => {
+//   try {
+//     cron.startCronJob();
+//     res.status(200).send({
+//       message: "Cron job started successfully"
+//     });
+//   } catch (error) {
+//     console.error("Error starting cron job:", error);
+//     res.status(500).send({
+//       message: "Failed to start cron job",
+//       error: error.message
+//     });
+//   }
+// };
+  
 
-  //       if (questionFiles.length === 0) {
-  //         console.log("No pending question files found");
-  //         return;
-  //       }
-        
-  //       console.log(`Found ${questionFiles.length} pending question files to process`);
-  //       // Process files one by one
-  //       // await processQuestionFiles(0, questionFiles);
-  //       console.log("Cron job completed successfully");
-  //       console.log("=====================================================");
-  //     });
-  //   } catch (error) {
-  //     console.error("Error running Cron Job:", error);
-  //     console.log("=====================================================");
-  //   }
-  // });
-};
+//   cronService.startCronJob = () => {
+//     cron.schedule("* * * * *", async () => {
+//       console.log("=====================================================");
+//       console.log("Cron Job started at", new Date().toISOString());
 
-// Process files sequentially with proper async/await handling
+//       try {
+//         // Fetch question files with status = 0
+//         getPendingQuestionFiles(async (err, questionFiles) => {
+//           if (err) {
+//             console.error("Error fetching question files:", err);
+//             return;
+//           }
+
+//           if (questionFiles.length === 0) {
+//             console.log("No pending question files found");
+//             return;
+//           }
+
+//           console.log(`Found ${questionFiles.length} pending question files to process`);
+//           // Process files one by one
+//           await processQuestionFiles(0, questionFiles);
+//           console.log("Cron job completed successfully");
+//           console.log("=====================================================");
+//           res.status(200).send({
+//             message: "Cron job started successfully"
+//           });
+//         });
+//       } catch (error) {
+//         console.error("Error running Cron Job:", error);
+//         console.log("=====================================================");
+//         console.error("Error starting cron job:", error);
+//         res.status(500).send({
+//           message: "Failed to start cron job",
+//           error: error.message
+//         });
+//       }
+//     });
+//   }
+
+
+
+// // Process files sequentially with proper async/await handling
 // async function processQuestionFiles(index, questionFiles) {
 //   // Base case: all files processed
 //   if (index >= questionFiles.length) {
@@ -148,3 +180,24 @@ module.exports = (app) => {
 //     await processQuestionFiles(index + 1, questionFiles);
 //   }
 // }
+
+// module.exports = cronService;
+
+
+
+
+// Controller for starting the cron job
+exports.startCronJob = (req, res) => {
+  try {
+    cronService.startCronJob();
+    res.status(200).send({
+      message: "Cron job started successfully"
+    });
+  } catch (error) {
+    console.error("Error starting cron job:", error);
+    res.status(500).send({
+      message: "Failed to start cron job",
+      error: error.message
+    });
+  }
+};

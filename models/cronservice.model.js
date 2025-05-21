@@ -50,16 +50,16 @@ async function insertQuestionsFromFile(file, result) {
 
         // Update the status of the file to 1 (processed)
         const date = generateDateTime()
-        // connection.query(`UPDATE question_files SET status = 1 where id = ${file.id}`, (err, res) => {
-        //     if (err) {
-        //         console.error("Error updating status:", err);
-        //         result(err);
-        //         return;
-        //     }
-        //     // console.log(`File ID ${file.id} status updated to processed`);
+        connection.query(`UPDATE question_files SET status = 1 where id = ${file.id}`, (err, res) => {
+            if (err) {
+                console.error("Error updating status:", err);
+                result(err);
+                return;
+            }
+            // console.log(`File ID ${file.id} status updated to processed`);
 
-        //     result(null);
-        // })
+            result(null);
+        })
     } catch (error) {
         console.error(`Error inserting questions for file ID: ${file.id}`, error);
         result(error);
@@ -80,6 +80,7 @@ async function sendNotifyMailToIns(file, result) {
             // const response = await axios.post(apiUrl,{notificationDetails:res[0]});
             console.log('notify response', res);
             const notificationDetails = res[0];
+            // const errorLogJson = JSON.parse(notificationDetails.error_log);
             const response = await axios.post(
                 `https://api.communication.gotestli.com/api/send/email`,
                 {
@@ -111,7 +112,8 @@ We’ve completed processing your uploaded Excel file for question insertion. Be
                             0
                             } rows encountered errors. 
   - Row indexes: ${notificationDetails.error_rows}
-
+   Detailed Error Log:
+${notificationDetails.error_log?.map((err, i) => `  ${i + 1}. ${err}`).join("\n") || "  None"}
 Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!
 
 Wishing you success,
@@ -143,6 +145,14 @@ https://gotestli.com
                             }</b> rows encountered errors.</li>
   <li>Row indexes: <b>${notificationDetails.error_rows}</b></li>
 </ul>
+<h4 style="margin-top: 20px;">🛠️ <b>Detailed Error Log:</b></h4>
+<ol style="padding-left: 20px; color: #b00020;">
+  ${notificationDetails.error_log?.map((err, i) => `
+    <li style="margin-bottom: 10px;">
+      <span style="font-weight: bold;">${err.replace(/\(Row:- (\d+)\)/, '<span style="color:#000;">Row  <b>$1</b></span>')}</span>
+    </li>
+  `).join('') || "<li>None</li>"}
+</ol>
 
 <p>Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!</p>
 

@@ -140,7 +140,7 @@ require("./routes/userspreferences.route.js")(app);
 require("./routes/followerslist.route.js")(app);
 require("./routes/questionfiles.route.js")(app);
 require("./routes/sendemail.route.js")(app);
-require("./controller/cronservice.controller.js")(app);
+// require("./controller/cronservice.controller.js")(app);
 require("./routes/contactmessages.route.js")(app);
 require("./routes/waitinglist.route.js")(app);
 require("./routes/badge.route.js")(app);
@@ -153,6 +153,7 @@ require("./routes/questionparagraph.route.js")(app);
 require("./routes/forgetpasswordotp.route.js")(app);
 require("./routes/organization.route.js")(app);
 require("./routes/transactions.route.js")(app);
+require("./routes/cronservice.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
