@@ -176,7 +176,7 @@ UserResult.calculateResult = (userResult, result) => {
 
   connection.query(
     `select   qs.totalmarks, qs.pass_percentage, utrd.answer, utrd.correct_answer, utr.total_question, utr.total_answered, 
-                      utr.total_not_answered, utr.total_reviewed, utr.total_not_visited , utr.percentage , qm.marks 
+                      utr.total_not_answered, utr.total_reviewed, utr.total_not_visited , utr.percentage , qm.marks, qm.negative_marks, qm.is_negative
                       from question_set qs , user_test_result utr , user_test_result_dtl utrd , question_master qm 
                       where qs.id = utr.question_set_id  
                       and utr.id = utrd.user_test_result_id
@@ -219,6 +219,8 @@ UserResult.calculateResult = (userResult, result) => {
           if (areAnswersEqual(record.correct_answer, record.answer)) {
             achievedMarks += record.marks;
             correct = correct + 1;
+          }else if(record.is_negative && record.answer !== null && record.answer !== undefined && record.answer !== '') {
+            achievedMarks -= record.negative_marks;
           }
         }, 0);
 

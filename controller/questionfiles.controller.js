@@ -179,7 +179,7 @@ exports.insertQuestions = async (req, res) => {
                   console.log(
                     `Error: Invalid value in question Column  (expected non-empty string)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in question Column  (expected non-empty string) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in question Column  (expected non-empty string) `;
                 }
                 break;
               case 3: // Validation for the question (e.g., 'Amazon S3...')
@@ -188,7 +188,7 @@ exports.insertQuestions = async (req, res) => {
                   console.log(
                     `Error: Invalid value in description Column  (expected non-empty string)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in description Column  (expected non-empty string) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in description Column  (expected non-empty string) `;
                 }
                 break;
               case 4: // Validation for answer choices (e.g., '1:2:3:4')
@@ -198,10 +198,10 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true;
-                   console.log(
+                  console.log(
                     `Error: Invalid value in options Column  (expected non-empty string)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in options Column  (expected non-empty string) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in options Column  (expected non-empty string) `;
                 }
                 break;
               case 5: // Validation for the selected answer (it must match a choice from Column 4)
@@ -212,8 +212,8 @@ exports.insertQuestions = async (req, res) => {
                     if (validation) {
                       const answerChoicesArray = answerChoices.includes(":")
                         ? answerChoices
-                            .split(":")
-                            .map((choice) => choice.trim())
+                          .split(":")
+                          .map((choice) => choice.trim())
                         : [answerChoices.trim()];
                       const answerArray = answer.includes(":")
                         ? answer.split(":").map((choice) => choice.trim())
@@ -242,10 +242,10 @@ exports.insertQuestions = async (req, res) => {
                     cellValue?.trim() === ""
                   ) {
                     rowHasError = true;
-                     console.log(
-                    `Error: Invalid value in options Column  (expected non-empty string)`
-                  );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in correct options Column  (expected non-empty string) and must match one of the options  `;
+                    console.log(
+                      `Error: Invalid value in options Column  (expected non-empty string)`
+                    );
+                    errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in correct options Column  (expected non-empty string) and must match one of the options  `;
                   }
                 } else {
                   rowHasError = true;
@@ -264,10 +264,10 @@ exports.insertQuestions = async (req, res) => {
                   cellValue.trim() === ""
                 ) {
                   rowHasError = true; // Must be one of 'easy', 'medium', 'hard'
-                   console.log(
+                  console.log(
                     `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard')`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard') `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard') `;
                 }
                 break;
               case 7: // Validation for category or tag ID (e.g., 13)
@@ -277,31 +277,33 @@ exports.insertQuestions = async (req, res) => {
                   cellValue > 500
                 ) {
                   rowHasError = true; // Must be a non-negative integer
-                   console.log(
+                  console.log(
                     `Error: Invalid value in marks Column  (Must be a non-negative integer)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in marks Column  (Must be a non-negative integer) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in marks Column  (Must be a non-negative integer) `;
                 }
                 break;
               case 8: // Validation for status or flag (e.g., 1)
                 if (
-                  typeof cellValue !== "number" ||
-                  ![0, 1].includes(cellValue)
+                  cellValue != 0 &&
+                  cellValue != 1
                 ) {
-                  rowHasError = true; // Must be 0 or 1
+                  console.log('"', cellValue, '"', 'cellvalue type check')
+                  rowHasError = true;
                   console.log(
                     `Error: Invalid value in is_negative column  (Must be 0 or 1)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in is_negative column  (Must be 0 or 1) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in is_negative column  (Must be 0 or 1) `;
                 }
                 break;
               case 9: // Validation for duration or reference (e.g., 23)
-                if (typeof cellValue !== "number" ) {
+                if (cellValue < 0) {
+                  console.log(typeof cellValue, 'cellvalue type check')
                   rowHasError = true; // Must be a positive integer
-                   console.log(
+                  console.log(
                     `Error: Invalid value in negative marks column  (Must be non-negative integer)`
                   );
-                  errorTextInRow = `(Row:- ${rowNumber-6})` + `Error: Invalid value in negative marks column  (Must be non-negative integer) `;
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in negative marks column  (Must be non-negative integer) `;
                 }
                 break;
               default:
@@ -315,6 +317,7 @@ exports.insertQuestions = async (req, res) => {
           if (rowHasError) {
             errorRows.push(rowNumber);
             errorLog.push(errorTextInRow);
+            // return res.status(500).send({message: `Error in row ${rowNumber-6}: ${errorTextInRow}`});
           }
         }
         console.log('errorlog:', errorLog);
@@ -335,9 +338,9 @@ exports.insertQuestions = async (req, res) => {
       date,
       (err, data) => {
         if (err) {
-          if (err.kind === "not_found" ) {
+          if (err.kind === "not_found") {
             return res.status(404).send({ message: "Data not found" });
-          } else if(!res.headersSent) {
+          } else if (!res.headersSent) {
             return res.status(500).send({ message: "Error inserting questions data" });
           }
         } else {
@@ -391,9 +394,9 @@ exports.getUploadedFile = (req, res) => {
 };
 
 exports.findById = (req, res) => {
-  const { start, end,search } = req.query;
-  const {orgid} = req.query;
-  QuestionFiles.findById(req.params.id, start, end,search,orgid, (err, data) => {
+  const { start, end, search } = req.query;
+  const { orgid } = req.query;
+  QuestionFiles.findById(req.params.id, start, end, search, orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({
@@ -412,8 +415,8 @@ exports.findById = (req, res) => {
 };
 
 exports.findByFileName = (req, res) => {
-  const {orgid} = req.query;
-  QuestionFiles.findByFileName(req.query.filename,orgid, (err, data) => {
+  const { orgid } = req.query;
+  QuestionFiles.findByFileName(req.query.filename, orgid, (err, data) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({

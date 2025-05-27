@@ -48,12 +48,12 @@ QuestionFiles.create = (newQuestionFiles, createdDate, result) => {
     ],
     (err, res) => {
       if (err) {
-         
+
         result(err, null);
         return;
       }
 
-       // console.log("created entry in QuestionFiles: ", {
+      // console.log("created entry in QuestionFiles: ", {
       //   id: res.insertId,
       //   ...newQuestionFiles,
       // });
@@ -61,6 +61,119 @@ QuestionFiles.create = (newQuestionFiles, createdDate, result) => {
     }
   );
 };
+
+// QuestionFiles.insertQuestions = async (
+//   fileId,
+//   errorRows,
+//   errorLog,
+//   dataSet,
+//   userId,
+//   date,
+//   result
+// ) => {
+//   let size = Object.keys(dataSet).length;
+//   for (let i = 7; i < 7 + size; i++) {
+//     if (!errorRows.includes(i)) {
+//       console.log("dataset: ", i, "th row", dataSet[i]);
+//       const data = dataSet[i];
+//       const question_type = String(data[3]).includes(':') ? 7 : 2;
+//       const checkDuplicateQuery = `SELECT COUNT(*) as count FROM question_master WHERE org_id = ? AND question = ? AND created_by = ?`;
+//       const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+//       const values = [
+//         0,
+//         data[0],
+//         data[1],
+//         question_type,
+//         1,
+//         data[4],
+//         data[5],
+//         data[6],
+//         data[7],
+//         userId,
+//         date,
+//         userId,
+//         date,
+//       ];
+//       const question = data[0];
+//       const org_id = 0;
+//       const created_by = userId;
+//       try {
+//         connection.query(checkDuplicateQuery, [org_id, question, created_by], (err, res) => {
+//           if (res[0].count > 0) {
+//             console.log(res[0].count, "duplicate question found");
+//            const duplicateMessage = `(Row:- ${i - 6})` + `Error: Duplicate question at row ${i - 6}: question already exists`
+//             // const duplicateMessage = `Duplicate question at row ${i - 6}: "${question}" already exists.`;
+//             logger.warn(duplicateMessage);
+//             errorRows.push(i);
+            
+//             errorLog.push(duplicateMessage);
+
+//             // return result(error, 'Duplicate question found');
+//           } else {
+//             connection.query(query, values, async (err, res) => {
+//               if (err) {
+//                 logger.error("Error inserting question:", err);
+//                 errorRows.push(i - 6);
+//                 errorLog.push(`Error inserting question row:- ${i - 7}:  ${err}`);
+
+//                 // return result(err, null);
+
+//               }
+//               // console.log("insert id:", res.insertId);
+//               logger.info("this row inserted in qm: ", i, res);
+//               const optionInsertResult = await insertQuestionOptions(
+//                 res.insertId,
+//                 data,
+//                 userId,
+//                 date
+//               );
+
+//               if (optionInsertResult) {
+
+//               }
+//             });
+//           }
+//           // logger.error("Error inserting question:", err);
+//           // errorRows.push(i - 6);
+//           // errorLog.push(`Error inserting question row:- ${i - 7}:  ${err}`);
+//           // return res(err, null);
+//         });
+
+
+//       } catch (error) {
+//         // console.log("Error inserting question:", error);
+//         return result(error, null);
+
+//       }
+//     } else {
+//       break;
+//     }
+//   }
+ 
+//   const globalArray = Array.from({ length: size }, (_, index) => index + 1);
+//   const erroredArray = errorRows.map((row) => row - 6);
+//   const correctedArray = globalArray.filter((num) => !erroredArray.includes(num));
+//   const correct = correctedArray.join(',');
+//   const errored = erroredArray.join(",");
+//   // update file data in question_files
+//   const res = await updateFilesData(fileId, correct, errored, errorLog, date)
+//   if (res) {
+//     // console.log('updated successfully!');
+//   } else {
+//     // console.log('some error')
+//   }
+//   if (errorRows.length > 0) {
+//     result(null, { message: "Questions of this Rows are not inserted: ", errored });
+//   } else {
+//     result(null, {
+//       message: "All questions and options inserted successfully",
+//     });
+//   }
+// };
+
+const util = require('util');
+const checkDuplicate = util.promisify(connection.query).bind(connection);
+const insertQuestion = util.promisify(connection.query).bind(connection);
 
 QuestionFiles.insertQuestions = async (
   fileId,
@@ -71,16 +184,35 @@ QuestionFiles.insertQuestions = async (
   date,
   result
 ) => {
-  let size = Object.keys(dataSet).length;
+  const size = Object.keys(dataSet).length;
+
   for (let i = 7; i < 7 + size; i++) {
-    if (!errorRows.includes(i)) {
-      console.log("dataset: ", i , "th row" , dataSet[i]);
-      const data = dataSet[i];
-      const question_type = String(data[3]).includes(':') ? 7 : 2
-      const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    if (errorRows.includes(i)) {
+      continue; // Skip error rows
+    }
+
+    const data = dataSet[i];
+    const question_type = String(data[3]).includes(':') ? 7 : 2;
+    const question = data[0];
+    const org_id = 0;
+
+    try {
+      const [duplicateCheck] = await checkDuplicate(
+        `SELECT COUNT(*) as count FROM question_master WHERE org_id = ? AND question = ? AND created_by = ?`,
+        [org_id, question, userId]
+      );
+
+      if (duplicateCheck.count > 0) {
+        const msg = `(Row:- ${i - 6}) Error: Duplicate question at row ${i - 6}`;
+        logger.warn(msg);
+        errorRows.push(i);
+        errorLog.push(msg);
+        continue;
+      }
+
       const values = [
-        0,
-        data[0],
+        org_id,
+        question,
         data[1],
         question_type,
         1,
@@ -93,56 +225,152 @@ QuestionFiles.insertQuestions = async (
         userId,
         date,
       ];
-      try {
-        connection.query(query, values, async (err, res) => {
-          if (err) {
-           logger.error("Error inserting question:", err);
-           errorRows.push(i-6);
-           errorLog.push(`Error inserting question row:- ${i-7}:  ${err}`);
-           return result(err, null);
-            
-          }
-           // console.log("insert id:", res.insertId);
-            logger.info("this row inserted in qm: ",i, res);
-          const optionInsertResult = await insertQuestionOptions(
-            res.insertId,
-            data,
-            userId,
-            date
-          );
 
-          if (optionInsertResult) {
-            
-          }
+      const insertResult = await insertQuestion(
+        `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity, marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        values
+      );
+
+      const insertId = insertResult.insertId;
+      logger.info(`Inserted question at row ${i - 6}: ID ${insertId}`);
+
+      const optionInsertResult = await insertQuestionOptions(
+        insertId,
+        data,
+        userId,
+        date
+      );
+
+    } catch (err) {
+      const errorMsg = `Error inserting question at row ${i - 6}: ${err.message}`;
+      logger.error(errorMsg);
+      errorRows.push(i);
+      errorLog.push(errorMsg);
+      continue;
+    }
+  }
+
+  // Prepare summary arrays
+  const globalArray = Array.from({ length: size }, (_, index) => index + 1);
+  const erroredArray = errorRows.map((row) => row - 6);
+  const correctedArray = globalArray.filter((num) => !erroredArray.includes(num));
+  const correct = correctedArray.join(',');
+  const errored = erroredArray.join(',');
+
+  const res = await updateFilesData(fileId, correct, errored, errorLog, date);
+
+  if (errorRows.length > 0) {
+    result(null, { message: "Questions of these rows were not inserted: ", errored });
+  } else {
+    result(null, { message: "All questions and options inserted successfully" });
+  }
+};
+
+QuestionFiles.insertQuestionsEliminatingDuplicates = async (
+  fileId,
+  errorRows,
+  errorLog,
+  dataSet,
+  userId,
+  date,
+  result
+) => {
+  let size = Object.keys(dataSet).length;
+  for (let i = 7; i < 7 + size; i++) {
+    if (!errorRows.includes(i)) {
+      const data = dataSet[i];
+      console.log("dataset: ", i, "th row", data);
+
+      const question = data[0];
+      const org_id = 0; // Hardcoded in values
+      const created_by = userId;
+      const question_type = String(data[3]).includes(':') ? 7 : 2;
+
+      try {
+        // Check for duplicate question
+        const checkDuplicateQuery = `SELECT COUNT(*) as count FROM question_master WHERE org_id = ? AND question = ? AND created_by = ?`;
+        const [rows] = await new Promise((resolve, reject) => {
+          connection.query(checkDuplicateQuery, [org_id, question, created_by], (err, res) => {
+            if (err) return reject(err);
+            resolve(res);
+          });
         });
-      } catch (error) {
-         // console.log("Error inserting question:", error);
-       return result(error, null);
-        
+
+        if (rows.count > 0) {
+          const duplicateMessage = `Duplicate question at row ${i - 6}: "${question}" already exists.`;
+          logger.warn(duplicateMessage);
+          errorRows.push(i - 6);
+          errorLog.push(duplicateMessage);
+          return result(error, 'Duplicate question found');
+        }
+
+        // If no duplicate, proceed to insert
+        const insertQuery = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity, marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [
+          org_id,
+          data[0],
+          data[1],
+          question_type,
+          1,
+          data[4],
+          data[5],
+          data[6],
+          data[7],
+          userId,
+          date,
+          userId,
+          date,
+        ];
+
+        const insertResult = await new Promise((resolve, reject) => {
+          connection.query(insertQuery, values, (err, res) => {
+            if (err) return reject(err);
+            resolve(res);
+          });
+        });
+
+        logger.info("Row inserted into question_master:", i, insertResult);
+
+        // Insert question options
+        const optionInsertResult = await insertQuestionOptions(
+          insertResult.insertId,
+          data,
+          userId,
+          date
+        );
+
+        if (optionInsertResult) {
+          // Optionally handle successful option insertion
+        }
+
+      } catch (err) {
+        logger.error("Error inserting question at row", i - 6, ":", err);
+        errorRows.push(i - 6);
+        errorLog.push(`Error inserting question at row ${i - 6}: ${err.message}`);
+        return result(error, null);
       }
     }
   }
 
   const globalArray = Array.from({ length: size }, (_, index) => index + 1);
-  const erroredArray = errorRows.map((row) => row-6);
+  const erroredArray = errorRows.map((row) => row - 6);
   const correctedArray = globalArray.filter((num) => !erroredArray.includes(num));
   const correct = correctedArray.join(',');
   const errored = erroredArray.join(",");
-  // update file data in question_files
-  const res =  await updateFilesData(fileId,correct,errored,errorLog,date)
-    if(res){
-       // console.log('updated successfully!');
-    }else{
-       // console.log('some error')
-    }
+
+  const res = await updateFilesData(fileId, correct, errored, errorLog, date);
+  if (!res) {
+    logger.error('Error updating question_files with result metadata.');
+  }
+
   if (errorRows.length > 0) {
-    result(null, { message: "Questions of this Rows are not inserted: ", errored });
+    result(null, { message: "Questions of these rows were not inserted due to errors or duplicates:", errored });
   } else {
-    result(null, {
-      message: "All questions and options inserted successfully",
-    });
+    result(null, { message: "All questions and options inserted successfully" });
   }
 };
+
 
 
 
@@ -157,13 +385,13 @@ QuestionFiles.insertQuestions = async (
 //   let size = Object.keys(dataSet).length;
 //   console.log(`Total rows in dataset: ${size}`);
 //   console.log(`Error rows: ${errorRows.length > 0 ? errorRows.join(', ') : 'None'}`);
-  
+
 //   // Track processed rows and successful inserts
 //   let processedCount = 0;
 //   let successCount = 0;
 //   let failCount = 0;
 //   let successRows = [];
-  
+
 //   // If no rows to process, return early
 //   if (size === 0) {
 //     await updateFilesData(fileId, "", "", date);
@@ -171,27 +399,27 @@ QuestionFiles.insertQuestions = async (
 //       message: "No questions to insert",
 //     });
 //   }
-  
+
 //   // Use a Promise to track when all inserts are done
 //   const insertPromises = [];
-  
+
 //   for (let i = 7; i < 7 + size; i++) {
 //     // Skip rows with validation errors
 //     if (errorRows.includes(i)) {
 //       failCount++;
 //       continue;
 //     }
-    
+
 //     const rowNum = i - 6; // Convert to 1-based indexing for display
 //     console.log(`Processing row ${rowNum}: ${JSON.stringify(dataSet[i])}`);
-    
+
 //     const data = dataSet[i];
 //     if (!data || data.length < 8) {
 //       console.error(`Invalid data in row ${rowNum}:`, data);
 //       failCount++;
 //       continue;
 //     }
-    
+
 //     const question_type = String(data[2]).includes(':') ? 7 : 2;
 //     const query = `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity,marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 //     const values = [
@@ -209,7 +437,7 @@ QuestionFiles.insertQuestions = async (
 //       userId,
 //       date,
 //     ];
-    
+
 //     // Add this insert to our list of promises
 //     const insertPromise = new Promise((resolve, reject) => {
 //       connection.query(query, values, async (err, res) => {
@@ -220,7 +448,7 @@ QuestionFiles.insertQuestions = async (
 //         } else {
 //           const questionId = res.insertId;
 //           console.log(`Inserted question ID: ${questionId} for row ${rowNum}`);
-          
+
 //           try {
 //             const optionsInserted = await insertQuestionOptions(
 //               questionId,
@@ -228,7 +456,7 @@ QuestionFiles.insertQuestions = async (
 //               userId,
 //               date
 //             );
-            
+
 //             if (optionsInserted) {
 //               successCount++;
 //               successRows.push(rowNum);
@@ -245,29 +473,29 @@ QuestionFiles.insertQuestions = async (
 //             resolve(false);
 //           }
 //         }
-        
+
 //         processedCount++;
 //       });
 //     });
-    
+
 //     insertPromises.push(insertPromise);
 //   }
-  
+
 //   // Wait for all inserts to complete
 //   try {
 //     await Promise.all(insertPromises);
-    
+
 //     console.log(`All rows processed. Success: ${successCount}, Failed: ${failCount}`);
-    
+
 //     // Convert arrays to comma-separated strings
 //     const correct = successRows.length > 0 ? successRows.join(',') : "";
 //     const errorIndexes = errorRows.map(row => row - 6); // Convert to 1-based indexing
 //     const errored = errorIndexes.length > 0 ? errorIndexes.join(",") : "";
-    
+
 //     // Update file data in question_files
 //     console.log(`Updating file record. File ID: ${fileId}, Correct rows: ${correct}, Error rows: ${errored}`);
 //     await updateFilesData(fileId, correct, errored, date);
-    
+
 //     // Return appropriate response
 //     if (successCount === 0) {
 //       result(null, { message: "No questions were inserted successfully" });
@@ -310,12 +538,12 @@ QuestionFiles.insertQuestions = async (
 //     const query = `
 //       INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
 //       VALUES ?`;
-    
+
 //     try {
 //       const question_options = data[2].split(":");
 //       console.log(`Processing options for question ID ${questionId}: ${question_options.join(', ')}`);
 //       console.log(`Correct answer: ${data[3]}`);
-      
+
 //       const correct_answer = question_options.map((option) => {
 //         if (typeof data[3] === "string" && data[3].includes(':')) {
 //           return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
@@ -329,15 +557,15 @@ QuestionFiles.insertQuestions = async (
 //             : 0;
 //         }
 //       });
-      
+
 //       console.log(`Correct answers mapping: ${correct_answer.join(', ')}`);
-      
+
 //       // Make sure we have at least 4 options
 //       if (question_options.length < 4) {
 //         console.error(`Not enough options for question ID ${questionId}. Found: ${question_options.length}`);
 //         return resolve(false);
 //       }
-      
+
 //       const options = [
 //         [
 //           questionId,
@@ -376,7 +604,7 @@ QuestionFiles.insertQuestions = async (
 //           date,
 //         ], // Option 4
 //       ];
-      
+
 //       // Insert options for each question
 //       connection.query(query, [options], (err, result) => {
 //         if (err) {
@@ -394,16 +622,16 @@ QuestionFiles.insertQuestions = async (
 //   });
 // };
 
-const updateFilesData = async (fileId,correct,errored,errorLog,date) => {
+const updateFilesData = async (fileId, correct, errored, errorLog, date) => {
   const errorLogJson = JSON.stringify(errorLog);
   const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ?, error_log = ? WHERE id = ?`;
-    connection.query(query, [ correct, errored,errorLogJson, fileId], (err, res) => {
-      if (err) {
-        console.error("Error updating files:", err);
-        return false;
-      }
-     return true;
-    });
+  connection.query(query, [correct, errored, errorLogJson, fileId], (err, res) => {
+    if (err) {
+      console.error("Error updating files:", err);
+      return false;
+    }
+    return true;
+  });
 }
 
 const insertQuestionOptions = async (questionId, data, userId, date) => {
@@ -411,7 +639,7 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
     INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
     VALUES ?`;
   const question_options = data[2].split(":");
-   // console.log("data3", data[3]);
+  // console.log("data3", data[3]);
   const correct_answer = question_options.map((option) => {
     if (typeof data[3] === "string" && data[3].includes(':')) {
       return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
@@ -421,8 +649,8 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
           ? 1
           : 0
         : data[3] === option
-        ? 1
-        : 0;
+          ? 1
+          : 0;
     }
   });
   const options = [
@@ -474,29 +702,29 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
   }
 };
 
-QuestionFiles.findById = async (user_id,startPoint,endPoint,search,orgid, result) => {
+QuestionFiles.findById = async (user_id, startPoint, endPoint, search, orgid, result) => {
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-  
-const limit = Math.max(parseInt(end - start + 1, 10), 1);
-const offset = Math.max(parseInt(start - 1, 10), 0);
-let queryString = "";
-let queryParams = "";
-if (search) {
-  queryString = `SELECT * FROM question_files WHERE user_id = ? 
+
+  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT * FROM question_files WHERE user_id = ? 
    AND (file_name LIKE ?) AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
-} else {
-  queryString = `SELECT * FROM question_files WHERE user_id = ? AND org_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?`;
-}
-if (search) {
-  const searchTerm = `%${search}%`;
-  queryParams = [user_id, searchTerm,orgid, limit, offset];
-} else {
-  queryParams = [user_id,orgid, limit, offset];
-}
+  } else {
+    queryString = `SELECT * FROM question_files WHERE user_id = ? AND org_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [user_id, searchTerm, orgid, limit, offset];
+  } else {
+    queryParams = [user_id, orgid, limit, offset];
+  }
   connection.query(
-    queryString,queryParams,
+    queryString, queryParams,
     (err, res) => {
       if (err) {
         return result(err, null);
@@ -515,13 +743,13 @@ if (search) {
       let countParams = [];
       if (search) {
         const searchTerm = `%${search}%`;
-        countParams = [user_id, searchTerm,orgid];
+        countParams = [user_id, searchTerm, orgid];
       } else {
-        countParams = [user_id,orgid];
+        countParams = [user_id, orgid];
       }
       // If records are found, fetch the total count
       connection.query(
-        countQuery,countParams,
+        countQuery, countParams,
         (countErr, countRes) => {
           if (countErr) {
             return result(countErr, null);
@@ -535,18 +763,18 @@ if (search) {
   );
 };
 
-QuestionFiles.findByFileName = async (filename,orgid, result) => {
+QuestionFiles.findByFileName = async (filename, orgid, result) => {
   connection.query(
     `select * from question_files where file_name = '${filename}' AND org_id = ${orgid};`,
     (err, res) => {
       if (err) {
-         
+
         result(err, null);
         return;
       }
 
       if (res.length) {
-         // console.log("found user: ", res);
+        // console.log("found user: ", res);
         result(null, res);
         return;
       }
@@ -582,12 +810,12 @@ QuestionFiles.findByFileName = async (filename,orgid, result) => {
 QuestionFiles.removeAll = (result) => {
   connection.query("DELETE FROM question_files", (err, res) => {
     if (err) {
-       
+
       result(null, err);
       return;
     }
 
-     // console.log(`deleted ${res.affectedRows} question_set`);
+    // console.log(`deleted ${res.affectedRows} question_set`);
     result(null, res);
   });
 };
