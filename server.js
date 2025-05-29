@@ -103,7 +103,9 @@ app.use((req, res, next) => {
     req.url.startsWith("/v1.api.gotestli.com/sendemail/getintouch/heerrealtor") ||
     req.url.startsWith('/api/org') ||
     req.url.startsWith('/api/sendemail/org/onboarding/approval') ||
-    req.url.startsWith('/api/sendemail/org/user/invitation/from-admin')
+    req.url.startsWith('/api/sendemail/org/user/invitation/from-admin') || 
+    req.url.startsWith('/api/cheatsheet/comment') ||
+    req.url.startsWith('/api/cheatsheet/social') 
   ) {
     return next();
   }
@@ -154,6 +156,8 @@ require("./routes/forgetpasswordotp.route.js")(app);
 require("./routes/organization.route.js")(app);
 require("./routes/transactions.route.js")(app);
 require("./routes/cronservice.route.js")(app);
+require("./routes/cheatsheetcomments.route.js")(app);
+require("./routes/cheatsheetssocial.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 
