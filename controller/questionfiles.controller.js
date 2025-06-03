@@ -162,7 +162,10 @@ exports.insertQuestions = async (req, res) => {
           const rowData = [];
           let rowHasError = false;
           let errorTextInRow = '';
-
+          for (let colNumber = 2; colNumber <= 9; colNumber++) {
+            const cell = row.getCell(colNumber);
+            console.log(`Column ${colNumber}: ${cell.value || 'empty'} (Type: ${typeof cell.value})`);
+          }
           // Loop through all columns (even those without values)
           for (let colNumber = 2; colNumber <= 9; colNumber++) {
             const cell = row.getCell(colNumber);
@@ -174,7 +177,7 @@ exports.insertQuestions = async (req, res) => {
             switch (colNumber) {
               case 2: // Validation for the first element (e.g., 'amazon')
                 if (typeof cellValue !== "string" || cellValue.trim() === "") {
-                  console.log(cellValue)
+
                   rowHasError = true; // String is required, non-empty
                   console.log(
                     `Error: Invalid value in question Column  (expected non-empty string)`
@@ -249,6 +252,7 @@ exports.insertQuestions = async (req, res) => {
                   }
                 } else {
                   rowHasError = true;
+                  errorTextInRow = `(Row:- ${rowNumber - 6}) Error: Answer does not match any of the available options`;
                 }
                 break;
               case 6: // Validation for difficulty level (e.g., 'easy')
@@ -284,22 +288,54 @@ exports.insertQuestions = async (req, res) => {
                 }
                 break;
               case 8: // Validation for status or flag (e.g., 1)
-                if (
-                  cellValue != 0 &&
-                  cellValue != 1
-                ) {
-                  console.log('"', cellValue, '"', 'cellvalue type check')
+                let normalizedValue = cellValue;
+
+                if (cellValue === "" || cellValue === null || cellValue === undefined) {
+                  normalizedValue = 0;
+                }
+                // Handle boolean values
+                else if (typeof cellValue === "boolean") {
+                  normalizedValue = cellValue ? 1 : 0;
+                }
+                // Convert string numbers to actual numbers (trim whitespace first)
+                else if (typeof cellValue === "string") {
+                  const trimmed = cellValue.trim();
+                  if (!isNaN(trimmed) && trimmed !== "") {
+                    normalizedValue = Number(trimmed);
+                  }
+                }
+
+                // Convert to integer to handle floating point issues
+                if (typeof normalizedValue === "number") {
+                  normalizedValue = Math.round(normalizedValue);
+                }
+
+                console.log('Original cellValue:', cellValue, 'type:', typeof cellValue);
+                console.log('normalizedValue:', normalizedValue, 'type:', typeof normalizedValue);
+                console.log('Strict equality check - is 0?', normalizedValue === 0, 'is 1?', normalizedValue === 1);
+                if (normalizedValue !== 0 && normalizedValue !== 1) {
+                  console.log('"', normalizedValue, '"', 'cellvalue type check is negative')
                   rowHasError = true;
                   console.log(
                     `Error: Invalid value in is_negative column  (Must be 0 or 1)`
                   );
                   errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in is_negative column  (Must be 0 or 1) `;
-                }
+                } else {
+        console.log('CASE 8 PASSED - Value is valid:', normalizedValue);
+    }
                 break;
               case 9: // Validation for duration or reference (e.g., 23)
-                if (cellValue < 0) {
+                // Handle empty cells - default to 0
+                let negativeMarksValue = cellValue;
+                if (cellValue === "" || cellValue === null || cellValue === undefined) {
+                  negativeMarksValue = 0;
+                } else if (typeof cellValue === "string" && !isNaN(cellValue)) {
+                  negativeMarksValue = Number(cellValue);
+                }
+
+                if (negativeMarksValue < 0) {
                   console.log(typeof cellValue, 'cellvalue type check')
-                  rowHasError = true; // Must be a positive integer
+                  rowHasError = true;
                   console.log(
                     `Error: Invalid value in negative marks column  (Must be non-negative integer)`
                   );

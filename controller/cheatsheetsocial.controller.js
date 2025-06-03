@@ -33,7 +33,7 @@ exports.getCheatsheetLikes =  (req, res) => {
     if (err) {
       if (err.kind === "not_found") {
         res.send({
-          message: `Not found CheatsheetSocial with id ${req.params.cheatsheetid}.`
+          message: `Not found CheatsheetSocial with id ${req.params.cheatsheetid}.`, status:false
         });
       } else {
         res.status(500).send({
@@ -46,3 +46,24 @@ exports.getCheatsheetLikes =  (req, res) => {
     };
   });
 };
+
+exports.updateCheatsheetLikes = (req, res) => {
+
+  CheatsheetSocial.updateCheatsheetLikes(req.params.cheatsheetid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.send({
+          message: `Not found CheatsheetSocial with id ${req.params.cheatsheetid}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error updating CheatsheetSocial with id " + err + req.params.cheatsheetid
+        });
+      }
+    } else {
+      // cache.set(req.originalUrl, data);
+      res.send(data);
+    }
+  });
+
+}

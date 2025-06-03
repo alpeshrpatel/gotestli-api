@@ -11,6 +11,8 @@ module.exports = app => {
     router.post("/", CheatsheetSocial.create);
 
     router.get('/:cheatsheetid',CheatsheetSocial.getCheatsheetLikes);
+
+    router.put('/:cheatsheetid', CheatsheetSocial.updateCheatsheetLikes);
   
 
 

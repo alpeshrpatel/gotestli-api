@@ -54,9 +54,30 @@ CheatsheetSocial.getCheatsheetLikes = async (cheatsheetid, result) => {
         result(err, null);
         return;
       }
+      result(null, res[0] || { title: "", likes_count: 0 });
     }
   );
 };
 
+CheatsheetSocial.updateCheatsheetLikes = (cheatsheetid, result) => {
+  const query = `UPDATE cheatsheets_likes SET likes_count = likes_count + 1 WHERE cheatsheet_id = ?`;
+  
+  connection.query(query, [cheatsheetid], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.affectedRows == 0) {
+      // not found CheatsheetSocial with the id
+      result({ kind: "not_found" }, null);
+      return;
+    }
+
+    console.log("updated CheatsheetSocial: ", { cheatsheetid: cheatsheetid });
+    result(null, { cheatsheetid: cheatsheetid });
+  });
+}
 
 module.exports = CheatsheetSocial;
