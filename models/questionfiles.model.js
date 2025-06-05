@@ -622,6 +622,8 @@ QuestionFiles.insertQuestionsEliminatingDuplicates = async (
 //   });
 // };
 
+
+
 const updateFilesData = async (fileId, correct, errored, errorLog, date) => {
   const errorLogJson = JSON.stringify(errorLog);
   const query = `UPDATE question_files SET status = 1, correct_rows = ?, error_rows = ?, error_log = ? WHERE id = ?`;
@@ -700,6 +702,20 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
     console.error("Error inserting options:", error);
     return false;
   }
+};
+
+QuestionFiles.CheckQuestionExists = async (question, org_id, created_by,result) => {
+  const checkDuplicateQuery = `SELECT COUNT(*) as count FROM question_master WHERE org_id = ? AND question = ? AND created_by = ?`;
+  
+    connection.query(checkDuplicateQuery, [org_id, question, created_by], (err, res) => { 
+      if (err) {
+       return result(err, null);
+      
+      } else {
+        return result(0, res[0].count > 0);
+      }
+    });
+ 
 };
 
 QuestionFiles.findById = async (user_id, startPoint, endPoint, search, orgid, result) => {
