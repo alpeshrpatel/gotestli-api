@@ -12,7 +12,7 @@ module.exports = (app) => {
   router.post("/", userresult.create);
 
   // Retrieve a single QuestionSet with id
-  router.get("/:id",cacheMiddleware, userresult.findOne);
+  router.get("/:id", userresult.findOne);
 
   // Retrieve a single QuestionSet with id
   router.get("/user/:userid",  userresult.findByUserId);
@@ -23,7 +23,6 @@ module.exports = (app) => {
   // Retrieve a single QuestionSet with id
   router.get(
     "/user/:userid/questionset/:questionsetid",
-    cacheMiddleware,
     userresult.findQuestionSetByUserId
   );
 
