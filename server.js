@@ -158,6 +158,7 @@ require("./routes/transactions.route.js")(app);
 require("./routes/cronservice.route.js")(app);
 require("./routes/cheatsheetcomments.route.js")(app);
 require("./routes/cheatsheetssocial.route.js")(app);
+require("./routes/groqapi.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 

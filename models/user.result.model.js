@@ -301,6 +301,8 @@ UserResult.calculateResult = (userResult, result) => {
               wrong: userResult.total_question - correct,
               percentage: percentage,
               passPercentage: passPercentage,
+              achievedMarks: achievedMarks,
+              totalMarks: totalMarks,
             });
           }
         );
