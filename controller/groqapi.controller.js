@@ -7,7 +7,7 @@ const GroqApiController = {
     // Main controller method that handles all topic analysis functionality
     analyzeQuestionTopics: async (req, res) => {
         try {
-            const { questions, batchSize = 20, enableBatching = false } = req.body;
+            const { questions,topics, batchSize = 20, enableBatching = false } = req.body;
 
             // Validate input
             if (!questions || !Array.isArray(questions) || questions.length === 0) {
@@ -31,10 +31,10 @@ const GroqApiController = {
             // Choose analysis method based on question count and user preference
             if (enableBatching && questions.length > batchSize) {
                 // Use batch processing for large datasets
-                result = await analyzeBatchQuestionsAsync(questions, batchSize);
+                result = await analyzeBatchQuestionsAsync(questions,topics, batchSize);
             } else {
                 // Use single analysis for smaller datasets
-                result = await analyzeQuestionTopicsAsync(questions);
+                result = await analyzeQuestionTopicsAsync(questions,topics);
             }
 
             // Return success response
@@ -60,9 +60,9 @@ const GroqApiController = {
 };
 
 // Async wrapper for single analysis
-async function analyzeQuestionTopicsAsync(questions) {
+async function analyzeQuestionTopicsAsync(questions,topics) {
     return new Promise((resolve, reject) => {
-        analyzeQuestionTopicsCore(questions, (error, result) => {
+        analyzeQuestionTopicsCore(questions,topics, (error, result) => {
             if (error) {
                 reject(error);
             } else {
@@ -73,9 +73,9 @@ async function analyzeQuestionTopicsAsync(questions) {
 }
 
 // Async wrapper for batch analysis
-async function analyzeBatchQuestionsAsync(questions, batchSize) {
+async function analyzeBatchQuestionsAsync(questions,topics, batchSize) {
     return new Promise((resolve, reject) => {
-        analyzeBatchQuestionsCore(questions, (error, result) => {
+        analyzeBatchQuestionsCore(questions,topics, (error, result) => {
             if (error) {
                 reject(error);
             } else {
@@ -86,13 +86,13 @@ async function analyzeBatchQuestionsAsync(questions, batchSize) {
 }
 
 // Core single analysis function
-async function analyzeQuestionTopicsCore(questions, callback) {
+async function analyzeQuestionTopicsCore(questions,topics, callback) {
     try {
         const questionsText = questions.map((q, index) =>
             `${index + 1}. ${q.question}`
         ).join('\n');
 
-        const prompt = createAnalysisPrompt(questionsText);
+        const prompt = createAnalysisPrompt(questionsText,topics);
 
         const response = await fetch(GROQ_API_URL, {
             method: 'POST',
@@ -122,7 +122,7 @@ async function analyzeQuestionTopicsCore(questions, callback) {
         }
 
         const data = await response.json();
-        const analysis = parseTopicAnalysis(data.choices[0].message.content);
+        const analysis = parseTopicAnalysis(topics,data.choices[0].message.content);
         
         callback(null, analysis);
 
@@ -133,7 +133,7 @@ async function analyzeQuestionTopicsCore(questions, callback) {
 }
 
 // Core batch analysis function
-async function analyzeBatchQuestionsCore(questions, callback, batchSize = 20) {
+async function analyzeBatchQuestionsCore(questions,topics, callback, batchSize = 20) {
     try {
         const batches = [];
         for (let i = 0; i < questions.length; i += batchSize) {
@@ -144,7 +144,7 @@ async function analyzeBatchQuestionsCore(questions, callback, batchSize = 20) {
 
         for (const batch of batches) {
             await new Promise((resolve, reject) => {
-                analyzeQuestionTopicsCore(batch, (error, result) => {
+                analyzeQuestionTopicsCore(batch,topics, (error, result) => {
                     if (error) {
                         reject(error);
                     } else {
@@ -155,7 +155,7 @@ async function analyzeBatchQuestionsCore(questions, callback, batchSize = 20) {
             });
         }
 
-        const mergedResults = mergeBatchResults(batchResults);
+        const mergedResults = mergeBatchResults(batchResults,topics);
         callback(null, mergedResults);
 
     } catch (error) {
@@ -165,7 +165,7 @@ async function analyzeBatchQuestionsCore(questions, callback, batchSize = 20) {
 }
 
 // Create structured prompt for topic analysis
-function createAnalysisPrompt(questionsText) {
+function createAnalysisPrompt(questionsText,topics) {
     return `
 Analyze the following quiz questions and identify the main topics covered.
 
@@ -182,9 +182,9 @@ Please provide your analysis in the following JSON format:
         }
     ],
     "totalTopics": 3,
-    "hasThreeOrMoreTopics": true,
+    "hasThreeOrMoreTopics": true,  // if topics are greater or equal to ${topics} then true
     "topicDistribution": {
-        "balanced": true,
+        "balanced": true, // if topics are greater or equal to ${topics} then true
         "dominantTopic": "Topic Name (if any)"
     },
     "recommendations": ["suggestion1", "suggestion2"]
@@ -196,14 +196,14 @@ Rules for analysis:
 3. A topic should have at least 2 questions to be considered significant
 4. Consider semantic similarity, not just keyword matching
 5. Identify if topics are balanced or if one dominates
-6. Provide Detailed recommendations for improving topic coverage if fewer than 3 topics are found
+6. Provide Detailed recommendations for improving topic coverage if fewer than ${topics} topics are found
 
 
 Return only the JSON, no additional text.`;
 }
 
 // Parse the AI response
-function parseTopicAnalysis(response) {
+function parseTopicAnalysis(topics,response) {
     try {
         // Clean the response to extract JSON
         const jsonMatch = response.match(/\{[\s\S]*\}/);
@@ -216,8 +216,8 @@ function parseTopicAnalysis(response) {
         // Add validation and enhancement
         return {
             ...analysis,
-            isValid: validateTopicAnalysis(analysis),
-            summary: generateSummary(analysis)
+            isValid: validateTopicAnalysis(topics,analysis),
+            summary: generateSummary(topics,analysis)
         };
     } catch (error) {
         console.error('Error parsing analysis:', error);
@@ -226,22 +226,22 @@ function parseTopicAnalysis(response) {
 }
 
 // Validate the analysis results
-function validateTopicAnalysis(analysis) {
+function validateTopicAnalysis(topics,analysis) {
     return analysis.topics &&
-        analysis.topics.length >= 3 &&
-        analysis.totalTopics >= 3 &&
+        analysis.topics.length >= topics &&
+        analysis.totalTopics >= topics &&
         analysis.hasThreeOrMoreTopics === true;
 }
 
 // Generate human-readable summary
-function generateSummary(analysis) {
+function generateSummary(topics,analysis) {
     const topicNames = analysis.topics.map(t => t.name);
     const totalQuestions = analysis.topics.reduce((sum, topic) => sum + topic.questions.length, 0);
 
     return {
         message: analysis.hasThreeOrMoreTopics
             ? `✅ Quiz covers ${analysis.totalTopics} different topics: ${topicNames.join(', ')}`
-            : `❌ Quiz only covers ${analysis.totalTopics} topics. Need at least 3 different topics.`,
+            : `❌ Quiz only covers ${analysis.totalTopics} topics. Need at least ${topics} different topics.`,
         topicBreakdown: analysis.topics.map(topic => ({
             topic: topic.name,
             questionCount: topic.questions.length,
@@ -266,7 +266,7 @@ function createFallbackAnalysis() {
 }
 
 // Merge results from multiple batches
-function mergeBatchResults(batchResults) {
+function mergeBatchResults(batchResults,topics) {
     const allTopics = [];
     const allRecommendations = [];
 
@@ -285,13 +285,13 @@ function mergeBatchResults(batchResults) {
     return {
         topics: mergedTopics,
         totalTopics: mergedTopics.length,
-        hasThreeOrMoreTopics: mergedTopics.length >= 3,
-        isValid: mergedTopics.length >= 3,
+        hasThreeOrMoreTopics: mergedTopics.length >= topics,
+        isValid: mergedTopics.length >= topics,
         recommendations: [...new Set(allRecommendations)],
         summary: generateSummary({
             topics: mergedTopics,
             totalTopics: mergedTopics.length,
-            hasThreeOrMoreTopics: mergedTopics.length >= 3
+            hasThreeOrMoreTopics: mergedTopics.length >= topics
         })
     };
 }
