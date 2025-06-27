@@ -182,9 +182,9 @@ Please provide your analysis in the following JSON format:
         }
     ],
     "totalTopics": 3,
-    "hasThreeOrMoreTopics": true,  // if topics are greater or equal to ${topics} then true
+    "hasMoreThenGivenTopics": true,  // if topics are greater or equal to ${topics} then true else false
     "topicDistribution": {
-        "balanced": true, // if topics are greater or equal to ${topics} then true
+        "balanced": true, // if topics are greater or equal to ${topics} then true else false, basically it must be equal to 'hasMoreThenGivenTopics'
         "dominantTopic": "Topic Name (if any)"
     },
     "recommendations": ["suggestion1", "suggestion2"]
@@ -230,7 +230,7 @@ function validateTopicAnalysis(topics,analysis) {
     return analysis.topics &&
         analysis.topics.length >= topics &&
         analysis.totalTopics >= topics &&
-        analysis.hasThreeOrMoreTopics === true;
+        analysis.hasMoreThenGivenTopics === true;
 }
 
 // Generate human-readable summary
@@ -239,7 +239,7 @@ function generateSummary(topics,analysis) {
     const totalQuestions = analysis.topics.reduce((sum, topic) => sum + topic.questions.length, 0);
 
     return {
-        message: analysis.hasThreeOrMoreTopics
+        message: analysis.hasMoreThenGivenTopics
             ? `✅ Quiz covers ${analysis.totalTopics} different topics: ${topicNames.join(', ')}`
             : `❌ Quiz only covers ${analysis.totalTopics} topics. Need at least ${topics} different topics.`,
         topicBreakdown: analysis.topics.map(topic => ({
@@ -255,7 +255,7 @@ function createFallbackAnalysis() {
     return {
         topics: [],
         totalTopics: 0,
-        hasThreeOrMoreTopics: false,
+        hasMoreThenGivenTopics: false,
         isValid: false,
         error: 'Failed to analyze topics properly',
         summary: {
@@ -285,13 +285,13 @@ function mergeBatchResults(batchResults,topics) {
     return {
         topics: mergedTopics,
         totalTopics: mergedTopics.length,
-        hasThreeOrMoreTopics: mergedTopics.length >= topics,
+        hasMoreThenGivenTopics: mergedTopics.length >= topics,
         isValid: mergedTopics.length >= topics,
         recommendations: [...new Set(allRecommendations)],
         summary: generateSummary({
             topics: mergedTopics,
             totalTopics: mergedTopics.length,
-            hasThreeOrMoreTopics: mergedTopics.length >= topics
+            hasMoreThenGivenTopics: mergedTopics.length >= topics
         })
     };
 }
