@@ -503,6 +503,8 @@ module.exports = app => {
     //Retrieve questions of questionset
     router.get("/questions/:id", questionset.getQuestionSet);
 
+    router.get("/allquestions/qset/:id", questionset.getAllQuestionsOfQuestionSet);
+
     /**
  * @swagger
  * /api/questionset/instructor/{userId}:

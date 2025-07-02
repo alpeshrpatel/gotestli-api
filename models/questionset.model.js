@@ -148,6 +148,19 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
   );
 };
 
+QuestionSet.getAllQuestionsOfQuestionSet = (question_set_id,orgid, result) => {
+  connection.query(
+         `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[question_set_id,orgid],
+    (err, res) => {
+            if (err) {
+                result(err, null);
+                return;
+            }
+            result(null, {res});
+        }
+    );
+}
+
 QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint,search,orgid, result) => {
 
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
@@ -262,19 +275,58 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
   });
 };
 
-QuestionSet.getAll = (orgid,start,end,limit1,result) => {
-  const limit = Math.max(parseInt(end - start + 1, 10), 1);
-  const offset = Math.max(parseInt(start - 1, 10), 0);
-  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ? LIMIT ? OFFSET ?;` ;
-  connection.query(query,[orgid, limit, offset], (err, res) => {
-    if (err) {
+// QuestionSet.getAll = (orgid,start,end,limit1,result) => {
+//   const limit = Math.max(parseInt((end - start) + 1 , 10), 1);
+//   const offset = Math.max(parseInt(start - 1, 10), 0);
+//   let query = `SELECT * FROM question_set where status_id = 1 and org_id = ? LIMIT ? OFFSET ?;` ;
+//   connection.query(query,[orgid, limit, offset], (err, res) => {
+//     if (err) {
        
-      result(null, err);
+//       result(null, err);
+//       return;
+//     }
+
+//     // logger.info("users: ", res);
+//     result(null, res);
+//   });
+// };
+
+QuestionSet.getAll = (orgid, start, end, limit1, result) => {
+  const limit = Math.max(parseInt((end - start) + 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+  
+  
+  const updateExpiredQuery = `
+    UPDATE question_set 
+    SET status_id = 0 
+    WHERE status_id = 1 
+    AND org_id = ? 
+    AND end_date < NOW()
+  `;
+  
+  connection.query(updateExpiredQuery, [orgid], (updateErr, updateRes) => {
+    if (updateErr) {
+      result(null, updateErr);
       return;
     }
-
-    // logger.info("users: ", res);
-    result(null, res);
+    
+    
+    const selectQuery = `
+      SELECT * FROM question_set 
+      WHERE status_id = 1 
+      AND org_id = ? 
+      LIMIT ? OFFSET ?
+    `;
+    
+    connection.query(selectQuery, [orgid, limit, offset], (err, res) => {
+      if (err) {
+        result(null, err);
+        return;
+      }
+      
+      // logger.info("users: ", res);
+      result(null, res);
+    });
   });
 };
 

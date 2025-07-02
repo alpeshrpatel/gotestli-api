@@ -118,6 +118,26 @@ exports.getQuestionSet = (req, res) => {
   });
 };
 
+exports.getAllQuestionsOfQuestionSet = (req, res) => {
+   const {orgid} = req.query
+   QuestionSet.getAllQuestionsOfQuestionSet(req.params.id,orgid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found QuestionSet Questions with id ${req.params.id}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving QuestionSet Questions with id " + req.params.id,
+        });
+      }
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+}
+
 exports.getQuetionSetUsedByCount = (req, res) => {
   const {orgid} = req.query
   QuestionSet.getQuetionSetUsedByCount(orgid,(err, data) => {
