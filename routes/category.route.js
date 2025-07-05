@@ -309,7 +309,7 @@ module.exports = (app) => {
 
   // Retrieve a selected categories questionsets
   router.get(
-    "/selected/questionsets/:title",cacheMiddleware,
+    "/selected/questionsets/:title",
     category.findSelectedCategoriesQuestionsets
   );
 

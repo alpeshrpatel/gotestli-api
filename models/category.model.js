@@ -121,7 +121,7 @@ Category.findSelectedCategoriesQuestionsets = (title, result) => {
     `OR qs.tags LIKE CONCAT('%,', c2.title) ` +
     `OR qs.tags = c2.title ` +
     `and qs.is_demo = 1) ` +
-    `WHERE c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
+    `WHERE  qs.status_id = 1 and c2.parent_id = (SELECT id FROM categories c WHERE title = '${title}');`;
   connection.query(query, (err, res) => {
     if (err) {
        

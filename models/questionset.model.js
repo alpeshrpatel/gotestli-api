@@ -166,7 +166,7 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint,search,org
   const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
   const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-  const limit = Math.max(parseInt(end - start + 1, 10), 1);
+  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
 
   
@@ -292,7 +292,7 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
 // };
 
 QuestionSet.getAll = (orgid, start, end, limit1, result) => {
-  const limit = Math.max(parseInt((end - start) + 1, 10), 1);
+  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
   
   
