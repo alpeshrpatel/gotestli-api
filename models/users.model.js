@@ -109,6 +109,137 @@ Users.getAll = (orgid, result) => {
   });
 };
 
+Users.getAllStudentsList = (startPoint,endPoint,search,orgid,result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? AND (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [orgid, searchTerm, searchTerm,searchTerm,searchTerm, limit, offset];
+  } else {
+    queryParams = [orgid,limit, offset];
+  }
+  connection.query(
+    queryString, queryParams,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (!res.length) {
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      let countQuery = ``;
+      if (search) {
+        countQuery = `SELECT COUNT(*) as total FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? AND (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?);`;
+      } else {
+        countQuery = `SELECT COUNT(*) as total FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ?;`;
+      }
+      let countParams = [];
+      if (search) {
+        const searchTerm = `%${search}%`;
+        countParams = [orgid,searchTerm, searchTerm, searchTerm, searchTerm];
+      } else {
+        countParams = [orgid];
+      }
+      // Fetch total count only when there are results
+      connection.query(
+        countQuery, countParams,
+        (countErr, countRes) => {
+          if (countErr) {
+            result(countErr, null);
+            return;
+          }
+
+          const totalRecords = countRes[0]?.total || 0;
+          result(null, { res, totalRecords });  // Send response only once
+        }
+      );
+    }
+  );
+
+}
+
+
+Users.getAllInstructorsList = (startPoint,endPoint,search,orgid,result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+
+  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? AND  (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [ orgid,searchTerm, searchTerm,searchTerm,searchTerm, limit, offset];
+  } else {
+    queryParams = [orgid,limit, offset];
+  }
+  connection.query(
+    queryString, queryParams,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (!res.length) {
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      let countQuery = ``;
+      if (search) {
+        countQuery = `SELECT COUNT(*) as total FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? AND (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?);`;
+      } else {
+        countQuery = `SELECT COUNT(*) as total FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ?;`;
+      }
+      let countParams = [];
+      if (search) {
+        const searchTerm = `%${search}%`;
+        countParams = [orgid,searchTerm, searchTerm, searchTerm, searchTerm];
+      } else {
+        countParams = [orgid];
+      }
+      // Fetch total count only when there are results
+      connection.query(
+        countQuery, countParams,
+        (countErr, countRes) => {
+          if (countErr) {
+            result(countErr, null);
+            return;
+          }
+
+          const totalRecords = countRes[0]?.total || 0;
+          result(null, { res, totalRecords });  // Send response only once
+        }
+      );
+    }
+  );
+
+}
+
 Users.updateUser = (userid, users, orgid, result) => {
   // first_name: data.first_name || "",
   // last_name: data.last_name || "",

@@ -292,7 +292,7 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
 // };
 
 QuestionSet.getAll = (orgid, start, end, limit1, result) => {
-  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
+  const limit = Math.max(parseInt((end - start)- 1 , 10), 1);
   const offset = Math.max(parseInt(start - 1, 10), 0);
   
   

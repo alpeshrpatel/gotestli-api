@@ -74,6 +74,34 @@ exports.findAll = async (req, res) => {
   });
 };
 
+exports.findAllStudentsList = async (req, res) => {
+  const {start,end,search,orgid} = req.query
+  Users.getAllStudentsList(start,end,search,orgid,(err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving users.",
+      });
+    else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+}
+// findAllInstructorsList
+exports.findAllInstructorsList = async (req, res) => {
+  const {start,end,search,orgid} = req.query
+  Users.getAllInstructorsList(start,end,search,orgid,(err, data) => {
+    if (err)
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving users.",
+      });
+    else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+}
+
 // Find a single users by Id
 exports.findOne = async (req, res) => {
   const {orgid} = req.query;

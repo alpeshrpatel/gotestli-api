@@ -502,6 +502,10 @@ module.exports = app => {
    //  router.get("/", users.findAll);
 
     router.get("/orgid/:orgid", users.findAll);
+
+    router.get("/admin/students/list", users.findAllStudentsList);
+
+    router.get("/admin/instructors/list", users.findAllInstructorsList);
   
     /**
  * @swagger
