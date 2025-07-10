@@ -9,6 +9,8 @@ module.exports = app => {
   
     router.post("/analyze/question/topics", GroqApi.analyzeQuestionTopics);
 
+    router.post("/questionset/detail/suggestions", GroqApi.questionsetDetailSuggestions);
+
     // router.get('/type/:type/question/:id',CronJob);
   
     app.use('/api/groq/', router);
