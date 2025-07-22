@@ -61,7 +61,7 @@ app.get("/", (req, res) => {
   if (req.tenant) {
       res.send(`Welcome to the tenant: ${req.tenant}`);
   } else {
-      res.send("Welcome to GoTestli!");
+      res.send("Welcome to Gotestli!");
   }
 });
 
@@ -105,7 +105,8 @@ app.use((req, res, next) => {
     req.url.startsWith('/api/sendemail/org/onboarding/approval') ||
     req.url.startsWith('/api/sendemail/org/user/invitation/from-admin') || 
     req.url.startsWith('/api/cheatsheet/comment') ||
-    req.url.startsWith('/api/cheatsheet/social') 
+    req.url.startsWith('/api/cheatsheet/social') ||
+    req.url.startsWith('/api/recommend')
   ) {
     return next();
   }
@@ -159,6 +160,7 @@ require("./routes/cronservice.route.js")(app);
 require("./routes/cheatsheetcomments.route.js")(app);
 require("./routes/cheatsheetssocial.route.js")(app);
 require("./routes/groqapi.route.js")(app);
+require("./routes/recommend.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 

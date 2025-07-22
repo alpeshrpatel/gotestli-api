@@ -2,7 +2,7 @@ module.exports = options = {
   definition: {
     openapi: "3.1.0",
     info: {
-      title: "GoTestli Express API with Swagger",
+      title: "Gotestli Express API with Swagger",
       version: "0.1.0",
       description:
         "This is a simple CRUD API application made with Express and documented with Swagger",

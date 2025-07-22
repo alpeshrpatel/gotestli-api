@@ -120,9 +120,9 @@ Users.getAllStudentsList = (startPoint,endPoint,search,orgid,result) => {
   let queryString = "";
   let queryParams = "";
   if (search) {
-    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? AND (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? AND (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
   } else {
-    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+    queryString = `SELECT * FROM users WHERE role ='student' AND is_delete = 0 AND org_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
   }
   if (search) {
     const searchTerm = `%${search}%`;
@@ -186,9 +186,9 @@ Users.getAllInstructorsList = (startPoint,endPoint,search,orgid,result) => {
   let queryString = "";
   let queryParams = "";
   if (search) {
-    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? AND  (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? AND  (username LIKE ? OR email LIKE ? OR first_name LIKE ? OR last_name LIKE ?) ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
   } else {
-    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? ORDER BY created_on DESC LIMIT ? OFFSET ?;`;
+    queryString = `SELECT * FROM users WHERE role ='instructor' AND is_delete = 0 AND org_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
   }
   if (search) {
     const searchTerm = `%${search}%`;

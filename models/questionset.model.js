@@ -28,6 +28,9 @@ const QuestionSet = function (questionset) {
 };
 
 QuestionSet.create = (newQuestionSet, result) => {
+  if (newQuestionSet.start_date > new Date().toISOString()) {
+    newQuestionSet.status_id = 0; 
+    }
   const sqlQuery = `
     INSERT INTO question_set (
       org_id, title, question_set_url, image, author, short_desc, description,
@@ -173,12 +176,12 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint,search,org
   let queryString = "";
   let queryParams = "";
   if (search) {
-    queryString = `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
      FROM question_set 
      WHERE created_by = ? 
      AND (title LIKE ? OR short_desc LIKE ?) AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
   } else {
-    queryString = `SELECT id, title, short_desc, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
      FROM question_set 
      WHERE created_by = ? AND org_id = ?
      ORDER BY created_date DESC 
@@ -275,6 +278,26 @@ QuestionSet.getQuetionSetBySearchedKeyword = (keyword,orgid, result) => {
   });
 };
 
+QuestionSet.getQuestionSetByTitle = (title, result) => {
+  const query = `SELECT * FROM question_set WHERE title = ?`;
+  connection.query(query, [title], (err, res) => {
+    if (err) {
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      // console.log("found questionset: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found QuestionSet with the title
+    result({ kind: "not_found" }, null);
+  });
+
+}
+
 // QuestionSet.getAll = (orgid,start,end,limit1,result) => {
 //   const limit = Math.max(parseInt((end - start) + 1 , 10), 1);
 //   const offset = Math.max(parseInt(start - 1, 10), 0);
@@ -296,15 +319,25 @@ QuestionSet.getAll = (orgid, start, end, limit1, result) => {
   const offset = Math.max(parseInt(start - 1, 10), 0);
   
   
-  const updateExpiredQuery = `
+  // const updateExpiredQuery = `
+  //   UPDATE question_set 
+  //   SET status_id = 0 
+  //   WHERE status_id = 1 
+  //   AND org_id = ? 
+  //   AND end_date < NOW() AND start_date < NOW()
+  // `;
+
+ 
+const updateStatusQuery = `
     UPDATE question_set 
-    SET status_id = 0 
-    WHERE status_id = 1 
-    AND org_id = ? 
-    AND end_date < NOW()
-  `;
+    SET status_id = CASE 
+        WHEN start_date <= NOW() AND end_date > NOW() THEN 1
+        ELSE 0
+    END
+    WHERE org_id = ?
+`;
   
-  connection.query(updateExpiredQuery, [orgid], (updateErr, updateRes) => {
+  connection.query(updateStatusQuery, [orgid], (updateErr, updateRes) => {
     if (updateErr) {
       result(null, updateErr);
       return;
@@ -330,31 +363,98 @@ QuestionSet.getAll = (orgid, start, end, limit1, result) => {
   });
 };
 
-QuestionSet.findAllQSet = (orgid,result) => {
-  let query = `SELECT * FROM question_set where status_id = 1 and org_id = ${orgid}`;
-  connection.query(query, (err, res) => {
-    if (err) { 
-       
-      result(null, err);
-      return;
-    }
+QuestionSet.findAllQSet = (startPoint,endPoint,search,orgid,result) => {
+  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-    // logger.info("users: ", res);
-    result(null, res);
-  });
-};
+  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
+  const offset = Math.max(parseInt(start - 1, 10), 0);
+
+  
+  let queryString = "";
+  let queryParams = "";
+  if (search) {
+    queryString = `SELECT * FROM question_set where status_id = 1 and org_id = ? AND (title LIKE ? OR short_desc LIKE ? OR description LIKE ?) ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
+  } else {
+    queryString = `SELECT * FROM question_set where status_id = 1 and org_id = ? ORDER BY created_date DESC LIMIT ? OFFSET ?;`;
+  }
+  if (search) {
+    const searchTerm = `%${search}%`;
+    queryParams = [orgid, searchTerm, searchTerm,searchTerm, limit, offset];
+  } else {
+    queryParams = [orgid,limit, offset];
+  }
+  connection.query(
+    queryString, queryParams,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (!res.length) {
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      let countQuery = ``;
+      if (search) {
+        countQuery = `SELECT COUNT(*) as total FROM question_set where status_id = 1 and org_id = ? AND (title LIKE ? OR short_desc LIKE ? OR description LIKE ?);`;
+      } else {
+        countQuery = `SELECT COUNT(*) as total FROM question_set where status_id = 1 and org_id = ?;`;
+      }
+      let countParams = [];
+      if (search) {
+        const searchTerm = `%${search}%`;
+        countParams = [orgid,searchTerm, searchTerm, searchTerm];
+      } else {
+        countParams = [orgid];
+      }
+      // Fetch total count only when there are results
+      connection.query(
+        countQuery, countParams,
+        (countErr, countRes) => {
+          if (countErr) {
+            result(countErr, null);
+            return;
+          }
+
+          const totalRecords = countRes[0]?.total || 0;
+          result(null, { res, totalRecords });  // Send response only once
+        }
+      );
+    }
+  );
+
+}
+// QuestionSet.findAllQSet = (orgid,result) => {
+//   let query = `SELECT * FROM question_set where status_id = 1 and org_id = ${orgid}`;
+//   connection.query(query, (err, res) => {
+//     if (err) { 
+       
+//       result(null, err);
+//       return;
+//     }
+
+//     // logger.info("users: ", res);
+//     result(null, res);
+//   });
+// };
 
 
 QuestionSet.updateById = (id, questionset, modified_by, modified_date,orgid, result) => {
+ 
   connection.query(
     "UPDATE question_set SET title= ?, " +
-      "short_desc= ? , " +
+      "short_desc= ? , start_date = ? , end_date = ?," +
       "time_duration= ? , " +
       "is_demo= ?, modified_by= ? , modified_date= ? " +
       "WHERE id = ? and org_id = ?",
     [
       questionset.title,
       questionset.short_desc,
+      questionset.start_date,
+      questionset.end_date,
       questionset.time_duration,
       questionset.is_demo,
       modified_by,

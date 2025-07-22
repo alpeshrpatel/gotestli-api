@@ -376,8 +376,9 @@ module.exports = app => {
 
     //Retrieve all question sets
     router.get("/", questionset.findAll)
+    
 
-    router.get('/active/allqset/orgid/:orgid',questionset.findAllQSet)
+    router.get('/active/allqset',questionset.findAllQSet)
 
     /**
  * @swagger
@@ -770,6 +771,8 @@ module.exports = app => {
 
     // get question set of searched keyword
     router.get("/search/result/:keyword",cacheMiddleware, questionset.getQuetionSetBySearchedKeyword)
+
+    router.get("/getquestionsetbytitle/recommendations", questionset.getQuestionSetByTitle);
 /**
  * @swagger
  * /api/questionset/{id}:

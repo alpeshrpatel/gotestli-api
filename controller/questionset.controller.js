@@ -182,6 +182,31 @@ exports.getQuetionSetBySearchedKeyword = (req, res) => {
   );
 };
 
+// getQuestionSetByTitle
+exports.getQuestionSetByTitle = (req, res) => {
+  const {title} = req.query
+  console.log('title',title)
+  QuestionSet.getQuestionSetByTitle(
+    title,
+    (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found QuestionSet `,
+          });
+        } else {
+          res.status(500).send({
+            message: "Error retrieving QuestionSet "+ err.message,
+          });
+        }
+      } else{
+        cache.set(req.originalUrl, data);
+        res.send(data);
+      };
+    }
+  );
+};
+
 // Get a Questionset of author by Id
 exports.getQuestionSetsOfInstructor = (req, res) => {
   const {start,end,search,orgid} = req.query
@@ -228,8 +253,8 @@ exports.findAll = (req, res) => {
 //findAllQSet
 exports.findAllQSet = (req, res) => {
   // const title = req.query.title;
-  
-  QuestionSet.findAllQSet(req.params.orgid, async (err, data) => {
+  const {start,end,search,orgid} = req.query
+  QuestionSet.findAllQSet(start,end,search,orgid, async (err, data) => {
     if (err)
       res.status(500).send({
         message:
@@ -275,9 +300,11 @@ exports.update = (req, res) => {
   }
   const modified_date = generateDateTime();
 
+ 
+
   QuestionSet.updateById(
     req.params.id,
-    new QuestionSet(req.body.changedQSet),
+    req.body.changedQSet,
     req.body.userId,
     modified_date,orgid,
     (err, data) => {
