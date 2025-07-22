@@ -1,12 +1,14 @@
 // const { OpenAI } = require("openai");
 const qdrant = require('../config/qdrant');
 const Recommend = require('../models/recommend.model');
-const { pipeline } = require("@xenova/transformers");
+// const { pipeline } = require("@xenova/transformers");
 const { v4: uuidv4 } = require('uuid');
 
 // const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 exports.getQuizzes = async (req, res) => {
+    const { pipeline } = await import("@xenova/transformers");
+
     // let input;
     const input = await Recommend.getVectorDBDimension();
     // console.log('data for input', input)
@@ -133,6 +135,7 @@ exports.getQuizzes = async (req, res) => {
 }
 
 exports.getUsers = async (req, res) => {
+    const { pipeline } = await import("@xenova/transformers");
 
     const {email} = req.query;
 
@@ -205,6 +208,8 @@ exports.getUsers = async (req, res) => {
 }
 
 exports.updateUserCollection = async (req, res) => {
+    const { pipeline } = await import("@xenova/transformers");
+
     try {
 
         await qdrant.deleteCollection("users");
