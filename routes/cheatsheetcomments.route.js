@@ -13,6 +13,12 @@ module.exports = app => {
     router.get('/:cheatsheetid',CheatsheetComment.getCheatsheetCommentById);
 
     router.get('/replies', cacheMiddleware, CheatsheetComment.getRepliesByCommentId);
+
+    router.put("/:id", CheatsheetComment.update);
+
+    router.delete("/:id", CheatsheetComment.remove);
+
+    router.delete("/reply/:id", CheatsheetComment.removeReply);
   
 
 

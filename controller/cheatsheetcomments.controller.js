@@ -69,3 +69,58 @@ exports.getRepliesByCommentId =  (req, res) => {
     };
   });
 };
+
+exports.update = (req, res) => {
+  // Validate request
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!"
+    });
+  }
+
+  CheatsheetComment.updateById(req.params.id, new CheatsheetComment(req.body), (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found CheatsheetComment with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error updating CheatsheetComment with id " + req.params.id
+        });
+      }
+    } else res.send(data);
+  });
+}
+
+exports.remove = (req, res) => {
+  CheatsheetComment.remove(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found CheatsheetComment with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Could not delete CheatsheetComment with id " + req.params.id
+        });
+      }
+    } else res.send({ message: `CheatsheetComment was deleted successfully!` });
+  });
+};
+
+exports.removeReply = (req, res) => {
+  CheatsheetComment.removeReply(req.params.id, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found CheatsheetComment with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Could not delete CheatsheetComment with id " + req.params.id
+        });
+      }
+    } else res.send({ message: `CheatsheetComment was deleted successfully!` });
+  });
+};

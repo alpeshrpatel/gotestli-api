@@ -99,11 +99,9 @@ CheatsheetComment.getCommentById = (commentId, result) => {
 
 CheatsheetComment.updateById = (id, cheatsheetComment, result) => {
   connection.query(
-    "UPDATE cheatsheets_comments SET comment = ?, reply_to = ?, user_id = ?, modified_by = ? WHERE id = ?",
+    "UPDATE cheatsheets_comments SET comment = ?, modified_by = ? WHERE id = ?",
     [
       cheatsheetComment.comment,
-      cheatsheetComment.reply_to,
-      cheatsheetComment.user_id,
       cheatsheetComment.modified_by,
       id
     ],
@@ -126,7 +124,28 @@ CheatsheetComment.updateById = (id, cheatsheetComment, result) => {
 
 CheatsheetComment.remove = (id, result) => {
   connection.query(
-    "DELETE FROM cheatsheets_comments WHERE id = ?",
+    "DELETE FROM cheatsheets_comments WHERE id = ? or reply_to = ?",
+    [id,id],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      result(null, res);
+    }
+  );
+};
+
+CheatsheetComment.removeReply = (id, result) => {
+  connection.query(
+    "DELETE FROM cheatsheets_comments WHERE id = ? ",
     [id],
     (err, res) => {
       if (err) {
@@ -160,5 +179,9 @@ CheatsheetComment.getRepliesByCommentId = (commentId, result) => {
     }
   );
 };
+
+CheatsheetComment.update = (commentsData, result) => {
+
+}
 
 module.exports = CheatsheetComment;
