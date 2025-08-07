@@ -27,7 +27,7 @@ const connection = require("../config/mysql.db.config");
 const getVectorDBDimension = async () => {
   return new Promise((resolve, reject) => {
     connection.query(
-      `SELECT  id,title, author, short_desc, description, tags FROM question_set `,
+      `SELECT  id,title, author, short_desc, description, tags FROM question_set where status_id = 1;`,
       
       (err, res) => {
         if (err) return reject(err);
