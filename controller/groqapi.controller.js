@@ -114,45 +114,50 @@ const GroqApiController = {
             }
 
             const response = await fetch(GROQ_API_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are an expert educational content analyzer. Analyze questions and identify their topics precisely."
-                    },
-                    {
-                        role: "user",
-                        content: prompt
-                    }
-                ],
-                model: "llama3-8b-8192",
-                temperature: 0.1,
-                max_tokens: 1000
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (field === 'title' || field === 'short_desc') {
-            
-        return res.status(200).json({
-            success: true,
-            data:data.choices[0].message.content.split('\n').filter(line => line.trim() !== '').join().split('\"').filter(line => line.trim().length > 20),
-        })
-    } else if (field === 'description') {
-            return res.status(200).json({
-                success: true,
-                data: data.choices[0].message.content.split('\n').filter(line => line.trim() !== ''),
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${GROQ_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are an expert educational content analyzer. Analyze questions and identify their topics precisely."
+                        },
+                        {
+                            role: "user",
+                            content: prompt
+                        }
+                    ],
+                    model: "llama-3.1-8b-instant",
+                    temperature: 0.1,
+                    max_tokens: 1000
+                })
             });
-        }
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            if (field === 'title' || field === 'short_desc') {
+
+                return res.status(200).json({
+                    success: true,
+                    data: data.choices[0].message.content
+                        .split('\n')
+                        .filter(line => line.trim() !== '')
+                        .map(line => line.replace(/^\d+\.\s*/, '').replace(/^["']|["']$/g, '').trim())
+                        .filter(line => line.length > 10)
+                    // data:data.choices[0].message.content.split('\n').filter(line => line.trim() !== '').join().split('\"').filter(line => line.trim().length > 20),
+                })
+            } else if (field === 'description') {
+                return res.status(200).json({
+                    success: true,
+                    data: data.choices[0].message.content.split('\n').filter(line => line.trim() !== ''),
+                });
+            }
 
         } catch (error) {
             console.error('Controller error:', error);
