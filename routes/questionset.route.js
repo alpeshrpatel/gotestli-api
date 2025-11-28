@@ -505,6 +505,10 @@ module.exports = app => {
     router.get("/questions/:id", questionset.getQuestionSet);
 
     router.get("/allquestions/qset/:id", questionset.getAllQuestionsOfQuestionSet);
+    
+    router.get("/gameplay/public/allquestions/qset/:id", questionset.getAllQuestionsOfQuestionSet);
+
+    router.get('/gameplay/allquestions/gamepin/:gamepin', questionset.getAllQuestionsOfGamePin);
 
     /**
  * @swagger
@@ -858,6 +862,9 @@ module.exports = app => {
     router.put("/:id", questionset.update);
   
     router.put("/update/status", questionset.updateStatus);
+   
+
+    router.put("/update/gameconfig/:id", questionset.updateGameConfig);
     /**
  * @swagger
  * /api/questionset/{id}:

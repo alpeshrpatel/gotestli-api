@@ -81,110 +81,110 @@ async function sendNotifyMailToIns(file, result) {
             console.log('notify response', res);
             const notificationDetails = res[0];
             // const errorLogJson = JSON.parse(notificationDetails.error_log);
-            const response = await axios.post(
-                `https://api.communication.gotestli.com/api/send/email`,
-                {
-                    app_id: APP_ID,
-                    sender: "gotestli07@gmail.com",
-                    sender_name: "Gotestli",
-                    recipients: [
-                        {
-                            email: notificationDetails.email,
-                            name: notificationDetails.first_name,
-                        }
-                    ],
-                    content: {
-                        subject: "📊 Question Upload Report: Excel File Processed Successfully!",
-                        body_text: `
-Hi ${notificationDetails.first_name},
+//             const response = await axios.post(
+//                 `https://api.communication.gotestli.com/api/send/email`,
+//                 {
+//                     app_id: APP_ID,
+//                     sender: "gotestli07@gmail.com",
+//                     sender_name: "Gotestli",
+//                     recipients: [
+//                         {
+//                             email: notificationDetails.email,
+//                             name: notificationDetails.first_name,
+//                         }
+//                     ],
+//                     content: {
+//                         subject: "📊 Question Upload Report: Excel File Processed Successfully!",
+//                         body_text: `
+// Hi ${notificationDetails.first_name},
 
-We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:
+// We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:
 
-✔️ **Successful Insertions:**
-- ${(notificationDetails.correct_rows &&
-                                notificationDetails.correct_rows?.split(",").length) ||
-                            0
-                            } questions were successfully inserted into the database.
+// ✔️ **Successful Insertions:**
+// - ${(notificationDetails.correct_rows &&
+//                                 notificationDetails.correct_rows?.split(",").length) ||
+//                             0
+//                             } questions were successfully inserted into the database.
 
-❌ **Errors During Insertion:**
-- ${(notificationDetails.error_rows &&
-                                notificationDetails.error_rows?.split(",").length) ||
-                            0
-                            } rows encountered errors. 
-  - Row indexes: ${notificationDetails.error_rows}
-   Detailed Error Log:
-${notificationDetails.error_log?.map((err, i) => `  ${i + 1}. ${err}`).join("\n") || "  None"}
-Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!
+// ❌ **Errors During Insertion:**
+// - ${(notificationDetails.error_rows &&
+//                                 notificationDetails.error_rows?.split(",").length) ||
+//                             0
+//                             } rows encountered errors. 
+//   - Row indexes: ${notificationDetails.error_rows}
+//    Detailed Error Log:
+// ${notificationDetails.error_log?.map((err, i) => `  ${i + 1}. ${err}`).join("\n") || "  None"}
+// Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!
 
-Wishing you success,
-The Gotestli Team
+// Wishing you success,
+// The Gotestli Team
 
----------------------
-Gotestli
-Test Your Limits, Expand Your Knowledge
-https://gotestli.com
-`,
-                        body_html: `
-<p>Hi <b>${notificationDetails.first_name}</b>,</p>
+// ---------------------
+// Gotestli
+// Test Your Limits, Expand Your Knowledge
+// https://gotestli.com
+// `,
+//                         body_html: `
+// <p>Hi <b>${notificationDetails.first_name}</b>,</p>
 
-<p>We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:</p>
+// <p>We’ve completed processing your uploaded Excel file for question insertion. Below is a summary of the results:</p>
 
-<h3>✔️ <b>Successful Insertions:</b></h3>
-<ul>
-  <li><b>${(notificationDetails.correct_rows &&
-                                notificationDetails.correct_rows?.split(",").length) ||
-                            0
-                            }</b> questions were successfully inserted into the database.</li>
-</ul>
+// <h3>✔️ <b>Successful Insertions:</b></h3>
+// <ul>
+//   <li><b>${(notificationDetails.correct_rows &&
+//                                 notificationDetails.correct_rows?.split(",").length) ||
+//                             0
+//                             }</b> questions were successfully inserted into the database.</li>
+// </ul>
 
-<h3>❌ <b>Errors During Insertion:</b></h3>
-<ul>
-  <li><b>${(notificationDetails.error_rows &&
-                                notificationDetails.error_rows?.split(",").length) ||
-                            0
-                            }</b> rows encountered errors.</li>
-  <li>Row indexes: <b>${notificationDetails.error_rows}</b></li>
-</ul>
-<h4 style="margin-top: 20px;">🛠️ <b>Detailed Error Log:</b></h4>
-<ol style="padding-left: 20px; color: #b00020;">
-  ${notificationDetails.error_log?.map((err, i) => `
-    <li style="margin-bottom: 10px;">
-      <span style="font-weight: bold;">${err.replace(/\(Row:- (\d+)\)/, '<span style="color:#000;">Row  <b>$1</b></span>')}</span>
-    </li>
-  `).join('') || "<li>None</li>"}
-</ol>
+// <h3>❌ <b>Errors During Insertion:</b></h3>
+// <ul>
+//   <li><b>${(notificationDetails.error_rows &&
+//                                 notificationDetails.error_rows?.split(",").length) ||
+//                             0
+//                             }</b> rows encountered errors.</li>
+//   <li>Row indexes: <b>${notificationDetails.error_rows}</b></li>
+// </ul>
+// <h4 style="margin-top: 20px;">🛠️ <b>Detailed Error Log:</b></h4>
+// <ol style="padding-left: 20px; color: #b00020;">
+//   ${notificationDetails.error_log?.map((err, i) => `
+//     <li style="margin-bottom: 10px;">
+//       <span style="font-weight: bold;">${err.replace(/\(Row:- (\d+)\)/, '<span style="color:#000;">Row  <b>$1</b></span>')}</span>
+//     </li>
+//   `).join('') || "<li>None</li>"}
+// </ol>
 
-<p>Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!</p>
+// <p>Please review the error details and correct the file if necessary. If you need any assistance, feel free to reach out!</p>
 
- <p>Wishing you success,<br/>  
-<p>Gotestli Team</p>
-<hr style="margin: 30px 0;" />
+//  <p>Wishing you success,<br/>  
+// <p>Gotestli Team</p>
+// <hr style="margin: 30px 0;" />
 
-<div style="font-size: 13px; color: #888; text-align: center;">
-  <img src="https://gotestli.com/assets/img/header-logo3.png" alt="Gotestli Logo" width="120" style="margin-bottom: 10px;" />
-  <p><b>Gotestli</b><br/>
-  Test Your Limits, Expand Your Knowledge<br/>
-  <a href="https://gotestli.com" style="color: #ff6600; text-decoration: none;">www.gotestli.com</a></p>
-  <p style="margin-top: 10px; font-size: 12px;">
+// <div style="font-size: 13px; color: #888; text-align: center;">
+//   <img src="https://gotestli.com/assets/img/header-logo3.png" alt="Gotestli Logo" width="120" style="margin-bottom: 10px;" />
+//   <p><b>Gotestli</b><br/>
+//   Test Your Limits, Expand Your Knowledge<br/>
+//   <a href="https://gotestli.com" style="color: #ff6600; text-decoration: none;">www.gotestli.com</a></p>
+//   <p style="margin-top: 10px; font-size: 12px;">
    
-    <a href="mailto:gotestli07@gmail.com" style="color: #666; text-decoration: none; margin: 0 5px;">✉️ gotestli07@gmail.com</a>
-  </p>
+//     <a href="mailto:gotestli07@gmail.com" style="color: #666; text-decoration: none; margin: 0 5px;">✉️ gotestli07@gmail.com</a>
+//   </p>
   
-</div>
-`,
-                    },
+// </div>
+// `,
+//                     },
 
-                },
-                // {
-                //   userResultId: studentData.id,
-                //   studentData: data,
-                //   quizData: set,
-                //   instructor: response?.data?.first_name,
-                // },
-                {
-                    headers: fastapi_headers
-                }
-            );
+//                 },
+//                 // {
+//                 //   userResultId: studentData.id,
+//                 //   studentData: data,
+//                 //   quizData: set,
+//                 //   instructor: response?.data?.first_name,
+//                 // },
+//                 {
+//                     headers: fastapi_headers
+//                 }
+//             );
             // console.log(response)
         }
         result(null);

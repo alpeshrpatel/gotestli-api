@@ -106,7 +106,10 @@ app.use((req, res, next) => {
     req.url.startsWith('/api/sendemail/org/user/invitation/from-admin') || 
     req.url.startsWith('/api/cheatsheet/comment') ||
     req.url.startsWith('/api/cheatsheet/social') ||
-    req.url.startsWith('/api/recommend')
+    req.url.startsWith('/api/recommend') || 
+    req.url.startsWith('/api/questionset/gameplay') ||
+    req.url.startsWith('/api/options/gameplay') || 
+    req.url.startsWith('/api/leaderboard')
   ) {
     return next();
   }
@@ -161,6 +164,7 @@ require("./routes/cheatsheetcomments.route.js")(app);
 require("./routes/cheatsheetssocial.route.js")(app);
 require("./routes/groqapi.route.js")(app);
 require("./routes/recommend.route.js")(app);
+require("./routes/leaderboard.route.js")(app);
 
 const uploadFolder = "../gotestli-web/uploads/";
 

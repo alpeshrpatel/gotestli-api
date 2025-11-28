@@ -38,6 +38,29 @@ Options.findById = (id,orgid, result) => {
   );
 };
 
+Options.findWithAnsById = (id,orgid, result) => {
+  connection.query(
+    //,is_correct_answer AS correctAnswer
+    `SELECT question_id,question_option AS options,is_correct_answer AS answer FROM question_options WHERE question_id = ${id} and org_id = ${orgid}`,
+    (err, res) => {
+      if (err) {
+         
+        result(err, null);
+        return;
+      }
+
+      if (res.length) {
+         // console.log("found options: ", res[0]);
+        result(null, res);
+        return;
+      }
+
+      // not found Options with the id
+      result({ kind: "not_found" }, null);
+    }
+  );
+};
+
 Options.getAll = (orgid,result) => {
   let query = "SELECT * FROM question_options where org_id = ?";
 

@@ -138,6 +138,26 @@ exports.getAllQuestionsOfQuestionSet = (req, res) => {
   });
 }
 
+exports.getAllQuestionsOfGamePin = (req, res) => {
+   const {orgid} = req.query
+   QuestionSet.getAllQuestionsOfGamePin(req.params.gamepin,orgid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found QuestionSet Questions with id ${req.params.id}.`,
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving QuestionSet Questions with id " + req.params.id,
+        });
+      }
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+}
+
 exports.getQuetionSetUsedByCount = (req, res) => {
   const {orgid} = req.query
   QuestionSet.getQuetionSetUsedByCount(orgid,(err, data) => {
@@ -335,6 +355,33 @@ exports.updateStatus = (req, res) => {
 
   QuestionSet.updateStatusById(
     req.body,orgid,
+    (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found QuestionSet with id ${req.params.id}.`,
+          });
+        } else {
+          res.status(500).send({
+            message: "Error updating QuestionSet with id " + req.params.id,
+          });
+        }
+      } else res.send(data);
+    }
+  );
+};
+
+exports.updateGameConfig = (req, res) => {
+  
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+  }
+  const modified_date = generateDateTime();
+
+  QuestionSet.updateGameConfigById(
+    req.body, req.params.id,
     (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

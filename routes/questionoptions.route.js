@@ -42,6 +42,8 @@ module.exports = app => {
     // Retrieve a single options with id
     router.get("/:id", options.findOne);
 
+    router.get('/gameplay/public/:id', options.findOneWithAns);
+
     /**
  * @swagger
  * /api/options:

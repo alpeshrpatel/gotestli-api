@@ -153,7 +153,20 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
 
 QuestionSet.getAllQuestionsOfQuestionSet = (question_set_id,orgid, result) => {
   connection.query(
-         `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[question_set_id,orgid],
+         `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qsq.question_set_id, qs.game_time, qs.game_score, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[question_set_id,orgid],
+    (err, res) => {
+            if (err) {
+                result(err, null);
+                return;
+            }
+            result(null, {res});
+        }
+    );
+}
+
+QuestionSet.getAllQuestionsOfGamePin = (gamepin,orgid, result) => {
+  connection.query(
+         `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qs.pass_percentage, qsq.question_set_id, qs.game_time, qs.game_score from testli.question_set_questions qsq, question_set qs , question_master qm where  qs.org_id = ? and qs.game_pin = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[orgid, gamepin],
     (err, res) => {
             if (err) {
                 result(err, null);
@@ -176,12 +189,12 @@ QuestionSet.getQuestionSetsOfInstructor = (userId,startPoint,endPoint,search,org
   let queryString = "";
   let queryParams = "";
   if (search) {
-    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo, is_gamified, game_pin, status_id, modified_date, created_date 
      FROM question_set 
      WHERE created_by = ? 
      AND (title LIKE ? OR short_desc LIKE ?) AND org_id = ? order by created_date desc LIMIT ? OFFSET ?;`;
   } else {
-    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo, status_id, modified_date, created_date 
+    queryString = `SELECT id, title, short_desc, start_date, end_date, no_of_question, time_duration, totalmarks, is_demo,is_gamified, game_pin, status_id, modified_date, created_date 
      FROM question_set 
      WHERE created_by = ? AND org_id = ?
      ORDER BY created_date DESC 
@@ -364,11 +377,14 @@ const updateStatusQuery = `
 };
 
 QuestionSet.findAllQSet = (startPoint,endPoint,search,orgid,result) => {
-  const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
-  const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
+  // const start = Number.isInteger(Number(startPoint)) ? Number(startPoint) : 1;
+  // const end = Number.isInteger(Number(endPoint)) ? Number(endPoint) : 10;
 
-  const limit = Math.max(parseInt((end - start) - 1, 10), 1);
-  const offset = Math.max(parseInt(start - 1, 10), 0);
+  // const limit = Math.max(parseInt((end - start) - 1, 10), 1);
+  // const offset = Math.max(parseInt(start - 1, 10), 0);
+
+   const limit = Math.max(parseInt(rowsPerPage, 10), 1);
+  const offset = Math.max(parseInt((page - 1) * rowsPerPage, 10), 0);
 
   
   let queryString = "";
@@ -506,6 +522,35 @@ QuestionSet.updateStatusById = (questionset,orgid, result) => {
     }
   );
 };
+
+QuestionSet.updateGameConfigById = ( {timePerQuestion, scorePerQuestion, gamePin}, id, result) => {
+   connection.execute(
+    "UPDATE question_set SET is_gamified = 1 , game_pin = ? , game_time = ?, game_score = ? WHERE id = ?",
+    [
+      gamePin,
+      timePerQuestion,
+      scorePerQuestion,
+      id
+     
+    ],
+    (err, res) => {
+      if (err) {
+         
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found QuestionSet with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+       // console.log("updated questionset: ", { id: id, ...questionset });
+      result(null, { id: id });
+    }
+  );
+}
 
 QuestionSet.remove = (id, result) => {
   connection.query("DELETE FROM question_set WHERE id = ?", id, (err, res) => {

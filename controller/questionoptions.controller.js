@@ -40,6 +40,25 @@ exports.findOne = async (req, res) => {
   });
 };
 
+exports.findOneWithAns = async (req, res) => {
+  const {orgid} = req.query;
+  Options.findWithAnsById(req.params.id,orgid, (err, data) => {
+    if (err) {
+      if (err.kind === "not_found") {
+        res.status(404).send({
+          message: `Not found option with id ${req.params.id}.`
+        });
+      } else {
+        res.status(500).send({
+          message: "Error retrieving option with id " + req.params.id
+        });
+      }
+    } else{
+      cache.set(req.originalUrl, data);
+      res.send(data);
+    };
+  });
+};
 
 // Delete a option with the specified id in the request
 exports.delete = (req, res) => {
