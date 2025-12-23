@@ -164,12 +164,12 @@ exports.insertQuestions = async (req, res) => {
           const rowData = [];
           let rowHasError = false;
           let errorTextInRow = '';
-          for (let colNumber = 2; colNumber <= 9; colNumber++) {
+          for (let colNumber = 2; colNumber <= 10; colNumber++) {
             const cell = row.getCell(colNumber);
             console.log(`Column ${colNumber}: ${cell.value || 'empty'} (Type: ${typeof cell.value})`);
           }
           // Loop through all columns (even those without values)
-          for (let colNumber = 2; colNumber <= 9; colNumber++) {
+          for (let colNumber = 2; colNumber <= 10; colNumber++) {
             const cell = row.getCell(colNumber);
             const cellValue = cell.value ? cell.value : ""; // Handle empty cells
 
@@ -196,7 +196,16 @@ exports.insertQuestions = async (req, res) => {
                   errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in description Column  (expected non-empty string) `;
                 }
                 break;
-              case 4: // Validation for answer choices (e.g., '1:2:3:4')
+               case 4: // Validation for the question (e.g., 'Amazon S3...')
+                if (typeof cellValue !== "string" || cellValue?.trim() === "") {
+                  rowHasError = true;
+                  console.log(
+                    `Error: Invalid value in description Column  (expected non-empty string)`
+                  );
+                  errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in description Column  (expected non-empty string) `;
+                }
+                break;
+              case 5: // Validation for answer choices (e.g., '1:2:3:4')
                 if (
                   typeof cellValue !== "string" ||
                   !/^.+(:.+)+$/.test(cellValue) ||
@@ -209,8 +218,8 @@ exports.insertQuestions = async (req, res) => {
                   errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in options Column  (expected non-empty string) `;
                 }
                 break;
-              case 5: // Validation for the selected answer (it must match a choice from Column 4)
-                const answerChoices = rowData[2]; // Get choices from Column 4
+              case 6: // Validation for the selected answer (it must match a choice from Column 4)
+                const answerChoices = rowData[3]; // Get choices from Column 4
                 function validateAnswers(answerChoices, answer) {
                   if (answer?.includes(":")) {
                     const validation = /^.+(:.+)+$/.test(cellValue);
@@ -257,7 +266,7 @@ exports.insertQuestions = async (req, res) => {
                   errorTextInRow = `(Row:- ${rowNumber - 6}) Error: Answer does not match any of the available options`;
                 }
                 break;
-              case 6: // Validation for difficulty level (e.g., 'easy')
+              case 7: // Validation for difficulty level (e.g., 'easy')
                 const validDifficulties = [
                   "easy",
                   "medium",
@@ -276,7 +285,7 @@ exports.insertQuestions = async (req, res) => {
                   errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in difficulty Column  (Must be one of 'easy', 'medium', 'hard') `;
                 }
                 break;
-              case 7: // Validation for category or tag ID (e.g., 13)
+              case 8: // Validation for category or tag ID (e.g., 13)
                 if (
                   typeof cellValue !== "number" ||
                   cellValue < 0 ||
@@ -289,7 +298,7 @@ exports.insertQuestions = async (req, res) => {
                   errorTextInRow = `(Row:- ${rowNumber - 6})` + `Error: Invalid value in marks Column  (Must be a non-negative integer) `;
                 }
                 break;
-              case 8: // Validation for status or flag (e.g., 1)
+              case 9: // Validation for status or flag (e.g., 1)
                 let normalizedValue = cellValue;
 
                 if (cellValue === "" || cellValue === null || cellValue === undefined) {
@@ -326,7 +335,7 @@ exports.insertQuestions = async (req, res) => {
         // console.log('CASE 8 PASSED - Value is valid:', normalizedValue);
     }
                 break;
-              case 9: // Validation for duration or reference (e.g., 23)
+              case 10: // Validation for duration or reference (e.g., 23)
                 // Handle empty cells - default to 0
                 let negativeMarksValue = cellValue;
                 if (cellValue === "" || cellValue === null || cellValue === undefined) {
@@ -566,7 +575,7 @@ async function validateExcelFile(filePath,orgId, userId) {
       let hasError = false;
 
       
-      for (let colNumber = 2; colNumber <= 9; colNumber++) {
+      for (let colNumber = 2; colNumber <= 10; colNumber++) {
         const cell = row.getCell(colNumber);
         const cellValue = cell.value || "";
         rowData.push(cellValue);
@@ -671,44 +680,51 @@ function validateCell(colNumber, cellValue, rowData, rowNumber) {
         return `Column 3 (Description): Expected non-empty string, got "${cellValue}"`;
       }
       break;
+    
+    case 4: // Explanation column
+      if (typeof cellValue !== "string" || cellValue?.trim() === "") {
+        return `Column 4 (Explanation): Expected non-empty string, got "${cellValue}"`;
+      }
+      break;
       
-    case 4: // Options column (format: option1:option2:option3)
+    case 5: // Options column (format: option1:option2:option3)
       if (typeof cellValue !== "string" || !/^.+(:.+)+$/.test(cellValue) || cellValue.trim() === "") {
-        return `Column 4 (Options): Expected format 'option1:option2:option3', got "${cellValue}"`;
+        return `Column 5 (Options): Expected format 'option1:option2:option3', got "${cellValue}"`;
       }
       break;
       
-    case 5: // Correct answer column
-      const answerChoices = rowData[2]; // Options from column 4
+    case 6: // Correct answer column
+      // const answerChoices = rowData[2]; // Options from column 4
+      const answerChoices = rowData[3]; // Options from column 5
       if (!validateAnswer(answerChoices, cellValue)) {
-        return `Column 5 (Answer): "${cellValue}" does not match any option from "${answerChoices}"`;
+        return `Column 6 (Answer): "${cellValue}" does not match any option from "${answerChoices}"`;
       }
       break;
       
-    case 6: // Difficulty column
+    case 7: // Difficulty column
       const validDifficulties = ["easy", "medium", "hard", "very hard"];
       if (typeof cellValue !== "string" || !validDifficulties.includes(cellValue.toLowerCase()) || cellValue.trim() === "") {
-        return `Column 6 (Difficulty): Expected one of [${validDifficulties.join(', ')}], got "${cellValue}"`;
+        return `Column 7 (Difficulty): Expected one of [${validDifficulties.join(', ')}], got "${cellValue}"`;
       }
       break;
       
-    case 7: // Marks column
+    case 8: // Marks column
       if (typeof cellValue !== "number" || cellValue < 0 || cellValue > 500) {
-        return `Column 7 (Marks): Expected number between 0-500, got "${cellValue}"`;
+        return `Column 8 (Marks): Expected number between 0-500, got "${cellValue}"`;
       }
       break;
       
-    case 8: // Is_negative column (0 or 1)
+    case 9: // Is_negative column (0 or 1)
       const normalizedValue = normalizeBoolean(cellValue);
       if (normalizedValue !== 0 && normalizedValue !== 1) {
-        return `Column 8 (Is_negative): Expected 0 or 1, got "${cellValue}"`;
+        return `Column 9 (Is_negative): Expected 0 or 1, got "${cellValue}"`;
       }
       break;
       
-    case 9: // Negative marks column
+    case 10: // Negative marks column
       const negativeMarks = cellValue === "" || cellValue == null ? 0 : Number(cellValue);
       if (isNaN(negativeMarks) || negativeMarks < 0) {
-        return `Column 9 (Negative Marks): Expected non-negative number, got "${cellValue}"`;
+        return `Column 10 (Negative Marks): Expected non-negative number, got "${cellValue}"`;
       }
       break;
   }

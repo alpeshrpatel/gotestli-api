@@ -192,7 +192,7 @@ QuestionFiles.insertQuestions = async (
     }
 
     const data = dataSet[i];
-    const question_type = String(data[3]).includes(':') ? 7 : 2;
+    const question_type = String(data[4]).includes(':') ? 7 : 2;
     const question = data[0];
     const org_id = 0;
 
@@ -214,12 +214,13 @@ QuestionFiles.insertQuestions = async (
         org_id,
         question || '',
         data[1] || '',
+        data[2] || '',
         question_type || 2,
         1,
-        data[4] || 'easy',
-        data[5] || 1,
-        data[6] || 0,
+        data[5] || 'easy',
+        data[6] || 1,
         data[7] || 0,
+        data[8] || 0,
         userId,
         date,
         userId,
@@ -227,8 +228,8 @@ QuestionFiles.insertQuestions = async (
       ];
 
       const insertResult = await insertQuestion(
-        `INSERT INTO question_master (org_id, question, description, question_type_id, status_id, complexity, marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO question_master (org_id, question, description, explanation, question_type_id, status_id, complexity, marks, is_negative, negative_marks, created_by, created_date, modified_by, modified_date)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         values
       );
 

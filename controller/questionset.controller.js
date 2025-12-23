@@ -253,10 +253,12 @@ exports.getQuestionSetsOfInstructor = (req, res) => {
 exports.findAll = (req, res) => {
   // const title = req.query.title;
   const {orgid} = req.query
+  //  const start = parseInt(req.query.start) || 0;
+  //   const end = parseInt(req.query.end) || 10;
+  //   const limit = parseInt(req.query.limit) || 10;
    const start = parseInt(req.query.start) || 0;
-    const end = parseInt(req.query.end) || 10;
-    const limit = parseInt(req.query.limit) || 10;
-  QuestionSet.getAll(orgid,start,end,limit, async (err, data) => {
+  const limit = parseInt(req.query.limit) || 10;
+  QuestionSet.getAll(orgid,start,limit, async (err, data) => {
     if (err)
       res.status(500).send({
         message:

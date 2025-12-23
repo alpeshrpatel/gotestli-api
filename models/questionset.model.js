@@ -327,9 +327,10 @@ QuestionSet.getQuestionSetByTitle = (title, result) => {
 //   });
 // };
 
-QuestionSet.getAll = (orgid, start, end, limit1, result) => {
-  const limit = Math.max(parseInt((end - start)- 1 , 10), 1);
-  const offset = Math.max(parseInt(start - 1, 10), 0);
+QuestionSet.getAll = (orgid, start, limit, result) => {
+  // const limit = Math.max(parseInt((end - start)- 1 , 10), 1);
+  // const offset = Math.max(parseInt(start - 1, 10), 0);
+  const offset = start;
   
   
   // const updateExpiredQuery = `

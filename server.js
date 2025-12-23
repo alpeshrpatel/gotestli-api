@@ -236,6 +236,7 @@ app.post("/api/file/upload", upload.single("file"), async (req, res) => {
       "index",
       "question",
       "description",
+      "explanation",
       "question_option",
       "correct_answer",
       "complexity",
