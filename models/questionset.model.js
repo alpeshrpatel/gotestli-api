@@ -153,7 +153,7 @@ const offset = Math.max(parseInt(start - 1, 10), 0);
 
 QuestionSet.getAllQuestionsOfQuestionSet = (question_set_id,orgid, result) => {
   connection.query(
-         `SELECT qsq.question_id, qm.question, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qsq.question_set_id, qs.game_time, qs.game_score, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[question_set_id,orgid],
+         `SELECT qsq.question_id, qm.question, qm.explanation, qm.paragraph_id, qm.question_type_id,qm.marks,qm.is_negative, qm.negative_marks, qsq.question_set_id, qs.game_time, qs.game_score, qs.pass_percentage from testli.question_set_questions qsq, question_set qs , question_master qm where qs.id = ? and qs.org_id = ?  and qsq.question_set_id = qs.id  and qm.id = qsq.question_id order by qm.created_date desc;`,[question_set_id,orgid],
     (err, res) => {
             if (err) {
                 result(err, null);

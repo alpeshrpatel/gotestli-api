@@ -641,17 +641,17 @@ const insertQuestionOptions = async (questionId, data, userId, date) => {
   const query = `
     INSERT INTO question_options (question_id, question_option, is_correct_answer, created_by, created_date, modified_by, modified_date) 
     VALUES ?`;
-  const question_options = data[2].split(":");
+  const question_options = data[3].split(":");
   // console.log("data3", data[3]);
   const correct_answer = question_options.map((option) => {
-    if (typeof data[3] === "string" && data[3].includes(':')) {
-      return data[3].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
+    if (typeof data[4] === "string" && data[4].includes(':')) {
+      return data[4].toLowerCase().includes(option.toLowerCase()) ? 1 : 0;
     } else {
-      return typeof data[3] === "string"
-        ? data[3].toLowerCase() === option.toLowerCase()
+      return typeof data[4] === "string"
+        ? data[4].toLowerCase() === option.toLowerCase()
           ? 1
           : 0
-        : data[3] === option
+        : data[4] === option
           ? 1
           : 0;
     }
